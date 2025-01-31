@@ -64,7 +64,7 @@ export default function MobileNav() {
 
 	return (
 		<nav
-			className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t rounded-t-2xl safe-area-bottom"
+			className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t rounded-t-3xl safe-area-bottom"
 			aria-label="Navigation principale"
 		>
 			<div className="grid grid-cols-5 h-16 max-w-md mx-auto">
