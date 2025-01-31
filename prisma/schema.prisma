@@ -1,0 +1,132 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String           @id
+  name          String
+  email         String
+  emailVerified Boolean
+  image         String?
+  createdAt     DateTime
+  updatedAt     DateTime
+  sessions      Session[]
+  accounts      Account[]
+  completions   Completion[]
+  validations   ValidationVote[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime
+  updatedAt DateTime
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime
+  updatedAt             DateTime
+
+  @@map("account")
+}
+
+model Verification {
+  id         String    @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime?
+  updatedAt  DateTime?
+
+  @@map("verification")
+}
+
+model ChallengeCategory {
+  id          String      @id @default(uuid())
+  name        String
+  description String
+  challenges  Challenge[]
+
+  @@map("challenge_category")
+}
+
+model Challenge {
+  id          String             @id @default(uuid())
+  title       String
+  description String
+  categoryId  String?
+  category    ChallengeCategory? @relation(fields: [categoryId], references: [id])
+  points      Int                @default(10)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  completions Completion[]
+
+  @@map("challenge")
+}
+
+model Completion {
+  id                  String           @id @default(uuid())
+  userId              String
+  challengeId         String
+  proof               String // URL de la photo/vidéo
+  status              String           @default("PENDING") // PENDING, VALIDATED, REJECTED
+  completedAt         DateTime         @default(now())
+  updatedAt           DateTime         @updatedAt
+  user                User             @relation(fields: [userId], references: [id])
+  challenge           Challenge        @relation(fields: [challengeId], references: [id])
+  validators          ValidationVote[]
+  validationThreshold Int              @default(0) // Nombre de votes nécessaires pour valider
+  positiveVotes       Int              @default(0) // Compteur de votes positifs
+  negativeVotes       Int              @default(0) // Compteur de votes négatifs
+
+  @@unique([userId, challengeId])
+  @@map("completion")
+}
+
+model ValidationVote {
+  id           String     @id @default(uuid())
+  userId       String
+  completionId String
+  validated    Boolean
+  comment      String? // Permettre aux votants de laisser un commentaire
+  createdAt    DateTime   @default(now())
+  user         User       @relation(fields: [userId], references: [id])
+  completion   Completion @relation(fields: [completionId], references: [id])
+
+  @@unique([userId, completionId])
+  @@map("validation_vote")
+}
