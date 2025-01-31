@@ -66,10 +66,10 @@ export default function MobileNav() {
 							<div key={item.href} className="relative flex justify-center">
 								<Link
 									href={item.href}
-									className="absolute -top-6 flex flex-col items-center"
+									className="absolute -top-6 flex flex-col items-center group active:scale-90 transition-transform"
 									aria-label={`${item.label} - Action principale`}
 								>
-									<span className="flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg hover:shadow-md transition-shadow">
+									<span className="flex items-center justify-center w-14 h-14 rounded-full bg-primary text-primary-foreground shadow-lg group-hover:shadow-md transition-shadow">
 										<Icon className="h-6 w-6" aria-hidden="true" />
 									</span>
 									<span className="text-[11px] leading-none font-medium mt-[3px] translate-y-1">
@@ -86,7 +86,7 @@ export default function MobileNav() {
 							href={item.href}
 							className={cn(
 								"flex flex-col items-center justify-center py-1",
-								"font-medium transition-colors",
+								"active:scale-90 transition-transform tap-highlight-transparent",
 								isActive
 									? "text-primary"
 									: "text-muted-foreground hover:text-primary"
