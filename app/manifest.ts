@@ -1,10 +1,10 @@
-import type { MetadataRoute } from "next";
+import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
 	return {
 		name: "L'instant présent",
-		short_name: "L'instant présent",
-		description: "Le meilleur jeu de défis !",
+		short_name: "L'instant",
+		description: "Créez des souvenirs uniques",
 		start_url: "/",
 		display: "standalone",
 		background_color: "#ffffff",

@@ -96,7 +96,9 @@ export default function MobileNav() {
 							<Icon
 								className={cn(
 									"h-5 w-5 mb-1",
-									isActive ? "text-primary" : "text-muted-foreground"
+									isActive
+										? "text-primary"
+										: "text-muted-foreground group-hover:text-primary"
 								)}
 								aria-hidden="true"
 							/>

@@ -1,3 +1,4 @@
+import { PushNotificationManager } from "@/app/components/push-notification-manager";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -39,6 +40,7 @@ export default async function ProfilePage() {
 					</div>
 				</div>
 			</div>
+			<PushNotificationManager />
 		</PageContainer>
 	);
 }
