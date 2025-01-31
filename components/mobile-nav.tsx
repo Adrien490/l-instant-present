@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCallback } from "react";
 
 interface NavItem {
 	href: string;
@@ -48,8 +49,18 @@ const items: NavItem[] = [
 	},
 ];
 
+function vibrate() {
+	if ("vibrate" in navigator) {
+		navigator.vibrate(10); // vibration courte de 10ms
+	}
+}
+
 export default function MobileNav() {
 	const pathname = usePathname();
+
+	const handleClick = useCallback(() => {
+		vibrate();
+	}, []);
 
 	return (
 		<nav
@@ -66,6 +77,7 @@ export default function MobileNav() {
 							<div key={item.href} className="relative flex justify-center">
 								<Link
 									href={item.href}
+									onClick={handleClick}
 									className="absolute -top-6 flex flex-col items-center group active:scale-90 transition-transform"
 									aria-label={`${item.label} - Action principale`}
 								>
@@ -84,6 +96,7 @@ export default function MobileNav() {
 						<Link
 							key={item.href}
 							href={item.href}
+							onClick={handleClick}
 							className={cn(
 								"flex flex-col items-center justify-center py-1",
 								"active:scale-90 transition-transform tap-highlight-transparent",
