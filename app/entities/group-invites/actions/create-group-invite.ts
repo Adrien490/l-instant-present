@@ -13,12 +13,12 @@ import { GroupInvite } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { isGroupAdmin } from "../../groups/queries/is-group-admin";
-import groupInviteSchema from "../schemas/group-invite-schema";
+import groupInviteFormSchema from "../schemas/group-invite-form-schema";
 
-export default async function createGroupInvite(
-	_: ServerActionState<GroupInvite, typeof groupInviteSchema> | null,
+export async function createGroupInvite(
+	_: ServerActionState<GroupInvite, typeof groupInviteFormSchema> | null,
 	formData: FormData
-): Promise<ServerActionState<GroupInvite, typeof groupInviteSchema>> {
+): Promise<ServerActionState<GroupInvite, typeof groupInviteFormSchema>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
@@ -34,12 +34,9 @@ export default async function createGroupInvite(
 		const rawData = {
 			groupId: formData.get("groupId")?.toString() || "",
 			email: formData.get("email")?.toString() || "",
-			expiresAt: formData.get("expiresAt")
-				? new Date(formData.get("expiresAt")?.toString() || "")
-				: undefined,
 		};
 
-		const validation = groupInviteSchema.safeParse(rawData);
+		const validation = groupInviteFormSchema.safeParse(rawData);
 
 		if (!validation.success) {
 			return createValidationErrorResponse(
@@ -58,10 +55,41 @@ export default async function createGroupInvite(
 			);
 		}
 
+		// Vérifier si l'utilisateur existe déjà
+		const existingUser = await db.user.findUnique({
+			where: { email: validation.data.email },
+			select: { id: true },
+		});
+
+		if (!existingUser) {
+			return createErrorResponse(
+				ServerActionStatus.ERROR,
+				"Cette adresse email n'est pas associée à un compte"
+			);
+		}
+
+		// Vérifier si l'utilisateur est déjà membre du groupe
+		const existingMember = await db.groupMember.findUnique({
+			where: {
+				userId_groupId: {
+					userId: existingUser.id,
+					groupId: validation.data.groupId,
+				},
+			},
+		});
+
+		if (existingMember) {
+			return createErrorResponse(
+				ServerActionStatus.ERROR,
+				"Cette personne est déjà membre du groupe"
+			);
+		}
+
 		const invite = await db.groupInvite.create({
 			data: {
 				...validation.data,
 				senderId: session.user.id,
+				expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 jours
 			},
 		});
 
