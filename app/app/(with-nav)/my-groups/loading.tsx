@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export default function Loading() {
 	return (
-		<PageContainer className="pb-20">
+		<PageContainer className="pb-24">
 			<PageHeader
 				title={<Skeleton className="h-7 w-48" />}
 				description={<Skeleton className="h-5 w-full max-w-[500px]" />}

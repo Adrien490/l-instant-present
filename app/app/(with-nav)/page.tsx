@@ -1,5 +1,5 @@
-import { getUserInvites } from "@/app/server/group-invites/queries/get-user-invites";
-import getGroups from "@/app/server/groups/queries/get-groups";
+import { getUserInvites } from "@/app/entities/group-invites/queries/get-user-invites";
+import getGroups from "@/app/entities/groups/queries/get-groups";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -16,7 +16,7 @@ export default async function HomePage() {
 	const invites = await getUserInvites();
 
 	return (
-		<PageContainer>
+		<PageContainer className="pb-24">
 			{/* Hero Section */}
 			<PageHeader
 				title={`Bonjour ${session?.user.name?.split(" ")[0]} 👋`}

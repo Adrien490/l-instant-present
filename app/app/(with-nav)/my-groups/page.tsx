@@ -1,4 +1,4 @@
-import getGroups from "@/app/server/groups/queries/get-groups";
+import getGroups from "@/app/entities/groups/queries/get-groups";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import SearchForm from "@/components/search-form";
@@ -22,7 +22,7 @@ export default async function MyGroupsPage({ searchParams }: Props) {
 	});
 
 	return (
-		<PageContainer className="pb-20">
+		<PageContainer className="pb-24">
 			<PageHeader
 				title="Mes groupes"
 				description="Découvrez tous les groupes auxquels vous appartenez."

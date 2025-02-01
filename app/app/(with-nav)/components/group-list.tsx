@@ -1,6 +1,6 @@
 "use client";
 
-import { GetGroupsResponse } from "@/app/server/groups/queries/get-groups";
+import { GetGroupsResponse } from "@/app/entities/groups/queries/get-groups";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Plus, UserPlus, Users } from "lucide-react";

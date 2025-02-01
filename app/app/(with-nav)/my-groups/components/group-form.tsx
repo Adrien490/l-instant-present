@@ -1,8 +1,8 @@
 "use client";
 
-import { useGroupForm } from "@/app/server/groups/hooks/use-group-form";
-import { GetGroupResponse } from "@/app/server/groups/queries/get-group";
-import groupFormSchema from "@/app/server/groups/schemas/group-form-schema";
+import { useGroupForm } from "@/app/entities/groups/hooks/use-group-form";
+import { GetGroupResponse } from "@/app/entities/groups/queries/get-group";
+import groupFormSchema from "@/app/entities/groups/schemas/group-form-schema";
 import ServerActionResponse from "@/components/server-action-response";
 import { Button } from "@/components/ui/button";
 import { FormLabel } from "@/components/ui/form";

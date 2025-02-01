@@ -1,6 +1,6 @@
 "use client";
 
-import { GetGroupsResponse } from "@/app/server/groups/queries/get-groups";
+import { GetGroupsResponse } from "@/app/entities/groups/queries/get-groups";
 import { Card } from "@/components/ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
