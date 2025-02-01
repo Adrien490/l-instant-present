@@ -25,7 +25,7 @@ export default function BottomNav({
 	return (
 		<nav
 			className={cn(
-				"fixed bottom-0 left-0 right-0 h-[72px] border-t bg-background z-40",
+				"fixed bottom-0 left-0 right-0 h-[72px] border-t rounded-t-3xl bg-background z-40",
 				className
 			)}
 		>
