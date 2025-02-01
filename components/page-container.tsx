@@ -13,10 +13,7 @@ export default function PageContainer({
 	...props
 }: PageContainerProps) {
 	return (
-		<div
-			className={cn("min-h-[100dvh] mx-auto w-full px-4", className)}
-			{...props}
-		>
+		<div className={cn("w-full px-4", className)} {...props}>
 			{children}
 		</div>
 	);

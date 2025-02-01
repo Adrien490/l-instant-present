@@ -1,3 +1,4 @@
+import PageContainer from "@/components/page-container";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
@@ -9,11 +10,11 @@ export default async function HomePage() {
 	const session = await auth.api.getSession({ headers: await headers() });
 
 	return (
-		<div className="flex-1 pb-20">
+		<PageContainer>
 			{/* Hero Section */}
 			<div className="relative">
 				<div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-background" />
-				<div className="relative px-4 pt-6 pb-8">
+				<div className="relative pt-6 pb-8">
 					<h1 className="text-xl font-semibold">
 						Bonjour {session?.user?.name?.split(" ")[0]} 👋
 					</h1>
@@ -24,7 +25,7 @@ export default async function HomePage() {
 			</div>
 
 			{/* Quick Actions */}
-			<div className="px-4">
+			<div className="">
 				<div className="grid grid-cols-2 gap-3">
 					<Link href="/app/my-groups/new">
 						<Card className="flex h-32 flex-col items-center justify-center gap-2 p-4 transition-colors hover:bg-muted/50">
@@ -46,7 +47,7 @@ export default async function HomePage() {
 			</div>
 
 			{/* Recent Activity */}
-			<div className="mt-8 px-4">
+			<div className="mt-8">
 				<div className="flex items-center justify-between">
 					<h2 className="text-lg font-semibold">Activité récente</h2>
 					<Button variant="ghost" size="sm" asChild>
@@ -84,6 +85,6 @@ export default async function HomePage() {
 					</Card>
 				</div>
 			</div>
-		</div>
+		</PageContainer>
 	);
 }

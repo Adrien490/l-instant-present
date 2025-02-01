@@ -7,7 +7,7 @@ export default async function AppLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<div className="flex flex-col min-h-[100dvh]">
+		<div className="flex flex-col">
 			<Suspense
 				fallback={<div className="h-14 w-full bg-muted animate-pulse" />}
 			>
