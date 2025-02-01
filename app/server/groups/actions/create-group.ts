@@ -12,12 +12,12 @@ import {
 import { Group, GroupRole } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import createGroupSchema from "../schemas/create-group-schema";
+import groupFormSchema from "../schemas/group-form-schema";
 
 export default async function createGroup(
-	_: ServerActionState<Group, typeof createGroupSchema> | null,
+	_: ServerActionState<Group, typeof groupFormSchema> | null,
 	formData: FormData
-): Promise<ServerActionState<Group, typeof createGroupSchema>> {
+): Promise<ServerActionState<Group, typeof groupFormSchema>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
@@ -36,7 +36,7 @@ export default async function createGroup(
 			imageUrl: formData.get("imageUrl")?.toString() || null,
 		};
 
-		const validation = createGroupSchema.safeParse(rawData);
+		const validation = groupFormSchema.safeParse(rawData);
 
 		if (!validation.success) {
 			return createValidationErrorResponse(

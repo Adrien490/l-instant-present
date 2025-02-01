@@ -11,8 +11,10 @@ const DEFAULT_SELECT = {
 	id: true,
 	name: true,
 	description: true,
+	imageUrl: true,
 	createdAt: true,
 	updatedAt: true,
+	ownerId: true,
 	members: {
 		select: {
 			role: true,
@@ -28,7 +30,7 @@ const DEFAULT_SELECT = {
 	},
 } satisfies Prisma.GroupSelect;
 
-type GetGroupResponse = Prisma.GroupGetPayload<{
+export type GetGroupResponse = Prisma.GroupGetPayload<{
 	select: typeof DEFAULT_SELECT;
 }>;
 

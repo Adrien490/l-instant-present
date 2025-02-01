@@ -13,12 +13,12 @@ import { Group } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { isGroupAdmin } from "../queries/is-group-admin";
-import editGroupSchema from "../schemas/edit-group-schema";
+import groupFormSchema from "../schemas/group-form-schema";
 
 export default async function editGroup(
-	_: ServerActionState<Group, typeof editGroupSchema> | null,
+	_: ServerActionState<Group, typeof groupFormSchema> | null,
 	formData: FormData
-): Promise<ServerActionState<Group, typeof editGroupSchema>> {
+): Promise<ServerActionState<Group, typeof groupFormSchema>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
@@ -47,7 +47,7 @@ export default async function editGroup(
 			imageUrl: formData.get("imageUrl")?.toString() || null,
 		};
 
-		const validation = editGroupSchema.safeParse(rawData);
+		const validation = groupFormSchema.safeParse(rawData);
 
 		if (!validation.success) {
 			return createValidationErrorResponse(

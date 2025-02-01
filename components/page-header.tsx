@@ -1,54 +1,37 @@
 "use client";
 
-import UserAvatar from "@/app/(auth)/components/user-avatar";
 import { cn } from "@/lib/utils";
-import { User } from "better-auth/types";
-import { Suspense } from "react";
 
 interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
 	title: string;
 	description?: string;
-	userPromise: Promise<User | null>;
+	action?: React.ReactNode;
 }
 
 export default function PageHeader({
 	title,
 	description,
-	userPromise,
+	action,
 	className,
 	...props
 }: PageHeaderProps) {
 	return (
-		<header
-			className={cn(
-				"sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60",
-				className
-			)}
-			{...props}
-		>
-			<div className="h-14 flex items-center justify-between gap-4 px-4">
-				<div className="flex flex-col justify-center min-w-0">
-					<div className="flex items-center gap-2">
-						<h1 className="text-base font-semibold leading-tight truncate">
+		<div className={cn("bg-background", className)} {...props}>
+			<div className="py-4">
+				<div className="flex items-start justify-between gap-4">
+					<div className="min-w-0 flex-1">
+						<h1 className="text-lg font-semibold leading-tight truncate">
 							{title}
 						</h1>
+						{description && (
+							<p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+								{description}
+							</p>
+						)}
 					</div>
-					{description && (
-						<p className="text-xs text-muted-foreground truncate">
-							{description}
-						</p>
-					)}
-				</div>
-				<div className="flex items-center gap-2">
-					<Suspense
-						fallback={
-							<div className="w-8 h-8 rounded-full bg-muted animate-pulse" />
-						}
-					>
-						<UserAvatar userPromise={userPromise} size="sm" />
-					</Suspense>
+					{action && <div className="flex items-center shrink-0">{action}</div>}
 				</div>
 			</div>
-		</header>
+		</div>
 	);
 }

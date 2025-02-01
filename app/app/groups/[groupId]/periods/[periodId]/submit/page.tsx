@@ -1,18 +1,10 @@
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 
 export default async function SubmitPage() {
-	const session = await auth.api.getSession({ headers: await headers() });
-
 	return (
 		<PageContainer>
-			<PageHeader
-				title="Soumettre"
-				description="Partagez votre réussite"
-				userPromise={Promise.resolve(session?.user ?? null)}
-			/>
+			<PageHeader title="Soumettre" description="Partagez votre réussite" />
 			<div className="p-4 space-y-8">
 				<div className="max-w-2xl">
 					<h2 className="text-xl font-semibold mb-4">

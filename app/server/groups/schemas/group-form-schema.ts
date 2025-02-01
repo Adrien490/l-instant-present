@@ -1,9 +1,13 @@
 import { z } from "zod";
 
-export const editGroupSchema = z.object({
-	id: z.string().uuid({
-		message: "L'identifiant du groupe doit être un UUID valide",
-	}),
+export const groupFormSchema = z.object({
+	id: z
+		.string()
+		.uuid({
+			message: "L'identifiant du groupe doit être un UUID valide",
+		})
+		.optional()
+		.nullable(),
 	name: z
 		.string()
 		.min(3, "Le nom doit contenir au moins 3 caractères")
@@ -20,6 +24,6 @@ export const editGroupSchema = z.object({
 		.nullable(),
 });
 
-export type EditGroupParams = z.infer<typeof editGroupSchema>;
+export type GroupFormParams = z.infer<typeof groupFormSchema>;
 
-export default editGroupSchema;
+export default groupFormSchema;

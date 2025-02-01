@@ -1,17 +1,12 @@
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 
 export default async function CommunityPage() {
-	const session = await auth.api.getSession({ headers: await headers() });
-
 	return (
 		<PageContainer>
 			<PageHeader
 				title="Communauté"
 				description="Validez et encouragez les autres"
-				userPromise={Promise.resolve(session?.user ?? null)}
 			/>
 			<div className="p-4 space-y-8">
 				<div className="max-w-2xl">

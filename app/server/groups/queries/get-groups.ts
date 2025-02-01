@@ -18,6 +18,8 @@ const DEFAULT_SELECT = {
 	description: true,
 	createdAt: true,
 	updatedAt: true,
+	ownerId: true,
+	imageUrl: true,
 	members: {
 		select: {
 			role: true,
