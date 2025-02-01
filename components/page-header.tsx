@@ -5,13 +5,12 @@ import { cn } from "@/lib/utils";
 interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
 	title: string;
 	description?: string;
-	action?: React.ReactNode;
 }
 
 export default function PageHeader({
 	title,
 	description,
-	action,
+
 	className,
 	...props
 }: PageHeaderProps) {
@@ -29,7 +28,6 @@ export default function PageHeader({
 							</p>
 						)}
 					</div>
-					{action && <div className="flex items-center shrink-0">{action}</div>}
 				</div>
 			</div>
 		</div>

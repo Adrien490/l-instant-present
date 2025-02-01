@@ -8,7 +8,7 @@ import { auth } from "@/lib/auth";
 import { Mail, Plus, Users } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import GroupList from "./my-groups/components/group-list";
+import GroupList from "./components/group-list";
 
 export default async function HomePage() {
 	const session = await auth.api.getSession({ headers: await headers() });

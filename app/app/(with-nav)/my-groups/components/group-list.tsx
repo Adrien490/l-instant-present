@@ -1,54 +1,75 @@
 "use client";
 
 import { GetGroupsResponse } from "@/app/server/groups/queries/get-groups";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Plus, UserPlus, Users } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Crown, Users } from "lucide-react";
 import Link from "next/link";
 
 type Props = {
 	groups: GetGroupsResponse;
+	userId?: string;
 };
 
-export default function GroupList({ groups }: Props) {
+export default function GroupList({ groups, userId }: Props) {
+	console.log(groups);
 	if (!groups?.length) {
 		return (
-			<Card className="flex flex-col items-center text-center p-6 gap-6">
-				<div className="rounded-full bg-primary/10 p-3">
-					<UserPlus className="h-6 w-6 text-primary" />
+			<div className="mt-6 flex min-h-[60vh] flex-col items-center justify-center px-4">
+				<div className="flex flex-col items-center gap-6 text-center">
+					<div className="rounded-2xl bg-muted/60 p-5">
+						<Users className="h-8 w-8 text-muted-foreground/80" />
+					</div>
+					<div className="space-y-1.5">
+						<p className="text-base/relaxed font-medium text-foreground/80">
+							Aucun groupe trouvé
+						</p>
+						<p className="text-sm/relaxed text-muted-foreground max-w-[260px]">
+							Aucun groupe ne correspond à votre recherche
+						</p>
+					</div>
 				</div>
-				<div className="space-y-2">
-					<h3 className="text-sm font-medium">
-						Vous n&apos;avez pas encore de groupe
-					</h3>
-					<p className="text-xs text-muted-foreground px-4">
-						Créez votre premier groupe ou attendez une invitation
-					</p>
-				</div>
-				<Button size="sm" className="w-full" asChild>
-					<Link href="/app/my-groups/new">
-						<Plus className="h-4 w-4 mr-1.5" />
-						Créer un groupe
-					</Link>
-				</Button>
-			</Card>
+			</div>
 		);
 	}
 
 	return (
-		<div className="mt-4 flex flex-col gap-2">
+		<div className="mt-4 flex flex-col gap-2.5">
 			{groups.map((group) => (
 				<Link key={group.id} href={`/app/groups/${group.id}`}>
-					<Card className="p-4 transition-colors hover:bg-muted/50">
-						<div className="flex items-center gap-4">
-							<div className="rounded-lg bg-primary/10 p-2">
-								<Users className="h-4 w-4 text-primary" />
+					<Card className="overflow-hidden transition-all hover:bg-muted/50 active:bg-muted">
+						<div className="flex items-center gap-4 p-4">
+							<div className="rounded-xl bg-primary/10 p-3 shadow-sm">
+								<Users className="h-5 w-5 text-primary" />
 							</div>
-							<div className="flex-1">
-								<p className="text-sm font-medium truncate">{group.name}</p>
-								<p className="text-xs text-muted-foreground">
-									{group.members.length} membres
-								</p>
+							<div className="flex-1 min-w-0">
+								<div className="flex items-center gap-2">
+									<p className="font-medium leading-none truncate text-foreground/80">
+										{group.name}
+									</p>
+									{group.ownerId === userId && (
+										<Crown className="h-3.5 w-3.5 text-amber-500 flex-shrink-0" />
+									)}
+								</div>
+								<div className="mt-1 flex items-center gap-3 text-sm text-muted-foreground/90">
+									<span className="flex items-center gap-1">
+										<Users className="h-3.5 w-3.5" />
+										{group.members.length}
+									</span>
+									<span className="text-xs text-muted-foreground/70">
+										Créé{" "}
+										{formatDistanceToNow(new Date(group.createdAt), {
+											addSuffix: true,
+											locale: fr,
+										})}
+									</span>
+								</div>
+								{group.description && (
+									<p className="mt-2 text-sm text-muted-foreground/80 line-clamp-1">
+										{group.description}
+									</p>
+								)}
 							</div>
 						</div>
 					</Card>
