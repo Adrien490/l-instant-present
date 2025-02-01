@@ -1,49 +1,23 @@
 "use client";
 
-import createGroup from "@/app/server/groups/actions/create-group";
-import editGroup from "@/app/server/groups/actions/edit-group";
+import { useGroupForm } from "@/app/server/groups/hooks/use-group-form";
+import { GetGroupResponse } from "@/app/server/groups/queries/get-group";
 import groupFormSchema from "@/app/server/groups/schemas/group-form-schema";
 import ServerActionResponse from "@/components/server-action-response";
 import { Button } from "@/components/ui/button";
 import { FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { ServerActionState, ServerActionStatus } from "@/types/server-action";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Group } from "@prisma/client";
 import { Loader2 } from "lucide-react";
-import { useActionState } from "react";
 
 interface GroupFormProps {
-	group?: Group;
+	group?: GetGroupResponse;
 }
 
 export default function GroupForm({ group }: GroupFormProps) {
-	const [state, dispatch, isPending] = useActionState<
-		ServerActionState<Group, typeof groupFormSchema>,
-		FormData
-	>(
-		async (previousState, formData) => {
-			try {
-				if (group) {
-					return await editGroup(previousState, formData);
-				}
-				return await createGroup(previousState, formData);
-			} catch (error) {
-				console.error(error);
-				return {
-					status: ServerActionStatus.ERROR,
-					message: "Une erreur est survenue",
-				};
-			}
-		},
-		{
-			message: "",
-			status: ServerActionStatus.INITIAL,
-			data: group,
-		}
-	);
+	const { dispatch, state, isPending } = useGroupForm({ group });
 
 	const [form, fields] = useForm({
 		id: "group-form",
