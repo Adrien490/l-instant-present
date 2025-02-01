@@ -3,7 +3,7 @@
 import { ServerActionState, ServerActionStatus } from "@/types/server-action";
 import { GroupInvite } from "@prisma/client";
 import { useActionState } from "react";
-import { createGroupInvite } from "../actions/create-group-invite";
+import createGroupInvite from "../actions/create-group-invite";
 import groupInviteFormSchema from "../schemas/group-invite-form-schema";
 
 export function useGroupInviteForm() {

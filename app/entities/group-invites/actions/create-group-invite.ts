@@ -15,7 +15,7 @@ import { headers } from "next/headers";
 import { isGroupAdmin } from "../../groups/queries/is-group-admin";
 import groupInviteFormSchema from "../schemas/group-invite-form-schema";
 
-export async function createGroupInvite(
+export default async function createGroupInvite(
 	_: ServerActionState<GroupInvite, typeof groupInviteFormSchema> | null,
 	formData: FormData
 ): Promise<ServerActionState<GroupInvite, typeof groupInviteFormSchema>> {
