@@ -7,9 +7,9 @@ export default async function AppLayoutWithNav({
 	children: React.ReactNode;
 }) {
 	return (
-		<>
-			{children}
+		<div className="flex min-h-screen flex-col pb-16">
+			<main className="flex-1">{children}</main>
 			<BottomNav items={mainMenuItems} />
-		</>
+		</div>
 	);
 }
