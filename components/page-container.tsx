@@ -13,7 +13,13 @@ export default function PageContainer({
 	...props
 }: PageContainerProps) {
 	return (
-		<div className={cn("w-full px-4", className)} {...props}>
+		<div
+			className={cn(
+				"w-full h-full px-4 overflow-y-auto overflow-x-hidden",
+				className
+			)}
+			{...props}
+		>
 			{children}
 		</div>
 	);

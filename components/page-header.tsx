@@ -23,9 +23,9 @@ export default function PageHeader({
 							{title}
 						</h1>
 						{description && (
-							<p className="mt-1 text-sm text-muted-foreground line-clamp-2">
+							<div className="mt-1 text-sm text-muted-foreground line-clamp-2">
 								{description}
-							</p>
+							</div>
 						)}
 					</div>
 				</div>

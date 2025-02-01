@@ -22,7 +22,7 @@ export default async function MyGroupsPage({ searchParams }: Props) {
 	});
 
 	return (
-		<PageContainer>
+		<PageContainer className="pb-20">
 			<PageHeader
 				title="Mes groupes"
 				description="Découvrez tous les groupes auxquels vous appartenez."

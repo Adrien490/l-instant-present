@@ -1,5 +1,4 @@
 import AppHeader from "@/components/app-header";
-import { Suspense } from "react";
 
 export default async function AppLayout({
 	children,
@@ -7,12 +6,8 @@ export default async function AppLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<div className="flex flex-col">
-			<Suspense
-				fallback={<div className="h-14 w-full bg-muted animate-pulse" />}
-			>
-				<AppHeader />
-			</Suspense>
+		<div className="flex flex-col h-full">
+			<AppHeader />
 			{children}
 		</div>
 	);

@@ -16,7 +16,7 @@ export default async function HomePage() {
 	const invites = await getUserInvites();
 
 	return (
-		<PageContainer className="pb-20">
+		<PageContainer>
 			{/* Hero Section */}
 			<PageHeader
 				title={`Bonjour ${session?.user.name?.split(" ")[0]} 👋`}

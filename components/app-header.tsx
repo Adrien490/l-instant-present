@@ -8,11 +8,7 @@ export default async function AppHeader() {
 	const session = await auth.api.getSession({ headers: await headers() });
 
 	return (
-		<header
-			className={cn(
-				"sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-			)}
-		>
+		<header className={cn("w-full border-b")}>
 			<div className="px-4">
 				<div className="h-14 flex items-center justify-between gap-4">
 					<div className="flex flex-col justify-center min-w-0">
