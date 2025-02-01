@@ -6,11 +6,11 @@ export function cn(...inputs: ClassValue[]) {
 }
 
 export function getUserInitials(
-	name: string | null | undefined,
+	nom: string | null | undefined,
 	email: string | null | undefined
 ): string {
-	if (name) {
-		return name
+	if (nom) {
+		return nom
 			.split(" ")
 			.map((n) => n[0])
 			.join("")

@@ -1,73 +1,41 @@
 "use client";
 
+import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
+import { NavItem, mainMenuItems } from "@/lib/menus";
 import { cn } from "@/lib/utils";
-import {
-	Home,
-	LucideIcon,
-	Medal,
-	PlusCircle,
-	Trophy,
-	Users2,
-} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useCallback } from "react";
 
-interface NavItem {
-	href: string;
-	label: string;
-	icon: LucideIcon;
-	primary?: boolean;
+interface BottomNavProps {
+	items: NavItem[];
+	className?: string;
 }
 
-const items: NavItem[] = [
-	{
-		href: "/app",
-		label: "Accueil",
-		icon: Home,
-	},
-	{
-		href: "/app/challenges",
-		label: "Défis",
-		icon: Medal,
-	},
-	{
-		href: "/app/submit",
-		label: "Soumettre",
-		icon: PlusCircle,
-		primary: true,
-	},
-	{
-		href: "/app/community",
-		label: "Communauté",
-		icon: Users2,
-	},
-	{
-		href: "/app/leaderboard",
-		label: "Classement",
-		icon: Trophy,
-	},
-];
-
-function vibrate() {
-	if ("vibrate" in navigator) {
-		navigator.vibrate(10); // vibration courte de 10ms
-	}
-}
-
-export default function MobileNav() {
+export default function BottomNav({
+	items = mainMenuItems,
+	className,
+}: BottomNavProps) {
 	const pathname = usePathname();
+	const { trigger } = useHapticFeedback();
 
-	const handleClick = useCallback(() => {
-		vibrate();
-	}, []);
+	const handleItemClick = () => {
+		trigger({ light: true }); // Retour haptique léger au clic
+	};
 
 	return (
 		<nav
-			className="fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t rounded-t-3xl safe-area-bottom"
+			className={cn(
+				"fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t rounded-t-3xl safe-area-bottom",
+				className
+			)}
 			aria-label="Navigation principale"
 		>
-			<div className="grid grid-cols-5 h-16 max-w-md mx-auto">
+			<div
+				className={cn(
+					"grid h-16 max-w-md mx-auto",
+					`grid-cols-${items.length}`
+				)}
+			>
 				{items.map((item) => {
 					const Icon = item.icon;
 					const isActive = pathname === item.href;
@@ -77,7 +45,7 @@ export default function MobileNav() {
 							<div key={item.href} className="relative flex justify-center">
 								<Link
 									href={item.href}
-									onClick={handleClick}
+									onClick={handleItemClick}
 									className="absolute -top-6 flex flex-col items-center group active:scale-90 transition-transform"
 									aria-label={`${item.label} - Action principale`}
 								>
@@ -96,7 +64,7 @@ export default function MobileNav() {
 						<Link
 							key={item.href}
 							href={item.href}
-							onClick={handleClick}
+							onClick={handleItemClick}
 							className={cn(
 								"flex flex-col items-center justify-center py-1",
 								"active:scale-90 transition-transform tap-highlight-transparent",
