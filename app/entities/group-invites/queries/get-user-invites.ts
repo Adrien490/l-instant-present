@@ -8,8 +8,15 @@ import { headers } from "next/headers";
 
 const DEFAULT_SELECT = {
 	id: true,
+	email: true,
 	status: true,
 	createdAt: true,
+	sender: {
+		select: {
+			name: true,
+			image: true,
+		},
+	},
 	group: {
 		select: {
 			id: true,
