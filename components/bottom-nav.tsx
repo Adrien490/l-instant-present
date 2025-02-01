@@ -42,20 +42,19 @@ export default function BottomNav({
 								href={item.href}
 								onClick={handleItemClick}
 								className={cn(
-									"flex flex-col items-center justify-center gap-1",
-									"active:scale-95 transition-transform tap-highlight-transparent",
+									"flex flex-col items-center justify-center gap-1 relative",
+									"active:opacity-60 transition-all duration-150 tap-highlight-transparent",
+									"after:absolute after:bottom-0 after:h-1 after:w-12 after:rounded-full after:transition-all after:duration-200",
 									isActive
-										? "text-primary"
-										: "text-muted-foreground hover:text-primary"
+										? "text-primary after:bg-primary"
+										: "text-muted-foreground hover:text-primary after:w-0 hover:after:w-12 after:bg-primary/50"
 								)}
 								aria-current={isActive ? "page" : undefined}
 							>
 								<Icon
 									className={cn(
-										"h-5 w-5",
-										isActive
-											? "text-primary"
-											: "text-muted-foreground group-hover:text-primary"
+										"h-5 w-5 transition-transform duration-200",
+										isActive ? "scale-110" : "scale-100 group-hover:scale-110"
 									)}
 									aria-hidden="true"
 								/>
