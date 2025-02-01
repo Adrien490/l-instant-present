@@ -61,7 +61,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 				id={form.id}
 				onSubmit={form.onSubmit}
 				action={dispatch}
-				className="flex flex-col gap-6"
+				className="flex flex-col gap-6 pb-32"
 			>
 				<input type="hidden" name="id" value={state?.data?.id ?? ""} />
 
@@ -107,22 +107,24 @@ export default function GroupForm({ group }: GroupFormProps) {
 					</div>
 				</div>
 
-				<div className="sticky bottom-0 bg-background py-4 border-t">
-					<div>
-						<Button type="submit" className="w-full" disabled={isPending}>
-							{isPending && (
-								<Loader2
-									className="mr-2 h-4 w-4 animate-spin"
-									aria-hidden="true"
-								/>
-							)}
-							{group ? "Enregistrer" : "Créer"}
-						</Button>
+				<div className="fixed inset-x-0 bottom-16 bg-background border-t p-4">
+					<div className="container max-w-2xl">
+						<div>
+							<Button type="submit" className="w-full" disabled={isPending}>
+								{isPending && (
+									<Loader2
+										className="mr-2 h-4 w-4 animate-spin"
+										aria-hidden="true"
+									/>
+								)}
+								{group ? "Enregistrer" : "Créer"}
+							</Button>
+						</div>
+						<p className="text-xs text-muted-foreground text-center mt-4">
+							Les champs marqués d&apos;un{" "}
+							<span className="text-destructive">*</span> sont obligatoires
+						</p>
 					</div>
-					<p className="text-xs text-muted-foreground text-center mt-4">
-						Les champs marqués d&apos;un{" "}
-						<span className="text-destructive">*</span> sont obligatoires
-					</p>
 				</div>
 			</form>
 		</>
