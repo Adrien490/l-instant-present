@@ -11,7 +11,7 @@ export default function AuthPage() {
 				{/* Logo et Présentation */}
 				<div className="space-y-8 md:space-y-10 text-center">
 					{/* Carousel */}
-					<div className="relative w-full aspect-square max-w-[176px] mx-auto">
+					<div className="relative w-full aspect-square max-w-[240px] md:max-w-[280px] mx-auto">
 						<div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary/20 to-primary/30 blur-2xl -z-10 opacity-70" />
 						<AuthCarousel />
 					</div>
