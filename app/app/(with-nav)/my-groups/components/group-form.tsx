@@ -82,7 +82,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 				</div>
 
 				<div className="fixed inset-x-0 bottom-16 bg-background border-t p-4">
-					<div className="container max-w-2xl">
+					<div className="mx-auto max-w-2xl">
 						<div>
 							<Button type="submit" className="w-full" disabled={isPending}>
 								{isPending && (

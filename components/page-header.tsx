@@ -2,15 +2,15 @@
 
 import { cn } from "@/lib/utils";
 
-interface PageHeaderProps extends React.HTMLAttributes<HTMLElement> {
-	title: string;
-	description?: string;
+interface PageHeaderProps {
+	title: React.ReactNode;
+	description?: React.ReactNode;
+	className?: string;
 }
 
 export default function PageHeader({
 	title,
 	description,
-
 	className,
 	...props
 }: PageHeaderProps) {
