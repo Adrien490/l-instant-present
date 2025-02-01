@@ -1,9 +1,8 @@
-import { PushNotificationManager } from "@/app/components/push-notification-manager";
 import PageContainer from "@/components/page-container";
-import PageHeader from "@/components/page-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { auth } from "@/lib/auth";
 import { getUserInitials } from "@/lib/utils";
+import { Waves } from "lucide-react";
 import { headers } from "next/headers";
 import ProfileActions from "./profile-actions";
 
@@ -13,11 +12,6 @@ export default async function ProfilePage() {
 
 	return (
 		<PageContainer>
-			<PageHeader
-				title="Profil"
-				description="Gérez vos informations personnelles"
-				userPromise={Promise.resolve(user ?? null)}
-			/>
 			<div className="p-4">
 				<div className="max-w-2xl mx-auto">
 					<div className="space-y-6">
@@ -31,8 +25,9 @@ export default async function ProfilePage() {
 									{getUserInitials(user?.name, user?.email)}
 								</AvatarFallback>
 							</Avatar>
-							<h2 className="text-xl font-semibold">
+							<h2 className="text-xl font-semibold flex items-center gap-2">
 								{user?.name || "Utilisateur"}
+								<Waves className="h-5 w-5" />
 							</h2>
 							<p className="text-sm text-muted-foreground">{user?.email}</p>
 						</div>
@@ -40,7 +35,6 @@ export default async function ProfilePage() {
 					</div>
 				</div>
 			</div>
-			<PushNotificationManager />
 		</PageContainer>
 	);
 }

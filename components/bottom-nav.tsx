@@ -25,7 +25,7 @@ export default function BottomNav({
 	return (
 		<nav
 			className={cn(
-				"fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t safe-area-bottom",
+				"fixed bottom-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-t rounded-t-3xl safe-area-bottom",
 				className
 			)}
 			aria-label="Navigation principale"
