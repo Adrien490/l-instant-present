@@ -1,51 +1,70 @@
 import PageContainer from "@/components/page-container";
 import { Separator } from "@/components/ui/separator";
-import Image from "next/image";
+import { cn } from "@/lib/utils";
+import AuthCarousel from "./components/auth-carousel";
 import SocialLogin from "./components/social-login";
 
 export default function AuthPage() {
 	return (
-		<PageContainer className="flex flex-col items-center justify-center py-12">
-			<div className="space-y-12 text-center w-full max-w-[340px] mx-auto">
-				<div className="space-y-10">
-					<div className="relative w-44 h-44 mx-auto">
-						<div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary/30 to-primary/50 animate-pulse duration-3000" />
-						<div className="absolute inset-[4px] rounded-full bg-gradient-to-b from-background to-background/80 backdrop-blur-sm" />
-						<Image
-							src="https://cqh6s9vs06.ufs.sh/f/exr347yFLlRD6yXGfoGZzRFBAPYa3w9SqMxDvNIb5hjpWcf0"
-							alt="L'instant présent"
-							fill
-							priority
-							className="object-contain p-5 rounded-full drop-shadow-md"
-						/>
+		<PageContainer className="min-h-[100dvh] flex flex-col items-center justify-center py-8 md:py-12">
+			<div className="w-full max-w-[340px] mx-auto space-y-10 md:space-y-12">
+				{/* Logo et Présentation */}
+				<div className="space-y-8 md:space-y-10 text-center">
+					{/* Carousel */}
+					<div className="relative w-full aspect-square max-w-[176px] mx-auto">
+						<div className="absolute inset-0 rounded-full bg-gradient-to-tr from-primary/20 to-primary/30 blur-2xl -z-10 opacity-70" />
+						<AuthCarousel />
 					</div>
+
+					{/* Texte de présentation */}
 					<div className="space-y-4">
 						<div className="space-y-2">
-							<h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary/80 to-primary bg-clip-text text-transparent">
+							<h1
+								className={cn(
+									"text-3xl font-bold tracking-tight",
+									"bg-gradient-to-r from-primary/90 to-primary",
+									"bg-clip-text text-transparent",
+									"md:text-4xl"
+								)}
+							>
 								L&apos;instant présent
 							</h1>
-							<p className="text-lg font-medium leading-tight">
+							<p className="text-lg font-medium leading-tight md:text-xl">
 								Des défis, une année, des souvenirs pour la vie
 							</p>
 						</div>
-						<p className="text-sm text-muted-foreground/90 leading-relaxed max-w-[280px] mx-auto">
+						<p
+							className={cn(
+								"text-sm text-muted-foreground/90",
+								"leading-relaxed max-w-[280px] mx-auto",
+								"md:text-base md:max-w-[300px]"
+							)}
+						>
 							Rejoignez vos amis et relevez ensemble des défis uniques pour
 							créer des moments inoubliables.
 						</p>
 					</div>
 				</div>
 
-				<div className="space-y-6">
-					<div className="relative">
+				{/* Connexion */}
+				<div className="flex flex-col items-center space-y-6">
+					<div className="relative w-full text-center">
 						<Separator className="absolute inset-x-0 top-1/2 -translate-y-1/2" />
 						<div className="relative inline-block bg-background px-4">
-							<span className="text-xs font-medium text-muted-foreground/80 tracking-wide uppercase">
+							<span
+								className={cn(
+									"text-xs font-medium tracking-wide uppercase",
+									"text-muted-foreground/80"
+								)}
+							>
 								Connexion
 							</span>
 						</div>
 					</div>
 
-					<SocialLogin />
+					<div className="w-full">
+						<SocialLogin />
+					</div>
 				</div>
 			</div>
 		</PageContainer>
