@@ -11,6 +11,8 @@
 	},
 	"dependencies": {
 		"@better-fetch/fetch": "^1.1.12",
+		"@conform-to/react": "^1.2.2",
+		"@conform-to/zod": "^1.2.2",
 		"@hookform/resolvers": "^3.10.0",
 		"@prisma/client": "^6.3.0",
 		"@radix-ui/react-accordion": "^1.2.2",
