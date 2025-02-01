@@ -1,10 +1,8 @@
 import { getGroupInvites } from "@/app/entities/group-invites/queries/get-group-invites";
-import getGroups from "@/app/entities/groups/queries/get-groups";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
 import { Mail, Plus, Send } from "lucide-react";
 import Link from "next/link";
 import InviteList from "./components/invite-list";
@@ -15,61 +13,60 @@ type Props = {
 
 export default async function InvitesPage({ searchParams }: Props) {
 	const resolvedSearchParams = await searchParams;
-	const type = resolvedSearchParams.type;
-	const defaultType = type === "sent" ? "sent" : "received";
-	const [invites, groups] = await Promise.all([
-		getGroupInvites({ type: defaultType }),
-		getGroups({ search: "" }),
-	]);
+	const type = resolvedSearchParams.type || "received";
+	const invites = await getGroupInvites({ type });
 
 	return (
 		<PageContainer className="pb-24">
-			<PageHeader
-				title="Invitations"
-				description="Gérez vos invitations aux groupes"
-			/>
-
-			{groups.length > 0 && (
-				<div className="mt-4">
-					<Button asChild>
+			<div className="flex flex-col gap-6">
+				<div className="flex items-center justify-between">
+					<PageHeader
+						title="Invitations"
+						description="Gérez vos invitations aux groupes"
+					/>
+					<Button asChild size="sm" className="shrink-0">
 						<Link href="/app/invites/send">
 							<Plus className="h-4 w-4 mr-2" />
-							Envoyer une invitation
+							Inviter
 						</Link>
 					</Button>
 				</div>
-			)}
 
-			<Tabs defaultValue={defaultType} className="mt-6">
-				<TabsList className="grid w-full grid-cols-2 mb-6">
-					<TabsTrigger value="received" className="flex items-center gap-2">
-						<Mail className="h-4 w-4" />
-						Reçues{" "}
-						{invites.length > 0 && (
-							<Badge variant="secondary" className="ml-1.5">
-								{invites.length}
-							</Badge>
-						)}
-					</TabsTrigger>
-					<TabsTrigger value="sent" className="flex items-center gap-2">
-						<Send className="h-4 w-4" />
-						Envoyées{" "}
-						{invites.length > 0 && (
-							<Badge variant="secondary" className="ml-1.5">
-								{invites.length}
-							</Badge>
-						)}
-					</TabsTrigger>
-				</TabsList>
+				<div className="flex flex-col gap-6">
+					<div className="bg-muted rounded-xl p-1.5">
+						<div className="grid grid-cols-2 gap-1.5">
+							<Link
+								href="/app/invites?type=received"
+								className={cn(
+									"flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
+									"hover:bg-background/80 active:bg-background",
+									type === "received"
+										? "bg-background text-foreground shadow-sm"
+										: "text-muted-foreground"
+								)}
+							>
+								<Mail className="h-4 w-4" />
+								Reçues
+							</Link>
+							<Link
+								href="/app/invites?type=sent"
+								className={cn(
+									"flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
+									"hover:bg-background/80 active:bg-background",
+									type === "sent"
+										? "bg-background text-foreground shadow-sm"
+										: "text-muted-foreground"
+								)}
+							>
+								<Send className="h-4 w-4" />
+								Envoyées
+							</Link>
+						</div>
+					</div>
 
-				<TabsContent value="received">
-					<InviteList invites={invites} type="received" />
-				</TabsContent>
-
-				<TabsContent value="sent">
-					<InviteList invites={invites} type="sent" />
-				</TabsContent>
-			</Tabs>
+					<InviteList invites={invites} type={type} />
+				</div>
+			</div>
 		</PageContainer>
 	);
 }

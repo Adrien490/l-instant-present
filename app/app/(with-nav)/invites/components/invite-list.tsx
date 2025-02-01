@@ -1,3 +1,5 @@
+"use client";
+
 import { type GetGroupInvitesResponse } from "@/app/entities/group-invites/queries/get-group-invites";
 import EmptyState from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
