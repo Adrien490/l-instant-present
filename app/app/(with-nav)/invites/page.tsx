@@ -9,18 +9,18 @@ import { Mail, Plus, Send } from "lucide-react";
 import Link from "next/link";
 import InviteList from "./components/invite-list";
 
-export default async function InvitesPage({
-	searchParams,
-}: {
-	searchParams: { tab?: string };
-}) {
-	const [invites, sentInvites, groups] = await Promise.all([
-		getGroupInvites({ type: "received" }),
-		getGroupInvites({ type: "sent" }),
+type Props = {
+	searchParams: Promise<{ type?: "received" | "sent" }>;
+};
+
+export default async function InvitesPage({ searchParams }: Props) {
+	const resolvedSearchParams = await searchParams;
+	const type = resolvedSearchParams.type;
+	const defaultType = type === "sent" ? "sent" : "received";
+	const [invites, groups] = await Promise.all([
+		getGroupInvites({ type: defaultType }),
 		getGroups({ search: "" }),
 	]);
-
-	const defaultTab = searchParams.tab === "sent" ? "sent" : "received";
 
 	return (
 		<PageContainer className="pb-24">
@@ -40,7 +40,7 @@ export default async function InvitesPage({
 				</div>
 			)}
 
-			<Tabs defaultValue={defaultTab} className="mt-6">
+			<Tabs defaultValue={defaultType} className="mt-6">
 				<TabsList className="grid w-full grid-cols-2 mb-6">
 					<TabsTrigger value="received" className="flex items-center gap-2">
 						<Mail className="h-4 w-4" />
@@ -54,9 +54,9 @@ export default async function InvitesPage({
 					<TabsTrigger value="sent" className="flex items-center gap-2">
 						<Send className="h-4 w-4" />
 						Envoyées{" "}
-						{sentInvites.length > 0 && (
+						{invites.length > 0 && (
 							<Badge variant="secondary" className="ml-1.5">
-								{sentInvites.length}
+								{invites.length}
 							</Badge>
 						)}
 					</TabsTrigger>
@@ -67,7 +67,7 @@ export default async function InvitesPage({
 				</TabsContent>
 
 				<TabsContent value="sent">
-					<InviteList invites={sentInvites} type="sent" />
+					<InviteList invites={invites} type="sent" />
 				</TabsContent>
 			</Tabs>
 		</PageContainer>
