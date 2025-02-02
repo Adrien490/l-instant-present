@@ -1,10 +1,8 @@
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Users } from "lucide-react";
-import Link from "next/link";
 
 export default function Loading() {
 	return (
@@ -14,14 +12,12 @@ export default function Loading() {
 				description={<Skeleton className="h-5 w-full max-w-[500px]" />}
 			/>
 
-			<div className="flex items-center gap-2 mt-4">
+			<div className="flex flex-col gap-3">
 				<div className="flex-1">
 					<Skeleton className="h-10 w-full" />
 				</div>
 				<div className="shrink-0">
-					<Link href="/app/my-groups/new">
-						<Button>Créer un groupe</Button>
-					</Link>
+					<Skeleton className="h-10 w-full" />
 				</div>
 			</div>
 
