@@ -1,5 +1,5 @@
-import GroupInviteItem from "@/app/entities/group-invites/components/group-invite-item";
 import { getGroupInvites } from "@/app/entities/group-invites/queries/get-group-invites";
+import GroupInviteItem from "@/app/entities/groups/components/group-invite-item";
 import GroupItem from "@/app/entities/groups/components/group-item";
 import getGroups from "@/app/entities/groups/queries/get-groups";
 import EmptyState from "@/components/empty-state";
@@ -33,7 +33,7 @@ export default async function HomePage() {
 							<div className="rounded-full bg-primary/10 p-2">
 								<Plus className="h-5 w-5 text-primary" />
 							</div>
-							<span className="text-xs font-medium text-center">
+							<span className="text-sm font-medium text-center">
 								Créer un groupe
 							</span>
 						</Card>
@@ -43,7 +43,7 @@ export default async function HomePage() {
 							<div className="rounded-full bg-primary/10 p-2">
 								<Users className="h-5 w-5 text-primary" />
 							</div>
-							<span className="text-xs font-medium text-center">
+							<span className="text-sm font-medium text-center">
 								Mes groupes
 							</span>
 						</Card>
@@ -55,18 +55,18 @@ export default async function HomePage() {
 			{invites.length > 0 && (
 				<div className="mt-6">
 					<div className="flex items-center justify-between">
-						<h2 className="text-base font-semibold">Invitations en attente</h2>
+						<h2 className="text-lg font-semibold">Invitations en attente</h2>
 					</div>
-					<div className="mt-3 space-y-2">
+					<div className="mt-4 space-y-3">
 						{invites.slice(0, 2).map((invite) => (
 							<GroupInviteItem key={invite.id} invite={invite} />
 						))}
 						{invites.length > 2 && (
 							<Link href="/app/invites">
-								<Card className="flex items-center justify-center gap-2 py-3 text-sm text-muted-foreground transition-colors hover:bg-muted/50 active:bg-muted">
+								<Card className="flex items-center justify-center gap-3 p-4 text-base text-muted-foreground transition-colors hover:bg-muted/50 active:bg-muted">
 									<span>+{invites.length - 2} autres invitations</span>
-									<span className="text-xs">•</span>
-									<span className="text-xs">Voir tout</span>
+									<span className="text-sm">•</span>
+									<span className="text-sm">Voir tout</span>
 								</Card>
 							</Link>
 						)}
@@ -77,9 +77,9 @@ export default async function HomePage() {
 			{/* My Groups */}
 			<div className="mt-6">
 				<div className="flex items-center justify-between">
-					<h2 className="text-base font-semibold">Groupes récents</h2>
+					<h2 className="text-lg font-semibold">Groupes récents</h2>
 					{groups.length > 0 && (
-						<Button variant="ghost" size="sm" className="text-xs" asChild>
+						<Button variant="ghost" size="sm" className="text-sm" asChild>
 							<Link href="/app/my-groups">Voir tous mes groupes</Link>
 						</Button>
 					)}
@@ -88,10 +88,10 @@ export default async function HomePage() {
 					<EmptyState
 						title="Aucun groupe trouvé"
 						description="Vous n'appartenez à aucun groupe"
-						icon={<Users className="h-8 w-8 text-muted-foreground/80" />}
+						icon={<Users className="h-5 w-5 text-muted-foreground/80" />}
 					/>
 				)}
-				<div className="mt-3 flex flex-col gap-2">
+				<div className="mt-4 flex flex-col gap-3">
 					{groups.slice(0, 3).map((group) => (
 						<GroupItem
 							key={group.id}
@@ -101,10 +101,10 @@ export default async function HomePage() {
 					))}
 					{groups.length > 3 && (
 						<Link href="/app/my-groups">
-							<Card className="flex items-center justify-center gap-2 py-3 text-sm text-muted-foreground transition-colors hover:bg-muted/50 active:bg-muted">
+							<Card className="flex items-center justify-center gap-3 p-4 text-base text-muted-foreground transition-colors hover:bg-muted/50 active:bg-muted">
 								<span>+{groups.length - 3} autres groupes</span>
-								<span className="text-xs">•</span>
-								<span className="text-xs">Voir tout</span>
+								<span className="text-sm">•</span>
+								<span className="text-sm">Voir tout</span>
 							</Card>
 						</Link>
 					)}

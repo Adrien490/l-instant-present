@@ -40,6 +40,7 @@ body {
 		height: -webkit-fill-available;
 		overflow-x: hidden;
 		-webkit-tap-highlight-color: transparent;
+		font-size: 16px; /* Base size for better readability on mobile */
 	}
 
 	body {
@@ -92,6 +93,52 @@ body {
 	.no-select {
 		-webkit-user-select: none;
 		user-select: none;
+	}
+
+	/* Input fields */
+	input,
+	select,
+	textarea {
+		@apply text-base leading-normal;
+		@apply p-3;
+		@apply min-h-[2.75rem];
+	}
+
+	/* Card and container padding */
+	.content-padding {
+		@apply p-4 sm:p-6;
+	}
+
+	/* Mobile-optimized icons */
+	.icon-base {
+		@apply h-5 w-5;
+	}
+
+	.icon-small {
+		@apply h-4 w-4;
+	}
+
+	.icon-large {
+		@apply h-6 w-6;
+	}
+
+	/* Touch targets */
+	.touch-target {
+		@apply min-h-[2.75rem] min-w-[2.75rem];
+		@apply flex items-center justify-center;
+	}
+
+	/* Mobile-optimized spacing utilities */
+	.spacing-base {
+		@apply space-y-4 sm:space-y-6;
+	}
+
+	.spacing-small {
+		@apply space-y-2 sm:space-y-3;
+	}
+
+	.spacing-large {
+		@apply space-y-6 sm:space-y-8;
 	}
 }
 

@@ -16,8 +16,8 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Check, Crown, Mail, Shield, Users, X } from "lucide-react";
 import { useState } from "react";
-import { useUpdateGroupInviteStatus } from "../hooks/use-update-group-invite-status";
-import { GetGroupInviteResponse } from "../queries/get-group-invite";
+import { useUpdateGroupInviteStatus } from "../../group-invites/hooks/use-update-group-invite-status";
+import { GetGroupInviteResponse } from "../../group-invites/queries/get-group-invite";
 type Props = {
 	invite: NonNullable<GetGroupInviteResponse>;
 };
@@ -36,36 +36,36 @@ export default function GroupInviteItem({ invite }: Props) {
 		<Drawer open={open} onOpenChange={setOpen}>
 			<DrawerTrigger asChild>
 				<Card className="overflow-hidden transition-all hover:bg-muted/50 active:bg-muted">
-					<div className="flex gap-3 p-3.5">
-						<div className="flex-shrink-0 mt-0.5">
-							<div className="rounded-lg bg-primary/10 p-2.5 shadow-sm">
-								<Mail className="h-4 w-4 text-primary" />
+					<div className="flex gap-4 p-4">
+						<div className="flex-shrink-0">
+							<div className="touch-target rounded-lg bg-primary/10">
+								<Mail className="icon-base text-primary" />
 							</div>
 						</div>
-						<div className="flex-1 min-w-0 space-y-2">
-							<div className="space-y-1">
+						<div className="flex-1 min-w-0 spacing-small">
+							<div className="spacing-small">
 								<div className="flex items-center gap-2 flex-wrap">
-									<p className="font-medium text-sm truncate text-foreground/90">
+									<p className="font-medium text-base truncate text-foreground/90">
 										{invite.group.name}
 									</p>
 									{isExpired ? (
-										<span className="text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium">
+										<span className="text-sm leading-none px-2 py-1 rounded-full bg-destructive/10 text-destructive font-medium">
 											Expirée
 										</span>
 									) : (
 										<>
 											{invite.status === "PENDING" && (
-												<span className="text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-primary/10 text-primary font-medium">
+												<span className="text-sm leading-none px-2 py-1 rounded-full bg-primary/10 text-primary font-medium">
 													En attente
 												</span>
 											)}
 											{invite.status === "ACCEPTED" && (
-												<span className="text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">
+												<span className="text-sm leading-none px-2 py-1 rounded-full bg-emerald-500/10 text-emerald-500 font-medium">
 													Acceptée
 												</span>
 											)}
 											{invite.status === "REJECTED" && (
-												<span className="text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium">
+												<span className="text-sm leading-none px-2 py-1 rounded-full bg-destructive/10 text-destructive font-medium">
 													Refusée
 												</span>
 											)}
@@ -73,28 +73,28 @@ export default function GroupInviteItem({ invite }: Props) {
 									)}
 								</div>
 								{invite.group.description && (
-									<p className="text-xs text-muted-foreground/80 line-clamp-1">
+									<p className="text-sm text-muted-foreground/80 line-clamp-2">
 										{invite.group.description}
 									</p>
 								)}
 							</div>
 
-							<div className="flex flex-col gap-1.5">
+							<div className="spacing-small">
 								<div className="flex items-center gap-2">
-									<Users className="h-3 w-3 text-muted-foreground" />
-									<span className="text-xs text-muted-foreground">
+									<Users className="icon-base text-muted-foreground" />
+									<span className="text-sm text-muted-foreground">
 										{invite.group.members.length} membre
 										{invite.group.members.length > 1 ? "s" : ""}
 									</span>
 								</div>
 								<div className="flex items-center gap-2">
-									<Mail className="h-3 w-3 text-muted-foreground" />
-									<span className="text-xs text-muted-foreground truncate">
+									<Mail className="icon-base text-muted-foreground" />
+									<span className="text-sm text-muted-foreground truncate">
 										{invite.email}
 									</span>
 								</div>
 								<div className="flex items-center gap-2">
-									<time className="text-[10px] text-muted-foreground/70">
+									<time className="text-sm text-muted-foreground/70">
 										Envoyée{" "}
 										{formatDistanceToNow(new Date(invite.createdAt), {
 											addSuffix: true,
@@ -102,7 +102,7 @@ export default function GroupInviteItem({ invite }: Props) {
 										})}
 									</time>
 									{invite.expiresAt && (
-										<span className="text-[10px] text-muted-foreground/70">
+										<span className="text-sm text-muted-foreground/70">
 											· Expire{" "}
 											{formatDistanceToNow(new Date(invite.expiresAt), {
 												addSuffix: true,
@@ -125,7 +125,7 @@ export default function GroupInviteItem({ invite }: Props) {
 						</div>
 						<div className="flex-1 min-w-0">
 							<div className="flex items-center gap-2">
-								<DrawerTitle className="text-xl font-semibold">
+								<DrawerTitle className="text-2xl font-semibold">
 									{invite.group.name}
 								</DrawerTitle>
 								{isExpired && (
@@ -135,7 +135,7 @@ export default function GroupInviteItem({ invite }: Props) {
 								)}
 							</div>
 							{invite.group.description && (
-								<DrawerDescription className="mt-2 text-sm line-clamp-2">
+								<DrawerDescription className="mt-2 text-base line-clamp-2">
 									{invite.group.description}
 								</DrawerDescription>
 							)}
@@ -185,8 +185,8 @@ export default function GroupInviteItem({ invite }: Props) {
 						<div className="bg-muted/50 rounded-xl p-4">
 							<div className="flex flex-col space-y-3">
 								<div className="flex items-center justify-between">
-									<h3 className="text-sm font-medium flex items-center gap-1.5">
-										<Users className="h-3.5 w-3.5 text-primary" />
+									<h3 className="text-lg font-medium flex items-center gap-2">
+										<Users className="icon-base text-primary" />
 										{invite.group.members.length} membre
 										{invite.group.members.length > 1 ? "s" : ""}
 									</h3>
@@ -215,10 +215,10 @@ export default function GroupInviteItem({ invite }: Props) {
 															backgroundPosition: "center",
 														}}
 													/>
-													<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 text-[10px] px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm border">
+													<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 text-sm px-2 py-1 rounded-full whitespace-nowrap shadow-sm border">
 														{member.user.name}
 														{member.role === "ADMIN" && (
-															<Crown className="inline-block ml-1 h-3 w-3 text-amber-500" />
+															<Crown className="inline-block ml-1.5 icon-small text-amber-500" />
 														)}
 													</div>
 												</div>
@@ -251,9 +251,9 @@ export default function GroupInviteItem({ invite }: Props) {
 									/>
 									<Button
 										size="lg"
-										className="w-full justify-start font-medium"
+										className="w-full justify-start font-medium text-base"
 									>
-										<Check className="mr-3 h-4 w-4" />
+										<Check className="mr-3 icon-base" />
 										Accepter l&apos;invitation
 									</Button>
 								</form>

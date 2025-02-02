@@ -44,8 +44,8 @@ export default function GroupItem({ group, isOwner }: Props) {
 										sizes="56px"
 									/>
 									{isOwner && (
-										<div className="absolute -top-1 -right-1 rounded-full bg-background p-0.5 shadow-sm">
-											<Crown className="h-3.5 w-3.5 text-amber-500" />
+										<div className="absolute -top-1 -right-1 rounded-full bg-background p-1 shadow-sm">
+											<Crown className="h-5 w-5 text-amber-500" />
 										</div>
 									)}
 								</div>
@@ -66,8 +66,8 @@ export default function GroupItem({ group, isOwner }: Props) {
 										</div>
 									</div>
 									{isOwner && (
-										<div className="absolute -top-1 -right-1 rounded-full bg-background p-0.5 shadow-sm">
-											<Crown className="h-3.5 w-3.5 text-amber-500" />
+										<div className="absolute -top-1 -right-1 rounded-full bg-background p-1 shadow-sm">
+											<Crown className="h-5 w-5 text-amber-500" />
 										</div>
 									)}
 								</div>
@@ -75,24 +75,24 @@ export default function GroupItem({ group, isOwner }: Props) {
 								<div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
 									<Users className="h-6 w-6 text-primary" />
 									{isOwner && (
-										<div className="absolute -top-1 -right-1 rounded-full bg-background p-0.5 shadow-sm">
-											<Crown className="h-3.5 w-3.5 text-amber-500" />
+										<div className="absolute -top-1 -right-1 rounded-full bg-background p-1 shadow-sm">
+											<Crown className="h-5 w-5 text-amber-500" />
 										</div>
 									)}
 								</div>
 							)}
 						</div>
-						<div className="flex-1 min-w-0 py-1">
-							<div className="flex items-center gap-2">
-								<p className="font-medium text-base truncate text-foreground/90">
+						<div className="flex-1 min-w-0 py-2">
+							<div className="flex items-center gap-3">
+								<p className="font-medium text-lg truncate text-foreground/90">
 									{group.name}
 								</p>
 							</div>
 
-							<div className="mt-1.5 flex flex-col gap-1.5">
+							<div className="mt-2 flex flex-col gap-2">
 								<div className="flex items-center gap-2">
-									<span className="text-sm text-muted-foreground flex items-center gap-1.5">
-										<Users className="h-3.5 w-3.5" />
+									<span className="text-sm text-muted-foreground flex items-center gap-2">
+										<Users className="h-5 w-5" />
 										{group.members.length} membre
 										{group.members.length > 1 ? "s" : ""}
 									</span>
@@ -134,21 +134,21 @@ export default function GroupItem({ group, isOwner }: Props) {
 						)}
 
 						<div className="absolute bottom-0 left-0 right-0 p-6">
-							<div className="flex flex-col gap-3">
-								<DrawerTitle className="text-2xl font-semibold flex items-center gap-2 text-white">
+							<div className="flex flex-col gap-4">
+								<DrawerTitle className="text-2xl font-semibold flex items-center gap-3 text-white">
 									{group.name}
 									{isOwner && (
 										<Crown className="h-5 w-5 text-amber-500 flex-shrink-0" />
 									)}
 								</DrawerTitle>
-								<div className="flex items-center gap-2 flex-wrap">
-									<time className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm">
+								<div className="flex items-center gap-3 flex-wrap">
+									<time className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm">
 										{formatDistanceToNow(new Date(group.createdAt), {
 											addSuffix: true,
 											locale: fr,
 										})}
 									</time>
-									<div className="px-3 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm">
+									<div className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm">
 										{group.members.length} membre
 										{group.members.length > 1 ? "s" : ""}
 									</div>
@@ -158,17 +158,15 @@ export default function GroupItem({ group, isOwner }: Props) {
 					</div>
 
 					<div className="p-6 space-y-6">
-						{group.description && (
-							<DrawerDescription className="text-base text-muted-foreground">
-								{group.description}
-							</DrawerDescription>
-						)}
+						<DrawerDescription className="text-base text-muted-foreground">
+							{group.description}
+						</DrawerDescription>
 
 						<div className="bg-muted rounded-2xl overflow-hidden">
 							<div className="p-6 space-y-4">
 								<div className="flex items-center justify-between">
-									<h3 className="text-base font-medium flex items-center gap-2">
-										<Users className="h-4.5 w-4.5 text-primary" />
+									<h3 className="text-lg font-medium flex items-center gap-3">
+										<Users className="h-5 w-5 text-primary" />
 										Membres du groupe
 									</h3>
 								</div>
@@ -186,7 +184,7 @@ export default function GroupItem({ group, isOwner }: Props) {
 															backgroundPosition: "center",
 														}}
 													/>
-													<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 text-xs px-2.5 py-1 rounded-full whitespace-nowrap shadow-sm border">
+													<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 text-sm px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm border">
 														{member.user.name}
 														{member.role === GroupRole.ADMIN && (
 															<Crown className="inline-block ml-1.5 h-3.5 w-3.5 text-amber-500" />
@@ -208,7 +206,7 @@ export default function GroupItem({ group, isOwner }: Props) {
 						<div className="space-y-3 pb-safe">
 							<Button
 								size="lg"
-								className="w-full justify-start font-medium text-base"
+								className="w-full justify-start font-medium text-base min-h-[2.75rem] px-4 py-3"
 								asChild
 							>
 								<Link href={`/app/groups/${group.id}`}>
@@ -222,7 +220,7 @@ export default function GroupItem({ group, isOwner }: Props) {
 									<Button
 										variant="outline"
 										size="lg"
-										className="w-full justify-start font-medium text-base"
+										className="w-full justify-start font-medium text-base min-h-[2.75rem] px-4 py-3"
 										asChild
 									>
 										<Link href={`/app/my-groups/${group.id}/edit`}>
@@ -233,7 +231,7 @@ export default function GroupItem({ group, isOwner }: Props) {
 									<Button
 										variant="destructive"
 										size="lg"
-										className="w-full justify-start font-medium text-base"
+										className="w-full justify-start font-medium text-base min-h-[2.75rem] px-4 py-3"
 									>
 										<Trash className="mr-3 h-5 w-5" />
 										Supprimer
@@ -243,7 +241,7 @@ export default function GroupItem({ group, isOwner }: Props) {
 								<Button
 									variant="destructive"
 									size="lg"
-									className="w-full justify-start font-medium text-base"
+									className="w-full justify-start font-medium text-base min-h-[2.75rem] px-4 py-3"
 								>
 									<Trash className="mr-3 h-5 w-5" />
 									Quitter le groupe

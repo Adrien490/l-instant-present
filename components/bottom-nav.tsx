@@ -31,7 +31,7 @@ export default function BottomNav({
 			)}
 		>
 			<div className="mx-auto max-w-md pointer-events-auto">
-				<div className="grid grid-cols-4 h-[72px]">
+				<div className="grid grid-cols-4 h-20">
 					{items.map((item) => {
 						const Icon = item.icon;
 						const isActive = pathname === item.href;
@@ -42,7 +42,7 @@ export default function BottomNav({
 								href={item.href}
 								onClick={handleItemClick}
 								className={cn(
-									"flex flex-col items-center justify-center gap-1 relative",
+									"flex flex-col items-center justify-center gap-2 relative",
 									"active:opacity-60 transition-all duration-150 tap-highlight-transparent",
 									"after:absolute after:bottom-0 after:h-1 after:w-12 after:rounded-full after:transition-all after:duration-200",
 									isActive
@@ -58,7 +58,7 @@ export default function BottomNav({
 									)}
 									aria-hidden="true"
 								/>
-								<span className="text-[11px] leading-none">{item.label}</span>
+								<span className="text-sm leading-none">{item.label}</span>
 							</Link>
 						);
 					})}
