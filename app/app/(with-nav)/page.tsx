@@ -59,7 +59,11 @@ export default async function HomePage() {
 					</div>
 					<div className="mt-4 space-y-3">
 						{invites.slice(0, 2).map((invite) => (
-							<GroupInviteItem key={invite.id} invite={invite} />
+							<GroupInviteItem
+								key={invite.id}
+								invite={invite}
+								type="received"
+							/>
 						))}
 						{invites.length > 2 && (
 							<Link href="/app/invites">

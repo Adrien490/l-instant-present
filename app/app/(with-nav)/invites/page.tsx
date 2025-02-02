@@ -75,7 +75,7 @@ export default async function InvitesPage({ searchParams }: Props) {
 				) : (
 					<div className="flex flex-col gap-2.5">
 						{invites.map((invite) => (
-							<GroupInviteItem key={invite.id} invite={invite} />
+							<GroupInviteItem key={invite.id} invite={invite} type={type} />
 						))}
 					</div>
 				)}

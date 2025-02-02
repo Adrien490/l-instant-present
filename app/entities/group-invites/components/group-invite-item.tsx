@@ -21,13 +21,15 @@ import { GetGroupInviteResponse } from "../queries/get-group-invite";
 
 type Props = {
 	invite: NonNullable<GetGroupInviteResponse>;
+	type: "sent" | "received";
 };
 
-export default function GroupInviteItem({ invite }: Props) {
+export default function GroupInviteItem({ invite, type }: Props) {
 	const [open, setOpen] = useState(false);
 
 	const isExpired = invite.expiresAt && new Date(invite.expiresAt) < new Date();
 	const isPending = invite.status === GroupInviteStatus.PENDING;
+	const isSent = type === "sent";
 
 	const { state, dispatch } = useUpdateGroupInviteStatus();
 
@@ -81,7 +83,11 @@ export default function GroupInviteItem({ invite }: Props) {
 									)}
 								</div>
 								<div className="absolute -bottom-1 -right-1 rounded-full bg-background p-1.5 shadow-sm">
-									<Mail className="h-4 w-4 text-primary" />
+									<Mail
+										className={`h-4 w-4 ${
+											isSent ? "text-muted-foreground" : "text-primary"
+										}`}
+									/>
 								</div>
 							</div>
 						</div>
@@ -132,7 +138,12 @@ export default function GroupInviteItem({ invite }: Props) {
 								</div>
 								<div className="flex items-center gap-2">
 									<span className="text-sm text-muted-foreground/70">
-										Invitation par {invite.sender.name} •{" "}
+										{isSent ? (
+											<>Envoyée à {invite.email}</>
+										) : (
+											<>Invitation par {invite.sender.name}</>
+										)}{" "}
+										•{" "}
 										{formatDistanceToNow(new Date(invite.createdAt), {
 											addSuffix: true,
 											locale: fr,
@@ -191,7 +202,11 @@ export default function GroupInviteItem({ invite }: Props) {
 								)}
 							</div>
 							<div className="absolute bottom-4 right-4 rounded-full bg-background p-2 shadow-sm">
-								<Mail className="h-6 w-6 text-primary" />
+								<Mail
+									className={`h-6 w-6 ${
+										isSent ? "text-muted-foreground" : "text-primary"
+									}`}
+								/>
 							</div>
 							<div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 						</div>
@@ -203,7 +218,11 @@ export default function GroupInviteItem({ invite }: Props) {
 										{invite.group.name}
 									</DrawerTitle>
 									<p className="text-sm text-white/90 mt-1">
-										Invitation envoyée par {invite.sender.name}
+										{isSent ? (
+											<>Invitation envoyée à {invite.email}</>
+										) : (
+											<>Invitation envoyée par {invite.sender.name}</>
+										)}
 									</p>
 								</div>
 								{isExpired && (
@@ -224,13 +243,19 @@ export default function GroupInviteItem({ invite }: Props) {
 						<div className="space-y-4">
 							<div className="flex items-center gap-3">
 								<div className="rounded-lg bg-primary/10 p-2">
-									<Mail className="h-4 w-4 text-primary" />
+									<Mail
+										className={`h-4 w-4 ${
+											isSent ? "text-muted-foreground" : "text-primary"
+										}`}
+									/>
 								</div>
 								<div className="flex-1 min-w-0">
 									<p className="text-sm text-muted-foreground">
-										Invitation envoyée à
+										{isSent ? "Invitation envoyée à" : "Invitation envoyée par"}
 									</p>
-									<p className="font-medium truncate">{invite.email}</p>
+									<p className="font-medium truncate">
+										{isSent ? invite.email : invite.sender.name}
+									</p>
 								</div>
 								<time className="text-xs px-2 py-0.5 rounded-full bg-muted">
 									{formatDistanceToNow(new Date(invite.createdAt), {
@@ -308,7 +333,7 @@ export default function GroupInviteItem({ invite }: Props) {
 							</div>
 						</div>
 
-						{isPending && !isExpired && (
+						{!isSent && isPending && !isExpired && (
 							<div className="space-y-3 pb-safe">
 								<form action={dispatch}>
 									<input type="hidden" name="id" value={invite.id} />
