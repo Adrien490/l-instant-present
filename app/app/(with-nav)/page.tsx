@@ -1,5 +1,5 @@
+import GroupInviteItem from "@/app/entities/group-invites/components/group-invite-item";
 import { getGroupInvites } from "@/app/entities/group-invites/queries/get-group-invites";
-import GroupInviteItem from "@/app/entities/groups/components/group-invite-item";
 import GroupItem from "@/app/entities/groups/components/group-item";
 import getGroups from "@/app/entities/groups/queries/get-groups";
 import EmptyState from "@/components/empty-state";

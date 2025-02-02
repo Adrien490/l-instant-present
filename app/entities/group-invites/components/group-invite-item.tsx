@@ -1,12 +1,12 @@
 "use client";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
 	Drawer,
 	DrawerContent,
 	DrawerDescription,
-	DrawerHeader,
 	DrawerTitle,
 	DrawerTrigger,
 } from "@/components/ui/drawer";
@@ -16,8 +16,9 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Check, Crown, Mail, Shield, Users, X } from "lucide-react";
 import { useState } from "react";
-import { useUpdateGroupInviteStatus } from "../../group-invites/hooks/use-update-group-invite-status";
-import { GetGroupInviteResponse } from "../../group-invites/queries/get-group-invite";
+import { useUpdateGroupInviteStatus } from "../hooks/use-update-group-invite-status";
+import { GetGroupInviteResponse } from "../queries/get-group-invite";
+
 type Props = {
 	invite: NonNullable<GetGroupInviteResponse>;
 };
@@ -37,9 +38,26 @@ export default function GroupInviteItem({ invite }: Props) {
 			<DrawerTrigger asChild>
 				<Card className="overflow-hidden transition-all hover:bg-muted/50 active:bg-muted">
 					<div className="flex gap-4 p-4">
-						<div className="flex-shrink-0">
-							<div className="touch-target rounded-lg bg-primary/10">
-								<Mail className="icon-base text-primary" />
+						<div className="relative flex-shrink-0">
+							<div className="relative w-14 h-14">
+								<div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10" />
+								<div className="absolute inset-[3px]">
+									<Avatar className="h-full w-full rounded-lg border-2 border-background">
+										<AvatarImage
+											src={invite.sender.image ?? undefined}
+											alt={invite.sender.name}
+										/>
+										<AvatarFallback className="text-base rounded-lg">
+											{invite.sender.name
+												?.split(" ")
+												.map((n) => n[0])
+												.join("")}
+										</AvatarFallback>
+									</Avatar>
+								</div>
+								<div className="absolute -bottom-1 -right-1 rounded-full bg-background p-1.5 shadow-sm">
+									<Mail className="h-4 w-4 text-primary" />
+								</div>
 							</div>
 						</div>
 						<div className="flex-1 min-w-0 spacing-small">
@@ -117,17 +135,40 @@ export default function GroupInviteItem({ invite }: Props) {
 				</Card>
 			</DrawerTrigger>
 
-			<DrawerContent className="h-[90vh] flex flex-col p-0 pb-[calc(72px+max(env(safe-area-inset-bottom),16px))]">
-				<DrawerHeader className="flex-shrink-0 text-left p-6 pb-4 border-b">
-					<div className="flex items-start gap-4">
-						<div className="rounded-xl bg-primary/10 p-3">
-							<Users className="h-5 w-5 text-primary" />
+			<DrawerContent className="h-[94vh] flex flex-col px-0 pb-32">
+				<ScrollArea className="flex-1">
+					<div className="relative flex-shrink-0">
+						<div className="relative w-full aspect-[2/1] bg-gradient-to-br from-primary/20 to-primary/10">
+							<div className="absolute inset-0 flex items-center justify-center">
+								<Avatar className="h-32 w-32 opacity-60">
+									<AvatarImage
+										src={invite.sender.image ?? undefined}
+										alt={invite.sender.name}
+									/>
+									<AvatarFallback className="text-4xl">
+										{invite.sender.name
+											?.split(" ")
+											.map((n) => n[0])
+											.join("")}
+									</AvatarFallback>
+								</Avatar>
+							</div>
+							<div className="absolute bottom-4 right-4 rounded-full bg-background p-2 shadow-sm">
+								<Mail className="h-6 w-6 text-primary" />
+							</div>
+							<div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 						</div>
-						<div className="flex-1 min-w-0">
-							<div className="flex items-center gap-2">
-								<DrawerTitle className="text-2xl font-semibold">
-									{invite.group.name}
-								</DrawerTitle>
+
+						<div className="absolute bottom-0 left-0 right-0 p-6">
+							<div className="flex flex-col gap-4">
+								<div>
+									<DrawerTitle className="text-2xl font-semibold flex items-center gap-3 text-white">
+										{invite.group.name}
+									</DrawerTitle>
+									<p className="text-sm text-white/90 mt-1">
+										Invitation envoyée par {invite.sender.name}
+									</p>
+								</div>
 								{isExpired && (
 									<span className="text-xs px-2 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium">
 										Expirée
@@ -141,9 +182,7 @@ export default function GroupInviteItem({ invite }: Props) {
 							)}
 						</div>
 					</div>
-				</DrawerHeader>
 
-				<ScrollArea className="flex-1">
 					<div className="p-6 space-y-6">
 						<div className="space-y-4">
 							<div className="flex items-center gap-3">

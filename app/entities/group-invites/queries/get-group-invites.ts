@@ -25,6 +25,7 @@ const DEFAULT_SELECT = {
 			id: true,
 			name: true,
 			description: true,
+			imageUrl: true,
 			members: {
 				select: {
 					userId: true,
