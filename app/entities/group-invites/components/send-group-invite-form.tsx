@@ -1,7 +1,7 @@
 "use client";
 
 import { useGroupInviteForm } from "@/app/entities/group-invites/hooks/use-group-invite-form";
-import groupInviteFormSchema from "@/app/entities/group-invites/schemas/group-invite-form-schema";
+import groupInviteFormSchema from "@/app/entities/group-invites/schemas/send-group-invite-schema";
 import PageBottom from "@/components/page-bottom";
 import ServerActionResponse from "@/components/server-action-response";
 import { Button } from "@/components/ui/button";

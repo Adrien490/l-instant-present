@@ -103,7 +103,11 @@ export default async function getGroups(
 
 		return await unstable_cache(getData, [cacheKey], {
 			revalidate: CACHE_REVALIDATION_TIME,
-			tags: ["groups:list", `groups:user:${session.user.id}`],
+			tags: [
+				"groups:list",
+				`groups:user:${session.user.id}`,
+				`groups:search:${params.search || "all"}`,
+			],
 		})();
 	} catch (error) {
 		console.error("[GET_GROUPS]", error);

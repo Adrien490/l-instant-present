@@ -2,7 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import db from "@/lib/db";
-import { Prisma } from "@prisma/client";
+import { GroupInviteStatus, Prisma } from "@prisma/client";
 import { headers } from "next/headers";
 
 const DEFAULT_SELECT = {
@@ -47,12 +47,12 @@ export type GetGroupInvitesResponse = Array<
 
 interface GetGroupInvitesOptions {
 	type?: "sent" | "received";
-	status?: "PENDING" | "ACCEPTED" | "REJECTED";
+	status?: GroupInviteStatus;
 }
 
 export async function getGroupInvites({
 	type = "received",
-	status = "PENDING",
+	status = GroupInviteStatus.PENDING,
 }: GetGroupInvitesOptions = {}): Promise<GetGroupInvitesResponse> {
 	try {
 		const session = await auth.api.getSession({

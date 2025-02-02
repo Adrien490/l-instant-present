@@ -12,12 +12,19 @@ import {
 import { GroupInvite } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import updateGroupInviteSchema from "../schemas/update-group-invite-schema";
+import updateGroupInviteSchema, {
+	updateGroupInviteStatusSchema,
+} from "../schemas/update-group-invite-status-schema";
 
-export default async function updateGroupInvite(
-	_: ServerActionState<GroupInvite, typeof updateGroupInviteSchema> | null,
+export default async function updateGroupInviteStatus(
+	_: ServerActionState<
+		GroupInvite,
+		typeof updateGroupInviteStatusSchema
+	> | null,
 	formData: FormData
-): Promise<ServerActionState<GroupInvite, typeof updateGroupInviteSchema>> {
+): Promise<
+	ServerActionState<GroupInvite, typeof updateGroupInviteStatusSchema>
+> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
@@ -52,7 +59,9 @@ export default async function updateGroupInvite(
 
 		revalidateTag(`group-${invite.groupId}`);
 		revalidateTag(`group-invites-${invite.groupId}`);
-
+		revalidateTag("groups:list");
+		revalidateTag(`groups:user:${session.user.id}`);
+		revalidateTag("groups:search:all");
 		return createSuccessResponse(
 			invite,
 			"L'invitation a été mise à jour avec succès"

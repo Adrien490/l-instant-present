@@ -107,18 +107,25 @@ model GroupMember {
 }
 
 model GroupInvite {
-  id        String    @id @default(uuid())
+  id        String            @id @default(uuid())
   groupId   String
   senderId  String
   email     String
-  status    String    @default("PENDING")
-  createdAt DateTime  @default(now())
+  status    GroupInviteStatus @default(PENDING)
+  createdAt DateTime          @default(now())
   expiresAt DateTime?
-  group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  sender    User      @relation("InviteSender", fields: [senderId], references: [id])
+  group     Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  sender    User              @relation("InviteSender", fields: [senderId], references: [id])
 
   @@unique([groupId, email])
   @@map("group_invite")
+}
+
+enum GroupInviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
 }
 
 model ChallengePeriod {

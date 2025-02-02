@@ -11,14 +11,13 @@ import {
 	DrawerTrigger,
 } from "@/components/ui/drawer";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { GroupInviteStatus } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Check, Crown, Mail, Shield, Users, X } from "lucide-react";
 import { useState } from "react";
-import { useUpdateGroupInvite } from "../hooks/use-update-group-invite";
+import { useUpdateGroupInviteStatus } from "../hooks/use-update-group-invite-status";
 import { GetGroupInviteResponse } from "../queries/get-group-invite";
-import { InviteStatus } from "../schemas/group-invite-schema";
-
 type Props = {
 	invite: NonNullable<GetGroupInviteResponse>;
 };
@@ -27,9 +26,9 @@ export default function GroupInviteItem({ invite }: Props) {
 	const [open, setOpen] = useState(false);
 
 	const isExpired = invite.expiresAt && new Date(invite.expiresAt) < new Date();
-	const isPending = invite.status === InviteStatus.PENDING;
+	const isPending = invite.status === GroupInviteStatus.PENDING;
 
-	const { state, dispatch, isPending: isUpdating } = useUpdateGroupInvite();
+	const { state, dispatch } = useUpdateGroupInviteStatus();
 
 	console.log(state);
 
@@ -248,7 +247,7 @@ export default function GroupInviteItem({ invite }: Props) {
 									<input
 										type="hidden"
 										name="status"
-										value={InviteStatus.ACCEPTED}
+										value={GroupInviteStatus.ACCEPTED}
 									/>
 									<Button
 										size="lg"
@@ -263,7 +262,7 @@ export default function GroupInviteItem({ invite }: Props) {
 									<input
 										type="hidden"
 										name="status"
-										value={InviteStatus.REJECTED}
+										value={GroupInviteStatus.REJECTED}
 									/>
 									<Button
 										variant="outline"

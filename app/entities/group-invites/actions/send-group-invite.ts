@@ -13,12 +13,12 @@ import { GroupInvite } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { isGroupAdmin } from "../../groups/queries/is-group-admin";
-import groupInviteFormSchema from "../schemas/group-invite-form-schema";
+import sendGroupInviteSchema from "../schemas/send-group-invite-schema";
 
-export default async function createGroupInvite(
-	_: ServerActionState<GroupInvite, typeof groupInviteFormSchema> | null,
+export default async function sendGroupInvite(
+	_: ServerActionState<GroupInvite, typeof sendGroupInviteSchema> | null,
 	formData: FormData
-): Promise<ServerActionState<GroupInvite, typeof groupInviteFormSchema>> {
+): Promise<ServerActionState<GroupInvite, typeof sendGroupInviteSchema>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
@@ -36,7 +36,7 @@ export default async function createGroupInvite(
 			email: formData.get("email")?.toString() || "",
 		};
 
-		const validation = groupInviteFormSchema.safeParse(rawData);
+		const validation = sendGroupInviteSchema.safeParse(rawData);
 
 		if (!validation.success) {
 			return createValidationErrorResponse(
@@ -68,6 +68,13 @@ export default async function createGroupInvite(
 			);
 		}
 
+		if (session.user.email === rawData.email) {
+			return createErrorResponse(
+				ServerActionStatus.ERROR,
+				"Vous ne pouvez pas vous inviter vous-même"
+			);
+		}
+
 		// Vérifier si l'utilisateur est déjà membre du groupe
 		const existingMember = await db.groupMember.findUnique({
 			where: {
@@ -82,6 +89,21 @@ export default async function createGroupInvite(
 			return createErrorResponse(
 				ServerActionStatus.ERROR,
 				"Cette personne est déjà membre du groupe"
+			);
+		}
+
+		const existingInvite = await db.groupInvite.findFirst({
+			where: {
+				groupId: validation.data.groupId,
+				email: validation.data.email,
+				status: "PENDING",
+			},
+		});
+
+		if (existingInvite) {
+			return createErrorResponse(
+				ServerActionStatus.ERROR,
+				"Une invitation est déjà en attente pour cette personne"
 			);
 		}
 
