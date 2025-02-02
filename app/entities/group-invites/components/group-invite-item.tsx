@@ -156,7 +156,7 @@ export default function GroupInviteItem({ invite, type }: Props) {
 				</Card>
 			</DrawerTrigger>
 
-			<DrawerContent className="h-[94vh] flex flex-col px-0 pb-32">
+			<DrawerContent className="h-[94vh] flex flex-col px-0">
 				<ScrollArea className="flex-1">
 					<div className="relative flex-shrink-0">
 						<div className="relative w-full aspect-[2/1] bg-gradient-to-br from-primary/20 to-primary/10">
@@ -334,7 +334,7 @@ export default function GroupInviteItem({ invite, type }: Props) {
 						</div>
 
 						{!isSent && isPending && !isExpired && (
-							<div className="space-y-3 pb-safe">
+							<div className="space-y-3 pb-32">
 								<form action={dispatch}>
 									<input type="hidden" name="id" value={invite.id} />
 									<input

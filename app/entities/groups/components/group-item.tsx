@@ -109,7 +109,7 @@ export default function GroupItem({ group, isOwner }: Props) {
 				</Card>
 			</DrawerTrigger>
 
-			<DrawerContent className="h-[94vh] flex flex-col px-0 pb-32">
+			<DrawerContent className="h-[94vh] flex flex-col px-0">
 				<ScrollArea className="flex-1">
 					<div className="relative flex-shrink-0">
 						{group.imageUrl ? (
@@ -203,7 +203,7 @@ export default function GroupItem({ group, isOwner }: Props) {
 							</div>
 						</div>
 
-						<div className="space-y-3 pb-safe">
+						<div className="space-y-3 pb-32">
 							<Button
 								size="lg"
 								className="w-full justify-start font-medium text-base min-h-[2.75rem] px-4 py-3"
