@@ -19,14 +19,16 @@ import { parseWithZod } from "@conform-to/zod";
 import { Loader2 } from "lucide-react";
 import { useEffect } from "react";
 
-interface GroupInviteFormProps {
+interface SendGroupInviteFormProps {
 	groups: Array<{
 		id: string;
 		name: string;
 	}>;
 }
 
-export default function GroupInviteForm({ groups }: GroupInviteFormProps) {
+export default function SendGroupInviteForm({
+	groups,
+}: SendGroupInviteFormProps) {
 	const { dispatch, state, isPending } = useGroupInviteForm();
 
 	const [form, fields] = useForm({

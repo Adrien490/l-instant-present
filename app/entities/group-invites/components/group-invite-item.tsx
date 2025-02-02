@@ -15,6 +15,7 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Check, Crown, Mail, Shield, Users, X } from "lucide-react";
 import { useState } from "react";
+import { useUpdateGroupInvite } from "../hooks/use-update-group-invite";
 import { GetGroupInviteResponse } from "../queries/get-group-invite";
 import { InviteStatus } from "../schemas/group-invite-schema";
 
@@ -27,6 +28,10 @@ export default function GroupInviteItem({ invite }: Props) {
 
 	const isExpired = invite.expiresAt && new Date(invite.expiresAt) < new Date();
 	const isPending = invite.status === InviteStatus.PENDING;
+
+	const { state, dispatch, isPending: isUpdating } = useUpdateGroupInvite();
+
+	console.log(state);
 
 	return (
 		<Drawer open={open} onOpenChange={setOpen}>
@@ -238,18 +243,37 @@ export default function GroupInviteItem({ invite }: Props) {
 
 						{isPending && !isExpired && (
 							<div className="space-y-3 pb-safe">
-								<Button size="lg" className="w-full justify-start font-medium">
-									<Check className="mr-3 h-4 w-4" />
-									Accepter l&apos;invitation
-								</Button>
-								<Button
-									variant="outline"
-									size="lg"
-									className="w-full justify-start font-medium"
-								>
-									<X className="mr-3 h-4 w-4" />
-									Refuser l&apos;invitation
-								</Button>
+								<form action={dispatch}>
+									<input type="hidden" name="id" value={invite.id} />
+									<input
+										type="hidden"
+										name="status"
+										value={InviteStatus.ACCEPTED}
+									/>
+									<Button
+										size="lg"
+										className="w-full justify-start font-medium"
+									>
+										<Check className="mr-3 h-4 w-4" />
+										Accepter l&apos;invitation
+									</Button>
+								</form>
+								<form action={dispatch}>
+									<input type="hidden" name="id" value={invite.id} />
+									<input
+										type="hidden"
+										name="status"
+										value={InviteStatus.REJECTED}
+									/>
+									<Button
+										variant="outline"
+										size="lg"
+										className="w-full justify-start font-medium"
+									>
+										<X className="mr-3 h-4 w-4" />
+										Refuser l&apos;invitation
+									</Button>
+								</form>
 							</div>
 						)}
 					</div>

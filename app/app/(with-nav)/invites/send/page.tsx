@@ -1,7 +1,9 @@
 import getGroups from "@/app/entities/groups/queries/get-groups";
+import EmptyState from "@/components/empty-state";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
-import GroupInviteForm from "../../../../entities/group-invites/components/group-invite-form";
+import { Users } from "lucide-react";
+import SendGroupInviteForm from "../../../../entities/group-invites/components/send-group-invite-form";
 
 export default async function SendInvitePage() {
 	const groups = await getGroups({ search: "" });
@@ -12,8 +14,15 @@ export default async function SendInvitePage() {
 				title="Envoyer une invitation"
 				description="Envoyez une invitation à un utilisateur pour rejoindre un groupe."
 			/>
-
-			<GroupInviteForm groups={groups} />
+			{groups.length > 0 ? (
+				<SendGroupInviteForm groups={groups} />
+			) : (
+				<EmptyState
+					title="Aucun groupe trouvé"
+					description="Vous n'avez pas encore créé de groupe."
+					icon={<Users className="h-4 w-4" />}
+				/>
+			)}
 		</PageContainer>
 	);
 }
