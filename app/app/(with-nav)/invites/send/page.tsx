@@ -1,7 +1,7 @@
 import getGroups from "@/app/entities/groups/queries/get-groups";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
-import GroupInviteForm from "../components/group-invite-form";
+import GroupInviteForm from "../../../../entities/group-invites/components/group-invite-form";
 
 export default async function SendInvitePage() {
 	const groups = await getGroups({ search: "" });

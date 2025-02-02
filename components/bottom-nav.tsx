@@ -25,12 +25,13 @@ export default function BottomNav({
 	return (
 		<nav
 			className={cn(
-				"fixed bottom-0 left-0 right-0 h-[72px] border-t rounded-t-3xl bg-background z-40",
+				"fixed bottom-0 left-0 right-0 border-t rounded-t-3xl bg-background z-50",
+				"pb-[max(env(safe-area-inset-bottom),16px)]",
 				className
 			)}
 		>
-			<div className="mx-auto max-w-md">
-				<div className="grid grid-cols-4 h-16">
+			<div className="mx-auto max-w-md pointer-events-auto">
+				<div className="grid grid-cols-4 h-[72px]">
 					{items.map((item) => {
 						const Icon = item.icon;
 						const isActive = pathname === item.href;

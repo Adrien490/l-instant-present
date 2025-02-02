@@ -1,9 +1,8 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import db, { CACHE_TIMES } from "@/lib/db";
+import db from "@/lib/db";
 import { Prisma } from "@prisma/client";
-import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 
 const DEFAULT_SELECT = {
@@ -12,6 +11,7 @@ const DEFAULT_SELECT = {
 	status: true,
 	createdAt: true,
 	expiresAt: true,
+	senderId: true,
 	sender: {
 		select: {
 			id: true,
@@ -24,9 +24,17 @@ const DEFAULT_SELECT = {
 		select: {
 			id: true,
 			name: true,
+			description: true,
 			members: {
 				select: {
 					userId: true,
+					role: true,
+					user: {
+						select: {
+							name: true,
+							image: true,
+						},
+					},
 				},
 			},
 		},
@@ -55,33 +63,16 @@ export async function getGroupInvites({
 			throw new Error("Unauthorized");
 		}
 
-		const getInvitesFromDb = async () => {
-			return db.groupInvite.findMany({
-				where: {
-					status,
-					...(type === "sent"
-						? { senderId: session.user.id }
-						: { email: session.user.email }),
-				},
-				select: DEFAULT_SELECT,
-				orderBy: { createdAt: "desc" },
-			});
-		};
-
-		return unstable_cache(
-			getInvitesFromDb,
-			[`invites-${type}-${status}-${session.user.id}`],
-			{
-				revalidate: CACHE_TIMES.VERY_SHORT,
-				tags: [
-					"invites",
-					`user-invites-${session.user.id}`,
-					type === "sent"
-						? `sent-invites-${session.user.id}`
-						: `received-invites-${session.user.email}`,
-				],
-			}
-		)();
+		return db.groupInvite.findMany({
+			where: {
+				status,
+				...(type === "sent"
+					? { senderId: session.user.id }
+					: { email: session.user.email }),
+			},
+			select: DEFAULT_SELECT,
+			orderBy: { createdAt: "desc" },
+		});
 	} catch (error) {
 		console.error("[GET_GROUP_INVITES]", error);
 		return [];

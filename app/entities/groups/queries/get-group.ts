@@ -1,12 +1,17 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import db from "@/lib/db";
+import db, { CACHE_TIMES, DB_TIMEOUTS } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import getGroupSchema, { GetGroupParams } from "../schemas/get-group-schema";
 
+// Constants
+const CACHE_REVALIDATION_TIME = CACHE_TIMES.MEDIUM;
+const DB_TIMEOUT = DB_TIMEOUTS.MEDIUM;
+
+// Types
 const DEFAULT_SELECT = {
 	id: true,
 	name: true,
@@ -54,34 +59,42 @@ export async function getGroup(
 			throw new Error("ID de groupe invalide");
 		}
 
-		const getGroupFromDb = async () => {
-			const group = await db.group.findFirst({
-				where: {
-					id: validation.data.id,
-					members: {
-						some: {
-							userId: session.user.id,
+		const validatedParams = validation.data;
+		const cacheKey = `group:${validatedParams.id}:user:${session.user.id}`;
+
+		const getData = async () => {
+			return await Promise.race([
+				db.group.findFirst({
+					where: {
+						id: validatedParams.id,
+						members: {
+							some: {
+								userId: session.user.id,
+							},
 						},
 					},
-				},
-				select: DEFAULT_SELECT,
-			});
-
-			if (!group) {
-				throw new Error("Groupe non trouvé");
-			}
-
-			return group;
+					select: DEFAULT_SELECT,
+				}),
+				new Promise<never>((_, reject) =>
+					setTimeout(() => reject(new Error("Query timeout")), DB_TIMEOUT)
+				),
+			]);
 		};
 
-		return unstable_cache(
-			getGroupFromDb,
-			[`group-${params.id}-${session.user.id}`],
-			{
-				revalidate: 60,
-				tags: ["groups"],
-			}
-		)();
+		const group = await unstable_cache(getData, [cacheKey], {
+			revalidate: CACHE_REVALIDATION_TIME,
+			tags: [
+				"groups",
+				`group:${validatedParams.id}`,
+				`groups:user:${session.user.id}`,
+			],
+		})();
+
+		if (!group) {
+			throw new Error("Groupe non trouvé");
+		}
+
+		return group;
 	} catch (error) {
 		console.error("[GET_GROUP_ERROR]", { params, error });
 		throw error instanceof Error

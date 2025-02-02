@@ -1,5 +1,7 @@
-import { getUserInvites } from "@/app/entities/group-invites/queries/get-user-invites";
+import { getGroupInvites } from "@/app/entities/group-invites/queries/get-group-invites";
+import GroupItem from "@/app/entities/groups/components/group-item";
 import getGroups from "@/app/entities/groups/queries/get-groups";
+import EmptyState from "@/components/empty-state";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -8,15 +10,14 @@ import { auth } from "@/lib/auth";
 import { Mail, Plus, Users } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
-import GroupList from "./components/group-list";
 
 export default async function HomePage() {
 	const session = await auth.api.getSession({ headers: await headers() });
 	const groups = await getGroups({ search: "" });
-	const invites = await getUserInvites();
+	const invites = await getGroupInvites({ type: "received" });
 
 	return (
-		<PageContainer className="pb-24">
+		<PageContainer className="pb-32">
 			{/* Hero Section */}
 			<PageHeader
 				title={`Bonjour ${session?.user.name?.split(" ")[0]} 👋`}
@@ -89,7 +90,22 @@ export default async function HomePage() {
 						</Button>
 					)}
 				</div>
-				<GroupList groups={groups} />
+				{groups.length === 0 && (
+					<EmptyState
+						title="Aucun groupe trouvé"
+						description="Vous n'appartenez à aucun groupe"
+						icon={<Users className="h-8 w-8 text-muted-foreground/80" />}
+					/>
+				)}
+				<div className="mt-4 flex flex-col gap-2.5">
+					{groups.slice(0, 3).map((group) => (
+						<GroupItem
+							key={group.id}
+							group={group}
+							isOwner={group.ownerId === session?.user.id}
+						/>
+					))}
+				</div>
 			</div>
 		</PageContainer>
 	);

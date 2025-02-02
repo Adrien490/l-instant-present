@@ -81,24 +81,15 @@ export default function GroupForm({ group }: GroupFormProps) {
 					</div>
 				</div>
 
-				<div className="fixed inset-x-0 bottom-16 bg-background border-t p-4">
-					<div className="mx-auto max-w-2xl">
-						<div>
-							<Button type="submit" className="w-full" disabled={isPending}>
-								{isPending && (
-									<Loader2
-										className="mr-2 h-4 w-4 animate-spin"
-										aria-hidden="true"
-									/>
-								)}
-								{group ? "Enregistrer" : "Créer"}
-							</Button>
-						</div>
-						<p className="text-xs text-muted-foreground text-center mt-4">
-							Les champs marqués d&apos;un{" "}
-							<span className="text-destructive">*</span> sont obligatoires
-						</p>
-					</div>
+				<div className="space-y-4">
+					<Button type="submit" className="w-full" disabled={isPending}>
+						{isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+						Enregistrer
+					</Button>
+					<p className="text-xs text-muted-foreground text-center">
+						Les champs marqués d&apos;un{" "}
+						<span className="text-destructive">*</span> sont obligatoires
+					</p>
 				</div>
 			</form>
 		</>

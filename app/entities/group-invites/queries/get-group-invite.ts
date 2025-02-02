@@ -29,6 +29,7 @@ const DEFAULT_SELECT = {
 			members: {
 				select: {
 					userId: true,
+					role: true,
 					user: {
 						select: {
 							name: true,
