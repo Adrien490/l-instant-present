@@ -2,6 +2,7 @@
 
 import { useGroupInviteForm } from "@/app/entities/group-invites/hooks/use-group-invite-form";
 import groupInviteFormSchema from "@/app/entities/group-invites/schemas/group-invite-form-schema";
+import PageBottom from "@/components/page-bottom";
 import ServerActionResponse from "@/components/server-action-response";
 import { Button } from "@/components/ui/button";
 import { FormLabel } from "@/components/ui/form";
@@ -108,7 +109,7 @@ export default function GroupInviteForm({ groups }: GroupInviteFormProps) {
 					</div>
 				</div>
 
-				<div className="">
+				<PageBottom>
 					<div className="mx-auto max-w-2xl">
 						<div>
 							<Button type="submit" className="w-full" disabled={isPending}>
@@ -126,7 +127,7 @@ export default function GroupInviteForm({ groups }: GroupInviteFormProps) {
 							<span className="text-destructive">*</span> sont obligatoires
 						</p>
 					</div>
-				</div>
+				</PageBottom>
 			</form>
 		</>
 	);
