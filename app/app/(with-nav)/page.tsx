@@ -58,9 +58,18 @@ export default async function HomePage() {
 						<h2 className="text-base font-semibold">Invitations en attente</h2>
 					</div>
 					<div className="mt-3 space-y-2">
-						{invites.map((invite) => (
+						{invites.slice(0, 2).map((invite) => (
 							<GroupInviteItem key={invite.id} invite={invite} />
 						))}
+						{invites.length > 2 && (
+							<Link href="/app/invites">
+								<Card className="flex items-center justify-center gap-2 py-3 text-sm text-muted-foreground transition-colors hover:bg-muted/50 active:bg-muted">
+									<span>+{invites.length - 2} autres invitations</span>
+									<span className="text-xs">•</span>
+									<span className="text-xs">Voir tout</span>
+								</Card>
+							</Link>
+						)}
 					</div>
 				</div>
 			)}
@@ -82,7 +91,7 @@ export default async function HomePage() {
 						icon={<Users className="h-8 w-8 text-muted-foreground/80" />}
 					/>
 				)}
-				<div className="mt-4 flex flex-col gap-2.5">
+				<div className="mt-3 flex flex-col gap-2">
 					{groups.slice(0, 3).map((group) => (
 						<GroupItem
 							key={group.id}
@@ -90,6 +99,15 @@ export default async function HomePage() {
 							isOwner={group.ownerId === session?.user.id}
 						/>
 					))}
+					{groups.length > 3 && (
+						<Link href="/app/my-groups">
+							<Card className="flex items-center justify-center gap-2 py-3 text-sm text-muted-foreground transition-colors hover:bg-muted/50 active:bg-muted">
+								<span>+{groups.length - 3} autres groupes</span>
+								<span className="text-xs">•</span>
+								<span className="text-xs">Voir tout</span>
+							</Card>
+						</Link>
+					)}
 				</div>
 			</div>
 		</PageContainer>
