@@ -1,3 +1,4 @@
+import GroupInviteItem from "@/app/entities/group-invites/components/group-invite-item";
 import { getGroupInvites } from "@/app/entities/group-invites/queries/get-group-invites";
 import GroupItem from "@/app/entities/groups/components/group-item";
 import getGroups from "@/app/entities/groups/queries/get-groups";
@@ -7,7 +8,7 @@ import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
-import { Mail, Plus, Users } from "lucide-react";
+import { Plus, Users } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 
@@ -58,23 +59,7 @@ export default async function HomePage() {
 					</div>
 					<div className="mt-3 space-y-2">
 						{invites.map((invite) => (
-							<Link key={invite.id} href={`/app/invites/${invite.id}`}>
-								<Card className="p-3 transition-colors hover:bg-muted/50">
-									<div className="flex items-center gap-3">
-										<div className="rounded-lg bg-primary/10 p-2">
-											<Mail className="h-4 w-4 text-primary" />
-										</div>
-										<div className="flex-1">
-											<p className="text-sm font-medium truncate">
-												{invite.group.name}
-											</p>
-											<p className="text-xs text-muted-foreground">
-												{invite.group.members.length} membres
-											</p>
-										</div>
-									</div>
-								</Card>
-							</Link>
+							<GroupInviteItem key={invite.id} invite={invite} />
 						))}
 					</div>
 				</div>
