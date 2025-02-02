@@ -2,15 +2,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-	Sheet,
-	SheetContent,
-	SheetDescription,
-	SheetHeader,
-	SheetTitle,
-	SheetTrigger,
-} from "@/components/ui/sheet";
+	Drawer,
+	DrawerContent,
+	DrawerDescription,
+	DrawerHeader,
+	DrawerTitle,
+	DrawerTrigger,
+} from "@/components/ui/drawer";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Crown, Edit, Trash, Users } from "lucide-react";
@@ -27,8 +27,8 @@ export default function GroupItem({ group, isOwner }: Props) {
 	const [open, setOpen] = useState(false);
 
 	return (
-		<Sheet open={open} onOpenChange={setOpen} modal={true}>
-			<SheetTrigger asChild>
+		<Drawer open={open} onOpenChange={setOpen}>
+			<DrawerTrigger asChild>
 				<Card className="overflow-hidden transition-all hover:bg-muted/50 active:bg-muted">
 					<div className="flex items-center gap-4 p-4">
 						<div className="rounded-xl bg-primary/10 p-3 shadow-sm">
@@ -65,34 +65,31 @@ export default function GroupItem({ group, isOwner }: Props) {
 						</div>
 					</div>
 				</Card>
-			</SheetTrigger>
+			</DrawerTrigger>
 
-			<SheetContent
-				side="bottom"
-				className="h-[90vh] flex flex-col p-0 pb-[calc(72px+max(env(safe-area-inset-bottom),16px))]"
-			>
-				<SheetHeader className="flex-shrink-0 text-left p-6 pb-4 border-b">
+			<DrawerContent className="h-[90vh] flex flex-col p-0 pb-[calc(72px+max(env(safe-area-inset-bottom),16px))]">
+				<DrawerHeader className="flex-shrink-0 text-left p-6 pb-4 border-b">
 					<div className="flex items-start gap-4">
 						<div className="rounded-xl bg-primary/10 p-3">
 							<Users className="h-5 w-5 text-primary" />
 						</div>
 						<div className="flex-1 min-w-0">
 							<div className="flex items-center gap-2">
-								<SheetTitle className="text-xl font-semibold">
+								<DrawerTitle className="text-xl font-semibold">
 									{group.name}
-								</SheetTitle>
+								</DrawerTitle>
 								{isOwner && (
 									<Crown className="h-4 w-4 text-amber-500 flex-shrink-0" />
 								)}
 							</div>
 							{group.description && (
-								<SheetDescription className="mt-2 text-sm line-clamp-2">
+								<DrawerDescription className="mt-2 text-sm line-clamp-2">
 									{group.description}
-								</SheetDescription>
+								</DrawerDescription>
 							)}
 						</div>
 					</div>
-				</SheetHeader>
+				</DrawerHeader>
 
 				<ScrollArea className="flex-1">
 					<div className="p-6 space-y-6">
@@ -197,7 +194,7 @@ export default function GroupItem({ group, isOwner }: Props) {
 						</div>
 					</div>
 				</ScrollArea>
-			</SheetContent>
-		</Sheet>
+			</DrawerContent>
+		</Drawer>
 	);
 }
