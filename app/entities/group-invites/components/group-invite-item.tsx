@@ -33,6 +33,8 @@ export default function GroupInviteItem({ invite }: Props) {
 
 	console.log(state);
 
+	console.log(invite);
+
 	return (
 		<Drawer open={open} onOpenChange={setOpen}>
 			<DrawerTrigger asChild>
@@ -42,25 +44,48 @@ export default function GroupInviteItem({ invite }: Props) {
 							<div className="relative w-14 h-14">
 								<div className="absolute inset-0 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10" />
 								<div className="absolute inset-[3px]">
-									<Avatar className="h-full w-full rounded-lg border-2 border-background">
-										<AvatarImage
-											src={invite.sender.image ?? undefined}
-											alt={invite.sender.name}
+									{invite.group.imageUrl ? (
+										<div
+											className="h-full w-full rounded-lg"
+											style={{
+												backgroundImage: `url(${invite.group.imageUrl})`,
+												backgroundSize: "cover",
+												backgroundPosition: "center",
+											}}
 										/>
-										<AvatarFallback className="text-base rounded-lg">
-											{invite.sender.name
-												?.split(" ")
-												.map((n) => n[0])
-												.join("")}
-										</AvatarFallback>
-									</Avatar>
+									) : (
+										<div className="flex -space-x-2 overflow-hidden">
+											{invite.group.members.slice(0, 4).map((member) => (
+												<div
+													key={member.userId}
+													className="relative h-full w-full"
+												>
+													<div
+														className="h-6 w-6 rounded-full ring-2 ring-background"
+														style={{
+															backgroundImage: `url(${member.user.image})`,
+															backgroundSize: "cover",
+															backgroundPosition: "center",
+														}}
+													/>
+												</div>
+											))}
+											{invite.group.members.length > 4 && (
+												<div className="relative inline-flex h-6 w-6 items-center justify-center rounded-full bg-muted ring-2 ring-background">
+													<span className="text-[10px] font-medium">
+														+{invite.group.members.length - 4}
+													</span>
+												</div>
+											)}
+										</div>
+									)}
 								</div>
 								<div className="absolute -bottom-1 -right-1 rounded-full bg-background p-1.5 shadow-sm">
 									<Mail className="h-4 w-4 text-primary" />
 								</div>
 							</div>
 						</div>
-						<div className="flex-1 min-w-0 spacing-small">
+						<div className="flex-1 min-w-0">
 							<div className="spacing-small">
 								<div className="flex items-center gap-2 flex-wrap">
 									<p className="font-medium text-base truncate text-foreground/90">
@@ -97,37 +122,22 @@ export default function GroupInviteItem({ invite }: Props) {
 								)}
 							</div>
 
-							<div className="spacing-small">
+							<div className="flex flex-col gap-1.5 mt-2">
 								<div className="flex items-center gap-2">
-									<Users className="icon-base text-muted-foreground" />
+									<Users className="h-4 w-4 text-muted-foreground" />
 									<span className="text-sm text-muted-foreground">
 										{invite.group.members.length} membre
 										{invite.group.members.length > 1 ? "s" : ""}
 									</span>
 								</div>
 								<div className="flex items-center gap-2">
-									<Mail className="icon-base text-muted-foreground" />
-									<span className="text-sm text-muted-foreground truncate">
-										{invite.email}
-									</span>
-								</div>
-								<div className="flex items-center gap-2">
-									<time className="text-sm text-muted-foreground/70">
-										Envoyée{" "}
+									<span className="text-sm text-muted-foreground/70">
+										Invitation par {invite.sender.name} •{" "}
 										{formatDistanceToNow(new Date(invite.createdAt), {
 											addSuffix: true,
 											locale: fr,
 										})}
-									</time>
-									{invite.expiresAt && (
-										<span className="text-sm text-muted-foreground/70">
-											· Expire{" "}
-											{formatDistanceToNow(new Date(invite.expiresAt), {
-												addSuffix: true,
-												locale: fr,
-											})}
-										</span>
-									)}
+									</span>
 								</div>
 							</div>
 						</div>
@@ -140,18 +150,45 @@ export default function GroupInviteItem({ invite }: Props) {
 					<div className="relative flex-shrink-0">
 						<div className="relative w-full aspect-[2/1] bg-gradient-to-br from-primary/20 to-primary/10">
 							<div className="absolute inset-0 flex items-center justify-center">
-								<Avatar className="h-32 w-32 opacity-60">
-									<AvatarImage
-										src={invite.sender.image ?? undefined}
-										alt={invite.sender.name}
+								{invite.group.imageUrl ? (
+									<div
+										className="absolute inset-0"
+										style={{
+											backgroundImage: `url(${invite.group.imageUrl})`,
+											backgroundSize: "cover",
+											backgroundPosition: "center",
+											opacity: 0.6,
+										}}
 									/>
-									<AvatarFallback className="text-4xl">
-										{invite.sender.name
-											?.split(" ")
-											.map((n) => n[0])
-											.join("")}
-									</AvatarFallback>
-								</Avatar>
+								) : (
+									<div className="grid grid-cols-4 gap-3">
+										{invite.group.members.map((member) => (
+											<div
+												key={member.userId}
+												className="relative group aspect-square"
+											>
+												<Avatar className="h-10 w-10">
+													<AvatarImage
+														src={member.user.image ?? undefined}
+														alt={member.user.name}
+													/>
+													<AvatarFallback className="text-xs">
+														{member.user.name
+															?.split(" ")
+															.map((n) => n[0])
+															.join("")}
+													</AvatarFallback>
+												</Avatar>
+												<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 text-[10px] px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm border">
+													{member.user.name}
+													{member.role === "ADMIN" && (
+														<Crown className="inline-block ml-1 h-2.5 w-2.5 text-amber-500" />
+													)}
+												</div>
+											</div>
+										))}
+									</div>
+								)}
 							</div>
 							<div className="absolute bottom-4 right-4 rounded-full bg-background p-2 shadow-sm">
 								<Mail className="h-6 w-6 text-primary" />
@@ -170,7 +207,7 @@ export default function GroupInviteItem({ invite }: Props) {
 									</p>
 								</div>
 								{isExpired && (
-									<span className="text-xs px-2 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium">
+									<span className="text-xs px-2 py-0.5 rounded-full bg-destructive/10 text-destructive font-medium w-fit">
 										Expirée
 									</span>
 								)}
@@ -195,6 +232,12 @@ export default function GroupInviteItem({ invite }: Props) {
 									</p>
 									<p className="font-medium truncate">{invite.email}</p>
 								</div>
+								<time className="text-xs px-2 py-0.5 rounded-full bg-muted">
+									{formatDistanceToNow(new Date(invite.createdAt), {
+										addSuffix: true,
+										locale: fr,
+									})}
+								</time>
 							</div>
 
 							<div className="flex items-center gap-3">
@@ -229,50 +272,36 @@ export default function GroupInviteItem({ invite }: Props) {
 										{invite.group.members.length} membre
 										{invite.group.members.length > 1 ? "s" : ""}
 									</h3>
-									<time className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary">
-										Invitation envoyée{" "}
-										{formatDistanceToNow(new Date(invite.createdAt), {
-											addSuffix: true,
-											locale: fr,
-										})}
-									</time>
 								</div>
 
 								{invite.group.members.length > 0 && (
 									<div className="space-y-3">
-										<div className="flex -space-x-2 overflow-hidden">
-											{invite.group.members.slice(0, 8).map((member) => (
+										<div className="grid grid-cols-4 gap-3">
+											{invite.group.members.map((member) => (
 												<div
 													key={member.userId}
-													className="relative group inline-block"
+													className="relative group aspect-square"
 												>
-													<div
-														className="h-8 w-8 rounded-full ring-2 ring-background transition-transform hover:scale-105"
-														style={{
-															backgroundImage: `url(${member.user.image})`,
-															backgroundSize: "cover",
-															backgroundPosition: "center",
-														}}
-													/>
-													<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 text-sm px-2 py-1 rounded-full whitespace-nowrap shadow-sm border">
+													<Avatar className="h-10 w-10">
+														<AvatarImage
+															src={member.user.image ?? undefined}
+															alt={member.user.name}
+														/>
+														<AvatarFallback className="text-xs">
+															{member.user.name
+																?.split(" ")
+																.map((n) => n[0])
+																.join("")}
+														</AvatarFallback>
+													</Avatar>
+													<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 text-[10px] px-1.5 py-0.5 rounded-full whitespace-nowrap shadow-sm border">
 														{member.user.name}
 														{member.role === "ADMIN" && (
-															<Crown className="inline-block ml-1.5 icon-small text-amber-500" />
+															<Crown className="inline-block ml-1 h-2.5 w-2.5 text-amber-500" />
 														)}
 													</div>
 												</div>
 											))}
-											{invite.group.members.length > 8 && (
-												<div className="relative inline-flex h-8 w-8 items-center justify-center rounded-full bg-muted ring-2 ring-background">
-													<span className="text-[10px] font-medium">
-														+{invite.group.members.length - 8}
-													</span>
-												</div>
-											)}
-										</div>
-										<div className="text-[10px] text-muted-foreground/70 line-clamp-1">
-											<span className="font-medium">Membres : </span>
-											{invite.group.members.map((m) => m.user.name).join(", ")}
 										</div>
 									</div>
 								)}
