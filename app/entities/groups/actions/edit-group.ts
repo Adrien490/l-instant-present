@@ -14,6 +14,7 @@ import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { isGroupAdmin } from "../queries/is-group-admin";
 import groupFormSchema from "../schemas/group-form-schema";
+import { uploadGroupImage } from "./upload-group-image";
 
 export default async function editGroup(
 	_: ServerActionState<Group, typeof groupFormSchema> | null,
@@ -31,8 +32,16 @@ export default async function editGroup(
 			);
 		}
 
+		const groupId = formData.get("id")?.toString();
+		if (!groupId) {
+			return createErrorResponse(
+				ServerActionStatus.ERROR,
+				"L'identifiant du groupe est manquant"
+			);
+		}
+
 		// Vérifier que l'utilisateur est admin du groupe
-		const isAdmin = await isGroupAdmin(formData.get("id")?.toString() || "");
+		const isAdmin = await isGroupAdmin(groupId);
 		if (!isAdmin) {
 			return createErrorResponse(
 				ServerActionStatus.FORBIDDEN,
@@ -40,11 +49,18 @@ export default async function editGroup(
 			);
 		}
 
+		// Gérer l'upload de l'image
+		const imageResult = await uploadGroupImage(null, formData);
+		if (imageResult.status !== ServerActionStatus.SUCCESS) {
+			return createErrorResponse(imageResult.status, imageResult.message);
+		}
+
 		const rawData = {
-			id: formData.get("id")?.toString() || "",
+			id: groupId,
 			name: formData.get("name")?.toString() || "",
 			description: formData.get("description")?.toString() || null,
-			imageUrl: formData.get("imageUrl")?.toString() || null,
+			imageUrl:
+				imageResult.data?.url || formData.get("imageUrl")?.toString() || null,
 		};
 
 		const validation = groupFormSchema.safeParse(rawData);
@@ -58,17 +74,17 @@ export default async function editGroup(
 		}
 
 		const group = await db.group.update({
-			where: { id: formData.get("id")?.toString() || "" },
+			where: { id: groupId },
 			data: {
 				name: validation.data.name,
 				description: validation.data.description,
-				imageUrl: validation.data.imageUrl,
+				imageUrl: validation.data.imageUrl || undefined,
 			},
 		});
 
 		revalidateTag("groups");
 		revalidateTag(`groups:user:${session.user.id}`);
-		revalidateTag(`group-${formData.get("id")?.toString() || ""}`);
+		revalidateTag(`group-${groupId}`);
 
 		return createSuccessResponse(
 			group,

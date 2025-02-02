@@ -1,7 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	images: {
-		domains: ["cqh6s9vs06.ufs.sh"],
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "cqh6s9vs06.ufs.sh",
+			},
+			{
+				protocol: "https",
+				hostname: "utfs.io",
+			},
+		],
 	},
 	async headers() {
 		return [
@@ -9,12 +18,12 @@ const nextConfig = {
 				source: "/(.*)",
 				headers: [
 					{
-						key: "X-Content-Type-Options",
-						value: "nosniff",
-					},
-					{
 						key: "X-Frame-Options",
 						value: "DENY",
+					},
+					{
+						key: "X-Content-Type-Options",
+						value: "nosniff",
 					},
 					{
 						key: "Referrer-Policy",
