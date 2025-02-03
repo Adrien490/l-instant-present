@@ -44,7 +44,7 @@ export default function BottomNav({
 								className={cn(
 									"flex flex-col items-center justify-center gap-1 relative",
 									"active:opacity-60 transition-all duration-150 tap-highlight-transparent",
-									"after:absolute after:bottom-1 after:h-1 after:w-12 after:rounded-full after:transition-all after:duration-200",
+									"after:absolute after:bottom-0 after:h-1 after:w-12 after:rounded-full after:transition-all after:duration-200",
 									isActive
 										? "text-primary after:bg-primary"
 										: "text-muted-foreground hover:text-primary after:w-0 hover:after:w-12 after:bg-primary/50"
