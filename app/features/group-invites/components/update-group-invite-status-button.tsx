@@ -11,7 +11,7 @@ type Props = {
 	status: GroupInviteStatus;
 	button: {
 		variant: ButtonProps["variant"];
-		children: React.ReactNode;
+		label: string;
 	};
 };
 
@@ -31,7 +31,7 @@ export function UpdateGroupInviteStatusButton({ id, status, button }: Props) {
 					{...button}
 				>
 					{isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-					{button.children}
+					{button.label}
 				</Button>
 			</form>
 		</>

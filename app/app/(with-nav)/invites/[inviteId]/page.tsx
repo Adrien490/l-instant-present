@@ -8,7 +8,7 @@ import { auth } from "@/lib/auth";
 import { GroupInviteStatus } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { ArrowRight, Check, Mail, Users, X } from "lucide-react";
+import { ArrowRight, Mail, Users, X } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -101,7 +101,7 @@ export default async function InvitePage({ params }: Props) {
 						<div className="p-4 space-y-4">
 							<div className="flex items-center justify-between">
 								<h3 className="text-base font-medium leading-tight tracking-tight md:tracking-normal antialiased flex items-center gap-2">
-									<Users className="h-5 w-5 text-primary transform-gpu" />
+									<Users className="h-5 w-5 text-primary" />
 									Membres du groupe
 								</h3>
 							</div>
@@ -117,7 +117,7 @@ export default async function InvitePage({ params }: Props) {
 													name: member.user.name,
 													image: member.user.image,
 												}}
-												className="group relative touch-target-2025"
+												className="group relative"
 											/>
 										))}
 									</div>
@@ -135,7 +135,7 @@ export default async function InvitePage({ params }: Props) {
 						<div className="p-4 space-y-4">
 							<div className="flex items-center justify-between">
 								<h3 className="text-base font-medium leading-tight tracking-tight md:tracking-normal antialiased flex items-center gap-2">
-									<Mail className="h-5 w-5 text-primary transform-gpu" />
+									<Mail className="h-5 w-5 text-primary" />
 									Détails de l&apos;invitation
 								</h3>
 							</div>
@@ -143,7 +143,7 @@ export default async function InvitePage({ params }: Props) {
 							<div className="space-y-2">
 								<div className="flex items-center gap-2">
 									<div
-										className="h-10 w-10 rounded-full ring-2 ring-background transition-transform hover:scale-105 transform-gpu"
+										className="h-10 w-10 rounded-full ring-2 ring-background transition-transform hover:scale-105"
 										style={{
 											backgroundImage: `url(${invite.sender.image})`,
 											backgroundSize: "cover",
@@ -178,37 +178,29 @@ export default async function InvitePage({ params }: Props) {
 									status={GroupInviteStatus.ACCEPTED}
 									button={{
 										variant: "default",
-										children: (
-											<>
-												<Check className="mr-3 h-5 w-5 transform-gpu" />
-												Accepter l&apos;invitation
-											</>
-										),
+										label: "Accepter l'invitation",
 									}}
 								/>
 
-								<Button
-									variant="destructive"
-									size="lg"
-									className="w-full justify-start font-medium text-base leading-normal antialiased touch-target-2025 min-h-[44px] px-4"
-									asChild
-								>
-									<Link href={`/app/invites/${invite.id}/reject`}>
-										<X className="mr-3 h-5 w-5 transform-gpu" />
-										Refuser l&apos;invitation
-									</Link>
-								</Button>
+								<UpdateGroupInviteStatusButton
+									id={invite.id}
+									status={GroupInviteStatus.REJECTED}
+									button={{
+										variant: "destructive",
+										label: "Refuser l'invitation",
+									}}
+								/>
 							</>
 						)}
 
 						{isAccepted && (
 							<Button
 								size="lg"
-								className="w-full justify-start font-medium text-base leading-normal antialiased touch-target-2025 min-h-[44px] px-4"
+								className="w-full justify-start font-medium text-base leading-normal antialiased min-h-[44px] px-4"
 								asChild
 							>
 								<Link href={`/app/groups/${invite.group.id}`}>
-									<ArrowRight className="mr-3 h-5 w-5 transform-gpu" />
+									<ArrowRight className="mr-3 h-5 w-5" />
 									Accéder au groupe
 								</Link>
 							</Button>
@@ -218,11 +210,11 @@ export default async function InvitePage({ params }: Props) {
 							<Button
 								variant="destructive"
 								size="lg"
-								className="w-full justify-start font-medium text-base leading-normal antialiased touch-target-2025 min-h-[44px] px-4"
+								className="w-full justify-start font-medium text-base leading-normal antialiased min-h-[44px] px-4"
 								asChild
 							>
 								<Link href={`/app/invites/${invite.id}/cancel`}>
-									<X className="mr-3 h-5 w-5 transform-gpu" />
+									<X className="mr-3 h-5 w-5" />
 									Annuler l&apos;invitation
 								</Link>
 							</Button>
