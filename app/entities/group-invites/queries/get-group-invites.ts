@@ -1,13 +1,17 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import db from "@/lib/db";
+import db, { DB_TIMEOUTS } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { headers } from "next/headers";
 import getGroupInvitesSchema, {
 	GetGroupInvitesParams,
 } from "../schemas/get-group-invites-schema";
 
+// Constants
+const DB_TIMEOUT = DB_TIMEOUTS.MEDIUM;
+
+// Types
 const DEFAULT_SELECT = {
 	id: true,
 	email: true,
@@ -49,7 +53,20 @@ export type GetGroupInvitesResponse = Array<
 	Prisma.GroupInviteGetPayload<{ select: typeof DEFAULT_SELECT }>
 >;
 
-export async function getGroupInvites(
+// Helpers
+const buildWhereClause = (
+	params: GetGroupInvitesParams,
+	session: { user: { id: string; email: string } }
+): Prisma.GroupInviteWhereInput => {
+	return {
+		status: params.status,
+		...(params.type === "sent"
+			? { senderId: session.user.id }
+			: { email: session.user.email }),
+	};
+};
+
+export default async function getGroupInvites(
 	params: GetGroupInvitesParams
 ): Promise<GetGroupInvitesResponse> {
 	try {
@@ -67,18 +84,19 @@ export async function getGroupInvites(
 		}
 
 		const validatedParams = validation.data;
+		const where = buildWhereClause(validatedParams, session);
 
-		return db.groupInvite.findMany({
-			where: {
-				status: validatedParams.status,
-				...(validatedParams.type === "sent"
-					? { senderId: session.user.id }
-					: { email: session.user.email }),
-			},
-			select: DEFAULT_SELECT,
-			orderBy: { createdAt: "desc" },
-			take: validatedParams.take,
-		});
+		return await Promise.race([
+			db.groupInvite.findMany({
+				where,
+				select: DEFAULT_SELECT,
+				orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+				take: validatedParams.take,
+			}),
+			new Promise<never>((_, reject) =>
+				setTimeout(() => reject(new Error("Query timeout")), DB_TIMEOUT)
+			),
+		]);
 	} catch (error) {
 		console.error("[GET_GROUP_INVITES]", error);
 		return [];

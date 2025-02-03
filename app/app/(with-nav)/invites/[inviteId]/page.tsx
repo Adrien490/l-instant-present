@@ -1,4 +1,5 @@
-import { getGroupInvite } from "@/app/entities/group-invites/queries/get-group-invite";
+import { UpdateGroupInviteStatusButton } from "@/app/entities/group-invites/components/update-group-invite-status-button";
+import getGroupInvite from "@/app/entities/group-invites/queries/get-group-invite";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import { Button } from "@/components/ui/button";
@@ -172,16 +173,19 @@ export default async function InvitePage({ params }: Props) {
 					<div className="space-y-4 pb-32 safe-area-bottom">
 						{isReceived && isPending && !isExpired && (
 							<>
-								<Button
-									size="lg"
-									className="w-full justify-start font-medium text-base leading-normal antialiased touch-target-2025 min-h-[44px] px-4"
-									asChild
-								>
-									<Link href={`/app/invites/${invite.id}/accept`}>
-										<Check className="mr-3 h-5 w-5 transform-gpu" />
-										Accepter l&apos;invitation
-									</Link>
-								</Button>
+								<UpdateGroupInviteStatusButton
+									id={invite.id}
+									status={GroupInviteStatus.ACCEPTED}
+									button={{
+										variant: "default",
+										children: (
+											<>
+												<Check className="mr-3 h-5 w-5 transform-gpu" />
+												Accepter l&apos;invitation
+											</>
+										),
+									}}
+								/>
 
 								<Button
 									variant="destructive"

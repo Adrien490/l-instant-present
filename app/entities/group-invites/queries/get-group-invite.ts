@@ -1,14 +1,16 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import db, { CACHE_TIMES } from "@/lib/db";
+import db, { DB_TIMEOUTS } from "@/lib/db";
 import { Prisma } from "@prisma/client";
-import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import {
 	GetGroupInviteParams,
 	getGroupInviteSchema,
 } from "../schemas/get-group-invite-schema";
+
+// Constants
+const DB_TIMEOUT = DB_TIMEOUTS.MEDIUM;
 
 const DEFAULT_SELECT = {
 	id: true,
@@ -51,7 +53,7 @@ export type GetGroupInviteResponse = Prisma.GroupInviteGetPayload<{
 	select: typeof DEFAULT_SELECT;
 }> | null;
 
-export async function getGroupInvite(
+export default async function getGroupInvite(
 	params: GetGroupInviteParams
 ): Promise<GetGroupInviteResponse> {
 	try {
@@ -70,34 +72,18 @@ export async function getGroupInvite(
 
 		const validatedParams = validation.data;
 
-		const getInviteFromDb = async () => {
-			const invite = await db.groupInvite.findUnique({
+		return await Promise.race([
+			db.groupInvite.findUnique({
 				where: {
 					id: validatedParams.inviteId,
 					OR: [{ senderId: session.user.id }, { email: session.user.email }],
 				},
 				select: DEFAULT_SELECT,
-			});
-
-			if (!invite) {
-				throw new Error("Invitation non trouvée");
-			}
-
-			return invite;
-		};
-
-		return unstable_cache(
-			getInviteFromDb,
-			[`invite-${validatedParams.inviteId}-${session.user.id}`],
-			{
-				revalidate: CACHE_TIMES.VERY_SHORT,
-				tags: [
-					"invites",
-					`invite-${validatedParams.inviteId}`,
-					`user-invites-${session.user.id}`,
-				],
-			}
-		)();
+			}),
+			new Promise<never>((_, reject) =>
+				setTimeout(() => reject(new Error("Query timeout")), DB_TIMEOUT)
+			),
+		]);
 	} catch (error) {
 		console.error("[GET_GROUP_INVITE]", error);
 		return null;

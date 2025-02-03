@@ -1,5 +1,6 @@
 import GroupList from "@/app/entities/groups/components/group-list";
 import getGroups from "@/app/entities/groups/queries/get-groups";
+import EmptyPlaceholder from "@/components/empty-placeholder";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import SearchForm from "@/components/search-form";
@@ -50,11 +51,19 @@ export default async function MyGroupsPage({ searchParams }: Props) {
 						</Link>
 					</Button>
 				</div>
-				<GroupList
-					groups={groups}
-					sessionId={session?.user.id}
-					className="flex flex-col gap-4"
-				/>
+				{groups.length > 0 ? (
+					<GroupList
+						groups={groups}
+						sessionId={session?.user.id}
+						className="flex flex-col gap-4"
+					/>
+				) : (
+					<EmptyPlaceholder
+						icon={<Users className="h-8 w-8 text-muted-foreground/80" />}
+						title="Aucun groupe trouvé"
+						description="Créez un groupe pour commencer"
+					/>
+				)}
 			</div>
 		</PageContainer>
 	);

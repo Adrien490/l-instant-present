@@ -7,7 +7,7 @@ import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
-import { AlertTriangle, ArrowLeft, CheckCircle2, Users } from "lucide-react";
+import { AlertTriangle, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -117,16 +117,7 @@ export default async function DeleteGroupPage({
 			/>
 			<div className="max-w-2xl mx-auto space-y-8">
 				<div className="relative rounded-2xl overflow-hidden bg-muted">
-					<ImageCover
-						imageUrl={group.imageUrl}
-						alt={group.name}
-						icon={
-							<Users
-								className="h-8 w-8 sm:h-10 sm:w-10 text-primary transform-gpu"
-								aria-hidden="true"
-							/>
-						}
-					>
+					<ImageCover imageUrl={group.imageUrl} alt={group.name}>
 						<div className="absolute bottom-0 left-0 right-0 p-6">
 							<h1 className="text-2xl font-medium leading-tight tracking-tight md:tracking-normal text-white antialiased">
 								{group.name}

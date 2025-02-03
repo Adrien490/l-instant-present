@@ -44,26 +44,23 @@ const buildWhereClause = (
 	params: GetGroupsParams,
 	userId: string
 ): Prisma.GroupWhereInput => {
-	const baseWhere: Prisma.GroupWhereInput = {
-		members: {
-			some: {
-				userId,
+	const conditions: Prisma.GroupWhereInput[] = [
+		{
+			members: {
+				some: {
+					userId,
+				},
 			},
 		},
-	};
+	];
 
-	if (!params.search) {
-		return baseWhere;
+	if (params.search) {
+		conditions.push({
+			name: { contains: params.search, mode: "insensitive" },
+		});
 	}
 
-	return {
-		AND: [
-			baseWhere,
-			{
-				name: { contains: params.search, mode: "insensitive" },
-			},
-		],
-	};
+	return { AND: conditions };
 };
 
 export default async function getGroups(
@@ -93,7 +90,11 @@ export default async function getGroups(
 				db.group.findMany({
 					where,
 					select: DEFAULT_SELECT,
-					orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+					orderBy: validatedParams.orderBy
+						? Object.entries(validatedParams.orderBy).map(([key, value]) => ({
+								[key]: value,
+						  }))
+						: [{ createdAt: "desc" }, { id: "desc" }],
 					take: validatedParams.take,
 				}),
 				new Promise<never>((_, reject) =>
