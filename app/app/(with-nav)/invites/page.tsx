@@ -1,6 +1,6 @@
 import GroupInviteList from "@/app/features/group-invites/components/group-invite-list";
 import getGroupInvites from "@/app/features/group-invites/queries/get-group-invites";
-import EmptyState from "@/components/empty-state";
+import EmptyPlaceholder from "@/components/empty-placeholder";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
@@ -67,7 +67,7 @@ export default async function InvitesPage({ searchParams }: Props) {
 				</div>
 
 				{invites.length === 0 ? (
-					<EmptyState
+					<EmptyPlaceholder
 						title="Aucune invitation trouvée"
 						description="Vous n'avez aucune invitation"
 						icon={<Mail className="h-8 w-8 text-muted-foreground/80" />}

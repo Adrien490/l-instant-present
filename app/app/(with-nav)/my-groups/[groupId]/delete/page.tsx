@@ -1,88 +1,21 @@
 import DeleteGroupForm from "@/app/features/groups/components/delete-group-form";
 import { getGroup } from "@/app/features/groups/queries/get-group";
 import { isGroupAdmin } from "@/app/features/groups/queries/is-group-admin";
-import EmptyState from "@/components/empty-state";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
-import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
-import { AlertTriangle, ArrowLeft, CheckCircle2 } from "lucide-react";
 import { headers } from "next/headers";
-import Link from "next/link";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
-interface DeleteGroupPageProps {
+type Props = {
 	params: Promise<{
 		groupId: string;
 	}>;
-	searchParams: Promise<{
-		deleted?: string;
-	}>;
-}
+};
 
-function DeletedGroupState() {
-	return (
-		<PageContainer>
-			<EmptyState
-				icon={
-					<CheckCircle2 className="h-5 w-5 text-emerald-500 transform-gpu" />
-				}
-				title="Groupe supprimé"
-				description="Le groupe a été supprimé avec succès."
-				action={
-					<Button
-						variant="outline"
-						size="lg"
-						className="w-full touch-target-2025 min-h-[44px] font-medium text-base leading-normal antialiased"
-						asChild
-					>
-						<Link href="/app/my-groups">
-							<ArrowLeft className="mr-3 h-5 w-5 transform-gpu" />
-							Retourner à mes groupes
-						</Link>
-					</Button>
-				}
-				className="min-h-[60vh] spacing-2025-compact"
-			/>
-		</PageContainer>
-	);
-}
-
-function GroupNotFoundState() {
-	return (
-		<PageContainer>
-			<EmptyState
-				icon={
-					<AlertTriangle className="h-5 w-5 text-muted-foreground transform-gpu" />
-				}
-				title="Groupe introuvable"
-				description="Ce groupe a peut-être été supprimé ou n'existe pas."
-				action={
-					<Button
-						variant="outline"
-						size="lg"
-						className="w-full touch-target-2025 min-h-[44px] font-medium text-base leading-normal antialiased"
-						asChild
-					>
-						<Link href="/app/my-groups">
-							<ArrowLeft className="mr-3 h-5 w-5 transform-gpu" />
-							Retourner à mes groupes
-						</Link>
-					</Button>
-				}
-				className="min-h-[60vh] spacing-2025-compact"
-			/>
-		</PageContainer>
-	);
-}
-
-export default async function DeleteGroupPage({
-	params,
-	searchParams,
-}: DeleteGroupPageProps) {
+export default async function DeleteGroupPage({ params }: Props) {
 	const resolvedParams = await params;
-	const resolvedSearchParams = await searchParams;
 	const { groupId } = resolvedParams;
 	const session = await auth.api.getSession({
 		headers: await headers(),
@@ -92,17 +25,13 @@ export default async function DeleteGroupPage({
 		redirect("/auth/signin");
 	}
 
-	if (resolvedSearchParams.deleted === "true") {
-		return <DeletedGroupState />;
-	}
-
 	const [group, isAdmin] = await Promise.all([
 		getGroup({ id: groupId }),
 		isGroupAdmin(groupId),
 	]);
 
 	if (!group) {
-		return <GroupNotFoundState />;
+		notFound();
 	}
 
 	if (!isAdmin) {

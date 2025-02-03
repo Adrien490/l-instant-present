@@ -40,7 +40,7 @@ export default function DeleteGroupForm({ group }: DeleteGroupFormProps) {
 				<input type="hidden" name="id" value={group.id} />
 
 				<div className="flex items-start gap-4 p-4 text-destructive bg-destructive/10 rounded-lg">
-					<AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5 transform-gpu" />
+					<AlertTriangle className="h-5 w-5 flex-shrink-0 mt-0.5" />
 					<div className="space-y-2">
 						<p className="font-medium text-base leading-normal antialiased">
 							Action irréversible
@@ -97,12 +97,10 @@ export default function DeleteGroupForm({ group }: DeleteGroupFormProps) {
 						type="submit"
 						variant="destructive"
 						size="lg"
-						className="w-full touch-target-2025 min-h-[44px] font-medium text-base leading-normal antialiased"
+						className="w-full min-h-[44px] font-medium text-base leading-normal antialiased"
 						disabled={isPending || !isNameMatch}
 					>
-						{isPending && (
-							<Loader2 className="mr-3 h-5 w-5 animate-spin transform-gpu" />
-						)}
+						{isPending && <Loader2 className="mr-3 h-5 w-5 animate-spin" />}
 						Supprimer définitivement
 					</Button>
 					<p className="text-xs leading-normal antialiased text-center text-muted-foreground">
