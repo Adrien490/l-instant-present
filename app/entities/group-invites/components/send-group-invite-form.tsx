@@ -2,7 +2,6 @@
 
 import { useSendGroupInvite } from "@/app/entities/group-invites/hooks/use-send-group-invite";
 import groupInviteFormSchema from "@/app/entities/group-invites/schemas/send-group-invite-schema";
-import PageBottom from "@/components/page-bottom";
 import ServerActionResponse from "@/components/server-action-response";
 import { Button } from "@/components/ui/button";
 import { FormLabel } from "@/components/ui/form";
@@ -160,25 +159,23 @@ export default function SendGroupInviteForm({
 					</div>
 				</div>
 
-				<PageBottom>
-					<div className="mx-auto max-w-2xl">
-						<div>
-							<Button type="submit" className="w-full" disabled={isPending}>
-								{isPending && (
-									<Loader2
-										className="mr-2 h-4 w-4 animate-spin"
-										aria-hidden="true"
-									/>
-								)}
-								Envoyer l&apos;invitation
-							</Button>
-						</div>
-						<p className="text-xs text-muted-foreground text-center mt-4">
-							Les champs marqués d&apos;un{" "}
-							<span className="text-destructive">*</span> sont obligatoires
-						</p>
+				<div className="">
+					<div>
+						<Button type="submit" className="w-full" disabled={isPending}>
+							{isPending && (
+								<Loader2
+									className="mr-2 h-4 w-4 animate-spin"
+									aria-hidden="true"
+								/>
+							)}
+							Envoyer l&apos;invitation
+						</Button>
 					</div>
-				</PageBottom>
+					<p className="text-xs text-muted-foreground text-center mt-4">
+						Les champs marqués d&apos;un{" "}
+						<span className="text-destructive">*</span> sont obligatoires
+					</p>
+				</div>
 			</form>
 		</>
 	);
