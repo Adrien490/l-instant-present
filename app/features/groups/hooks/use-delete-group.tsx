@@ -6,7 +6,7 @@ import { useActionState } from "react";
 import deleteGroup from "../actions/delete-group";
 import deleteGroupSchema from "../schemas/delete-group-schema";
 
-export function useGroupDelete() {
+export function useDeleteGroup() {
 	const [state, dispatch, isPending] = useActionState<
 		ServerActionState<Group, typeof deleteGroupSchema>,
 		FormData
