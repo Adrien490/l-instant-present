@@ -1,12 +1,12 @@
-import GroupCoverImage from "@/app/entities/groups/components/group-cover-image";
 import { getGroup } from "@/app/entities/groups/queries/get-group";
+import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { GroupRole } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
-import { Crown, Edit, Trash, Users } from "lucide-react";
+import { ArrowRight, Crown, Edit, Trash, Users } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -30,29 +30,30 @@ export default async function GroupPage({ params }: Props) {
 		<PageContainer className="">
 			<div className="flex flex-col">
 				<div className="relative">
-					<GroupCoverImage imageUrl={group.imageUrl} name={group.name} />
-					<div className="absolute bottom-0 left-0 right-0 p-4">
-						<div className="flex flex-col gap-4">
-							<h2 className="text-lg font-medium leading-tight tracking-tight md:tracking-normal flex items-center gap-3 text-white antialiased">
-								{group.name}
-								{isOwner && (
-									<Crown className="h-5 w-5 text-amber-500 flex-shrink-0 transform-gpu" />
-								)}
-							</h2>
-							<div className="flex items-center gap-2 flex-wrap">
-								<time className="text-sm leading-normal antialiased px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white">
-									{formatDistanceToNow(new Date(group.createdAt), {
-										addSuffix: true,
-										locale: fr,
-									})}
-								</time>
-								<div className="text-sm leading-normal antialiased px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white">
-									{group.members.length} membre
-									{group.members.length > 1 ? "s" : ""}
+					<ImageCover imageUrl={group.imageUrl} alt={group.name}>
+						<div className="absolute bottom-0 left-0 right-0 p-4">
+							<div className="flex flex-col gap-4">
+								<h2 className="text-lg font-medium leading-tight tracking-tight md:tracking-normal flex items-center gap-3 text-white antialiased">
+									{group.name}
+									{isOwner && (
+										<Crown className="h-5 w-5 text-amber-500 flex-shrink-0 transform-gpu" />
+									)}
+								</h2>
+								<div className="flex items-center gap-2 flex-wrap">
+									<time className="text-sm leading-normal antialiased px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white">
+										{formatDistanceToNow(new Date(group.createdAt), {
+											addSuffix: true,
+											locale: fr,
+										})}
+									</time>
+									<div className="text-sm leading-normal antialiased px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white">
+										{group.members.length} membre
+										{group.members.length > 1 ? "s" : ""}
+									</div>
 								</div>
 							</div>
 						</div>
-					</div>
+					</ImageCover>
 				</div>
 
 				<div className="py-4 space-y-4">
@@ -105,6 +106,17 @@ export default async function GroupPage({ params }: Props) {
 					</div>
 
 					<div className="space-y-4 pb-32 safe-area-bottom">
+						<Button
+							size="lg"
+							className="w-full justify-start font-medium text-base leading-normal antialiased touch-target-2025 min-h-[44px] px-4"
+							asChild
+						>
+							<Link href={`/app/groups/${group.id}`}>
+								<ArrowRight className="mr-3 h-5 w-5 transform-gpu" />
+								Accéder au groupe
+							</Link>
+						</Button>
+
 						{isOwner ? (
 							<>
 								<Button
