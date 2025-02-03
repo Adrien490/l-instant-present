@@ -25,13 +25,13 @@ export default function BottomNav({
 	return (
 		<nav
 			className={cn(
-				"fixed bottom-0 left-0 right-0 border-t bg-background/80 backdrop-blur-lg z-50",
-				"safe-area-bottom transform-gpu",
+				"fixed bottom-0 left-0 right-0 border-t rounded-t-3xl bg-background z-50",
+				"pb-[max(env(safe-area-inset-bottom),16px)]",
 				className
 			)}
 		>
 			<div className="mx-auto max-w-md pointer-events-auto">
-				<div className="grid grid-cols-4 h-[4.5rem]">
+				<div className="grid grid-cols-4 h-16">
 					{items.map((item) => {
 						const Icon = item.icon;
 						const isActive = pathname === item.href;
@@ -42,9 +42,9 @@ export default function BottomNav({
 								href={item.href}
 								onClick={handleItemClick}
 								className={cn(
-									"flex flex-col items-center justify-center gap-2 relative touch-target-2025",
+									"flex flex-col items-center justify-center gap-1 relative",
 									"active:opacity-60 transition-all duration-150 tap-highlight-transparent",
-									"after:absolute after:bottom-0 after:h-1 after:w-12 after:rounded-full after:transition-all after:duration-200 transform-gpu",
+									"after:absolute after:bottom-1 after:h-1 after:w-12 after:rounded-full after:transition-all after:duration-200",
 									isActive
 										? "text-primary after:bg-primary"
 										: "text-muted-foreground hover:text-primary after:w-0 hover:after:w-12 after:bg-primary/50"
@@ -53,12 +53,12 @@ export default function BottomNav({
 							>
 								<Icon
 									className={cn(
-										"h-5 w-5 transition-transform duration-200 transform-gpu",
+										"h-5 w-5 transition-transform duration-200 mb-0.5",
 										isActive ? "scale-110" : "scale-100 group-hover:scale-110"
 									)}
 									aria-hidden="true"
 								/>
-								<span className="text-sm leading-relaxed antialiased">
+								<span className="text-[11px] leading-none font-medium antialiased">
 									{item.label}
 								</span>
 							</Link>
