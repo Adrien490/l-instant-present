@@ -6,7 +6,6 @@ import webpush from "web-push";
 
 // Vérification des variables d'environnement requises
 const requiredEnvVars = {
-	VAPID_SUBJECT: process.env.VAPID_SUBJECT,
 	VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
 	VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
 };
@@ -19,7 +18,7 @@ Object.entries(requiredEnvVars).forEach(([key, value]) => {
 
 // Configuration de web-push avec les clés VAPID
 webpush.setVapidDetails(
-	requiredEnvVars.VAPID_SUBJECT!,
+	"mailto:adrien.poirier49@gmail.com",
 	requiredEnvVars.VAPID_PUBLIC_KEY!,
 	requiredEnvVars.VAPID_PRIVATE_KEY!
 );
