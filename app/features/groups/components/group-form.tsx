@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { UploadDropzone } from "@/lib/uploadthing";
+import { UploadDropzone, useUploadThing } from "@/lib/uploadthing";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Loader2 } from "lucide-react";
@@ -20,6 +20,8 @@ interface GroupFormProps {
 
 export default function GroupForm({ group }: GroupFormProps) {
 	const { dispatch, state, isPending } = useGroupForm({ group });
+	const { isUploading, startUpload } = useUploadThing("groupImage");
+	console.log(isUploading);
 
 	const [form, fields] = useForm({
 		id: "group-form",
@@ -40,7 +42,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 				onSubmit={form.onSubmit}
 				id={form.id}
 				action={dispatch}
-				className="flex flex-col gap-6"
+				className="flex flex-col gap-4 w-full"
 			>
 				<input type="hidden" name="id" value={state?.data?.id ?? ""} />
 				<input
@@ -49,10 +51,10 @@ export default function GroupForm({ group }: GroupFormProps) {
 					name={fields.imageUrl.name}
 				/>
 
-				<div className="space-y-8">
+				<div className="space-y-6">
 					{/* Section upload d'image */}
-					<div className="space-y-4">
-						<div className="flex items-center justify-between">
+					<div className="space-y-3">
+						<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
 							<div className="space-y-1">
 								<FormLabel className="text-base font-medium">
 									Image du groupe
@@ -66,7 +68,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 									type="button"
 									variant="ghost"
 									size="sm"
-									className="text-destructive hover:text-destructive/90"
+									className="text-destructive hover:text-destructive/90 w-full sm:w-auto"
 									onClick={() => {
 										const input = document.getElementById(
 											fields.imageUrl.id
@@ -84,7 +86,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 							)}
 						</div>
 
-						<div className="relative rounded-lg overflow-hidden">
+						<div className="relative rounded-lg overflow-hidden shadow-sm">
 							{imageUrl ? (
 								<div className="relative aspect-video bg-muted">
 									<Image
@@ -98,38 +100,50 @@ export default function GroupForm({ group }: GroupFormProps) {
 									<div className="absolute inset-0 ring-1 ring-inset ring-black/10" />
 								</div>
 							) : (
-								<UploadDropzone
-									endpoint="groupImage"
-									config={{ mode: "auto" }}
-									onClientUploadComplete={(res) => {
-										const input = document.getElementById(
-											fields.imageUrl.id
-										) as HTMLInputElement;
-										if (input) {
-											input.value = res[0].url;
-											input.dispatchEvent(
-												new Event("change", { bubbles: true })
-											);
-										}
-									}}
-									onUploadError={(error) => {
-										console.error("[GROUP_FORM] Upload error:", error);
-									}}
-									appearance={{
-										container: "aspect-video bg-muted/50",
-										label: "text-base font-medium",
-										allowedContent: "text-sm text-muted-foreground mt-1",
-										button: "hidden",
-									}}
-									className="rounded-lg border-2 border-dashed border-muted-foreground/25"
-								/>
+								<div className="relative touch-none">
+									<UploadDropzone
+										endpoint="groupImage"
+										onChange={async (files) => {
+											const res = await startUpload(files);
+											const input = document.getElementById(
+												fields.imageUrl.id
+											) as HTMLInputElement;
+											if (input && res?.[0]?.serverData?.url) {
+												input.value = res[0].serverData.url;
+												input.dispatchEvent(
+													new Event("change", { bubbles: true })
+												);
+											}
+										}}
+										onUploadError={(error) => {
+											console.error("[GROUP_FORM] Upload error:", error);
+										}}
+										appearance={{
+											container: "aspect-video bg-muted/50",
+											label: "text-base font-medium",
+											allowedContent: "text-sm text-muted-foreground mt-1",
+											button: "hidden",
+										}}
+										className="rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/40 transition-colors"
+									/>
+									{isUploading && (
+										<div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+											<div className="flex flex-col items-center gap-2">
+												<Loader2 className="h-8 w-8 animate-spin text-white" />
+												<p className="text-sm text-white font-medium">
+													Upload en cours...
+												</p>
+											</div>
+										</div>
+									)}
+								</div>
 							)}
 						</div>
 					</div>
 
-					<div className="space-y-6">
+					<div className="space-y-4">
 						<div className="space-y-2">
-							<FormLabel htmlFor={fields.name.id}>
+							<FormLabel htmlFor={fields.name.id} className="text-base">
 								Nom <span className="text-destructive">*</span>
 							</FormLabel>
 							<Input
@@ -139,6 +153,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 								aria-describedby={fields.name.descriptionId}
 								aria-invalid={!fields.name.valid}
 								defaultValue={group ? state?.data?.name : ""}
+								className="h-11"
 							/>
 							{fields.name.errors && (
 								<p
@@ -151,7 +166,9 @@ export default function GroupForm({ group }: GroupFormProps) {
 						</div>
 
 						<div className="space-y-2">
-							<FormLabel htmlFor={fields.description.id}>Description</FormLabel>
+							<FormLabel htmlFor={fields.description.id} className="text-base">
+								Description
+							</FormLabel>
 							<Textarea
 								id={fields.description.id}
 								name={fields.description.name}
@@ -160,6 +177,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 								aria-invalid={!fields.description.valid}
 								defaultValue={group ? state?.data?.description ?? "" : ""}
 								rows={4}
+								className="resize-none"
 							/>
 							{fields.description.errors && (
 								<p
@@ -172,10 +190,16 @@ export default function GroupForm({ group }: GroupFormProps) {
 						</div>
 					</div>
 
-					<div className="space-y-4">
-						<Button type="submit" className="w-full" disabled={isPending}>
-							{isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-							Enregistrer
+					<div className="space-y-3 pt-2">
+						<Button
+							type="submit"
+							className="w-full h-11 text-base"
+							disabled={isPending || isUploading}
+						>
+							{(isPending || isUploading) && (
+								<Loader2 className="mr-2 h-5 w-5 animate-spin" />
+							)}
+							{isUploading ? "Upload en cours..." : "Enregistrer"}
 						</Button>
 						<p className="text-xs text-muted-foreground text-center">
 							Les champs marqués d&apos;un{" "}
