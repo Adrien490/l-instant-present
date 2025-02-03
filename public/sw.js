@@ -27,8 +27,6 @@ self.addEventListener("push", (event) => {
 		data: {
 			url: data.data?.url || "/app",
 			type: data.data?.type,
-			id: data.data?.id,
-			groupId: data.data?.groupId,
 		},
 		actions: [],
 	};

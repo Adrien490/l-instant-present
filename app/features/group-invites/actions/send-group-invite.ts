@@ -18,6 +18,7 @@ import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import webpush from "web-push";
 import { isGroupAdmin } from "../../groups/queries/is-group-admin";
+import sendPushNotification from "../../push-notifications/actions/send-push-notification";
 import sendGroupInviteSchema from "../schemas/send-group-invite-schema";
 
 // Configuration de web-push avec vos clés VAPID
@@ -26,79 +27,6 @@ webpush.setVapidDetails(
 	process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
 	process.env.VAPID_PRIVATE_KEY!
 );
-
-async function sendPushNotification(
-	userId: string,
-	group: { name: string; id: string },
-	inviteId: string
-) {
-	try {
-		// Récupérer tous les appareils de l'utilisateur
-		const pushDevices = await db.pushDevice.findMany({
-			where: { userId },
-		});
-
-		// Pour chaque appareil, envoyer une notification
-		const notificationPayload = {
-			title: "Nouvelle invitation",
-			body: `Vous avez été invité(e) à rejoindre le groupe "${group.name}"`,
-			icon: "/icon.png",
-			badge: "/badge.png",
-			data: {
-				url: `/app/invites/${inviteId}`,
-				type: NotificationType.GROUP_INVITE,
-				id: inviteId,
-				groupId: group.id,
-				isLoggedOut: false,
-			},
-		};
-
-		await Promise.all(
-			pushDevices.map(async (device) => {
-				try {
-					await webpush.sendNotification(
-						{
-							endpoint: device.endpoint,
-							keys: {
-								p256dh: device.p256dh,
-								auth: device.auth,
-							},
-						},
-						JSON.stringify(notificationPayload)
-					);
-
-					// Mettre à jour la date de dernière utilisation
-					await db.pushDevice.update({
-						where: { id: device.id },
-						data: { lastUsedAt: new Date() },
-					});
-				} catch (error) {
-					console.error(
-						`[PUSH_NOTIFICATION] Failed to send to device ${device.id}:`,
-						error
-					);
-					// Si l'erreur indique que l'abonnement n'est plus valide, supprimer l'appareil
-					if (error instanceof Error && error.message.includes("expired")) {
-						await db.pushDevice.delete({ where: { id: device.id } });
-					}
-				}
-			})
-		);
-
-		// Créer une notification en base de données
-		await db.notification.create({
-			data: {
-				userId,
-				type: NotificationType.GROUP_INVITE,
-				title: notificationPayload.title,
-				body: notificationPayload.body,
-				data: { groupId: group.id },
-			},
-		});
-	} catch (error) {
-		console.error("[PUSH_NOTIFICATION] Failed to send:", error);
-	}
-}
 
 export default async function sendGroupInvite(
 	_: ServerActionState<GroupInvite, typeof sendGroupInviteSchema> | null,
@@ -240,7 +168,16 @@ export default async function sendGroupInvite(
 		});
 
 		// Envoyer la notification push
-		await sendPushNotification(existingUser.id, invite.group, invite.id);
+		await sendPushNotification(existingUser.id, {
+			title: "Nouvelle invitation",
+			body: `Vous avez été invité(e) à rejoindre le groupe "${invite.group.name}"`,
+			icon: "/icon.png",
+			badge: "/badge.png",
+			data: {
+				url: `/app/invites/${invite.id}`,
+				type: NotificationType.GROUP_INVITE,
+			},
+		});
 
 		revalidateTag(`group-${validation.data.groupId}`);
 		revalidateTag(`group-invites-${validation.data.groupId}`);

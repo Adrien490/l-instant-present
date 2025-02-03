@@ -1,6 +1,6 @@
 "use client";
 
-import { usePushNotifications } from "@/app/hooks/use-push-notifications";
+import { usePushNotifications } from "@/app/features/push-notifications/hooks/use-push-notifications";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Loader2 } from "lucide-react";
