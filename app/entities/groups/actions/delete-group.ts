@@ -33,6 +33,7 @@ export default async function deleteGroup(
 
 		const rawData = {
 			id: formData.get("id")?.toString() || "",
+			confirmName: formData.get("confirmName")?.toString() || "",
 		};
 
 		const validation = deleteGroupSchema.safeParse(rawData);
@@ -41,7 +42,7 @@ export default async function deleteGroup(
 			return createValidationErrorResponse(
 				validation.error.flatten().fieldErrors,
 				rawData,
-				"Identifiant de groupe invalide"
+				"Veuillez corriger les erreurs ci-dessous"
 			);
 		}
 
@@ -51,6 +52,29 @@ export default async function deleteGroup(
 			return createErrorResponse(
 				ServerActionStatus.FORBIDDEN,
 				"Vous n'avez pas les droits pour supprimer ce groupe"
+			);
+		}
+
+		// Récupérer le groupe pour vérifier le nom
+		const existingGroup = await db.group.findUnique({
+			where: { id: validation.data.id },
+		});
+
+		if (!existingGroup) {
+			return createErrorResponse(
+				ServerActionStatus.NOT_FOUND,
+				"Ce groupe n'existe pas"
+			);
+		}
+
+		// Vérifier que le nom saisi correspond au nom du groupe
+		if (validation.data.confirmName !== existingGroup.name) {
+			return createValidationErrorResponse(
+				{
+					confirmName: ["Le nom saisi ne correspond pas au nom du groupe"],
+				},
+				rawData,
+				"Le nom saisi ne correspond pas au nom du groupe"
 			);
 		}
 

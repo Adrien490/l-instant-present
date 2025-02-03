@@ -44,7 +44,7 @@ export type GetGroupResponse = Prisma.GroupGetPayload<{
  */
 export async function getGroup(
 	params: GetGroupParams
-): Promise<GetGroupResponse> {
+): Promise<GetGroupResponse | null> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
@@ -90,15 +90,9 @@ export async function getGroup(
 			],
 		})();
 
-		if (!group) {
-			throw new Error("Groupe non trouvé");
-		}
-
 		return group;
 	} catch (error) {
 		console.error("[GET_GROUP_ERROR]", { params, error });
-		throw error instanceof Error
-			? error
-			: new Error("Erreur lors de la récupération du groupe");
+		return null;
 	}
 }

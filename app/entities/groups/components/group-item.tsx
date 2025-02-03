@@ -232,9 +232,12 @@ export default function GroupItem({ group, isOwner }: Props) {
 										variant="destructive"
 										size="lg"
 										className="w-full justify-start font-medium text-base min-h-[2.75rem] px-4 py-3"
+										asChild
 									>
-										<Trash className="mr-3 h-5 w-5" />
-										Supprimer
+										<Link href={`/app/my-groups/${group.id}/delete`}>
+											<Trash className="mr-3 h-5 w-5" />
+											Supprimer
+										</Link>
 									</Button>
 								</>
 							) : (
@@ -242,9 +245,12 @@ export default function GroupItem({ group, isOwner }: Props) {
 									variant="destructive"
 									size="lg"
 									className="w-full justify-start font-medium text-base min-h-[2.75rem] px-4 py-3"
+									asChild
 								>
-									<Trash className="mr-3 h-5 w-5" />
-									Quitter le groupe
+									<Link href={`/app/groups/${group.id}/leave`}>
+										<Trash className="mr-3 h-5 w-5" />
+										Quitter le groupe
+									</Link>
 								</Button>
 							)}
 						</div>

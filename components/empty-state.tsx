@@ -6,6 +6,7 @@ interface EmptyStateProps {
 	icon: React.ReactNode;
 	title: string;
 	description: string;
+	action?: React.ReactNode;
 	className?: string;
 }
 
@@ -13,6 +14,7 @@ export default function EmptyState({
 	icon,
 	title,
 	description,
+	action,
 	className,
 }: EmptyStateProps) {
 	return (
@@ -32,6 +34,7 @@ export default function EmptyState({
 						{description}
 					</p>
 				</div>
+				{action && <div className="w-full max-w-[260px]">{action}</div>}
 			</div>
 		</div>
 	);

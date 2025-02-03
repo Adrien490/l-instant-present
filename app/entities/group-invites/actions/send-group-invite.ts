@@ -102,7 +102,7 @@ export default async function sendGroupInvite(
 
 		if (existingInvite) {
 			return createErrorResponse(
-				ServerActionStatus.ERROR,
+				ServerActionStatus.CONFLICT,
 				"Une invitation est déjà en attente pour cette personne"
 			);
 		}

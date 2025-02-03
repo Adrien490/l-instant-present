@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-const deleteGroupSchema = z.object({
+const deleteGroupFormSchema = z.object({
 	id: z.string(),
 	confirmName: z
 		.string()
@@ -11,4 +11,4 @@ const deleteGroupSchema = z.object({
 		),
 });
 
-export default deleteGroupSchema;
+export default deleteGroupFormSchema;
