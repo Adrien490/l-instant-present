@@ -64,26 +64,26 @@ self.addEventListener("push", (event) => {
 self.addEventListener("notificationclick", (event) => {
 	event.notification.close();
 
-	let urlToOpen = "/app";
-
-	// Gérer les différentes actions selon le type de notification
-	if (event.notification.data?.type === "GROUP_INVITE") {
-		urlToOpen = `/app/invites/${event.notification.data.id}`;
-	} else {
-		if (event.action === "open" || !event.action) {
-			urlToOpen = event.notification.data?.url || "/app";
-		}
-	}
+	const urlToOpen = event.notification.data?.url || "/app";
 
 	// Ouvrir l'URL appropriée
 	event.waitUntil(
 		clients
-			.matchAll({ type: "window", includeUncontrolled: true })
+			.matchAll({
+				type: "window",
+				includeUncontrolled: true,
+			})
 			.then((windowClients) => {
-				// Chercher une fenêtre existante avec l'URL
-				for (const client of windowClients) {
-					if (client.url === urlToOpen && "focus" in client) {
-						return client.focus();
+				// Chercher si une fenêtre de l'app est déjà ouverte
+				const appClient = windowClients.find((client) =>
+					client.url.includes(self.registration.scope)
+				);
+
+				if (appClient) {
+					// Si une fenêtre est ouverte, la focus et naviguer
+					appClient.focus();
+					if ("navigate" in appClient) {
+						return appClient.navigate(urlToOpen);
 					}
 				}
 				// Si aucune fenêtre n'existe, en ouvrir une nouvelle

@@ -29,7 +29,8 @@ webpush.setVapidDetails(
 
 async function sendPushNotification(
 	userId: string,
-	group: { name: string; id: string }
+	group: { name: string; id: string },
+	inviteId: string
 ) {
 	try {
 		// Récupérer tous les appareils de l'utilisateur
@@ -44,8 +45,11 @@ async function sendPushNotification(
 			icon: "/icon.png",
 			badge: "/badge.png",
 			data: {
-				url: "/invites",
+				url: `/app/invites/${inviteId}`,
 				type: NotificationType.GROUP_INVITE,
+				id: inviteId,
+				groupId: group.id,
+				isLoggedOut: false,
 			},
 		};
 
@@ -236,7 +240,7 @@ export default async function sendGroupInvite(
 		});
 
 		// Envoyer la notification push
-		await sendPushNotification(existingUser.id, invite.group);
+		await sendPushNotification(existingUser.id, invite.group, invite.id);
 
 		revalidateTag(`group-${validation.data.groupId}`);
 		revalidateTag(`group-invites-${validation.data.groupId}`);
