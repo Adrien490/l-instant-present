@@ -1,3 +1,4 @@
+import PushNotificationButton from "@/app/components/push-notification-button";
 import PageContainer from "@/components/page-container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { auth } from "@/lib/auth";
@@ -32,6 +33,7 @@ export default async function ProfilePage() {
 							<p className="text-sm text-muted-foreground">{user?.email}</p>
 						</div>
 						<ProfileActions />
+						<PushNotificationButton />
 					</div>
 				</div>
 			</div>
