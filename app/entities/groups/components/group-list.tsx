@@ -28,22 +28,13 @@ export default function GroupList({ groups, sessionId, className }: Props) {
 	}
 
 	return (
-		<div
-			className={cn(
-				"grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 safe-area-x",
-				className
-			)}
-		>
+		<div className={cn("", className)}>
 			{groups.map((group) => {
 				const isOwner = group.members.some(
 					(member: { user: { id: string } }) => member.user.id === sessionId
 				);
 				return (
-					<Link
-						href={`/app/my-groups/${group.id}`}
-						key={group.id}
-						className="touch-target-2025"
-					>
+					<Link href={`/app/my-groups/${group.id}`} key={group.id}>
 						<Card className="overflow-hidden transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
 							<div className="flex gap-4 p-4 touch-action-pan-y">
 								<div className="relative flex-shrink-0">

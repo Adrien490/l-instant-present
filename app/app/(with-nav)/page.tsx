@@ -112,7 +112,7 @@ export default async function HomePage() {
 				<GroupList
 					groups={firstThreeGroups}
 					sessionId={session.user.id}
-					className="mt-4 mb-4"
+					className="mt-4 mb-4 flex flex-col gap-4"
 				/>
 				{groups.length > 3 && (
 					<Link href="/app/my-groups" className="touch-target-2025">

@@ -32,20 +32,30 @@ export default async function MyGroupsPage({ searchParams }: Props) {
 				title="Mes groupes"
 				description="Découvrez tous les groupes auxquels vous appartenez."
 			/>
-			<div className="flex flex-col gap-3">
-				<SearchForm
-					paramName="search"
-					placeholder="Rechercher ..."
-					className="w-full"
+			<div className="flex flex-col gap-4 sm:gap-6">
+				<div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+					<SearchForm
+						paramName="search"
+						placeholder="Rechercher ..."
+						className="w-full"
+					/>
+					<Button
+						asChild
+						size="lg"
+						className="w-full sm:w-auto touch-target-2025 min-h-[44px] font-medium text-base leading-normal antialiased"
+					>
+						<Link href="/app/my-groups/new">
+							<Users className="mr-3 h-5 w-5 transform-gpu" />
+							Créer un groupe
+						</Link>
+					</Button>
+				</div>
+				<GroupList
+					groups={groups}
+					sessionId={session?.user.id}
+					className="flex flex-col gap-4"
 				/>
-				<Button asChild size="lg" className="w-full sm:w-auto">
-					<Link href="/app/my-groups/new">
-						<Users className="mr-2 h-4 w-4" />
-						Créer un groupe
-					</Link>
-				</Button>
 			</div>
-			<GroupList groups={groups} sessionId={session?.user.id} />
 		</PageContainer>
 	);
 }
