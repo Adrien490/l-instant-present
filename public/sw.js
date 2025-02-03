@@ -31,12 +31,8 @@ self.addEventListener("push", (event) => {
 	if (data.data?.type === "GROUP_INVITE") {
 		options.actions = [
 			{
-				action: "accept",
-				title: "Accepter",
-			},
-			{
-				action: "decline",
-				title: "Refuser",
+				action: "open",
+				title: "Voir l'invitation",
 			},
 		];
 		options.requireInteraction = true; // La notification reste jusqu'à ce que l'utilisateur interagisse
@@ -66,16 +62,7 @@ self.addEventListener("notificationclick", (event) => {
 
 	// Gérer les différentes actions selon le type de notification
 	if (event.notification.data?.type === "GROUP_INVITE") {
-		switch (event.action) {
-			case "accept":
-				urlToOpen = `/invites/${event.notification.data.id}/accept`;
-				break;
-			case "decline":
-				urlToOpen = `/invites/${event.notification.data.id}/decline`;
-				break;
-			default:
-				urlToOpen = `/invites`;
-		}
+		urlToOpen = `app/invites/${event.notification.data.id}`;
 	} else {
 		if (event.action === "open" || !event.action) {
 			urlToOpen = event.notification.data?.url || "/app";
