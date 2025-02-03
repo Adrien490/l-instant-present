@@ -141,6 +141,14 @@ export default async function HomePage() {
 						icon={<Users className="h-8 w-8 text-muted-foreground/80" />}
 						title="Aucun groupe trouvé"
 						description="Créez un groupe pour commencer"
+						action={
+							<Button asChild>
+								<Link href="/app/my-groups/new">
+									<Users className="mr-3 h-5 w-5 transform-gpu" />
+									Créer un groupe
+								</Link>
+							</Button>
+						}
 					/>
 				)}
 			</div>
