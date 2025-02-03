@@ -62,7 +62,7 @@ self.addEventListener("notificationclick", (event) => {
 
 	// Gérer les différentes actions selon le type de notification
 	if (event.notification.data?.type === "GROUP_INVITE") {
-		urlToOpen = `/invites/${event.notification.data.id}`;
+		urlToOpen = `/app/invites/${event.notification.data.id}`;
 	} else {
 		if (event.action === "open" || !event.action) {
 			urlToOpen = event.notification.data?.url || "/app";
