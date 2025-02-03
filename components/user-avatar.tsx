@@ -1,48 +1,46 @@
+"use client";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn, getUserInitials } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 
-interface UserAvatarProps {
-	user:
-		| {
-				id: string;
-				email: string;
-				emailVerified: boolean;
-				name: string;
-				createdAt: Date;
-				updatedAt: Date;
-				image?: string | null;
-		  }
-		| null
-		| undefined;
+type Props = {
+	user: {
+		id: string;
+		name?: string | null;
+		image?: string | null;
+	};
+	size?: "sm" | "md" | "lg";
 	className?: string;
-	showLink?: boolean;
-}
+};
 
-export default function UserAvatar({
-	user,
-	className,
-	showLink = true,
-}: UserAvatarProps) {
-	const avatar = (
-		<Avatar className={cn("h-8 w-8", className)}>
-			<AvatarImage
-				src={user?.image || undefined}
-				alt={user?.name || "Avatar de l'utilisateur"}
-			/>
-			<AvatarFallback className="font-medium">
-				{getUserInitials(user?.name, user?.email)}
-			</AvatarFallback>
-		</Avatar>
+const sizeClasses = {
+	sm: "h-8 w-8",
+	md: "h-10 w-10",
+	lg: "h-12 w-12",
+};
+
+export default function UserAvatar({ user, size = "md", className }: Props) {
+	const initials = user.name
+		?.split(" ")
+		.map((n) => n[0])
+		.join("")
+		.toUpperCase();
+
+	return (
+		<Link
+			href={`/app/profile/${user.id}`}
+			className={cn(
+				"group relative touch-target-2025 transition-transform hover:scale-105 transform-gpu",
+				className
+			)}
+		>
+			<Avatar className={cn(sizeClasses[size], "ring-2 ring-background")}>
+				<AvatarImage src={user.image ?? ""} alt={user.name ?? ""} />
+				<AvatarFallback className="text-sm font-medium">
+					{initials ?? "?"}
+				</AvatarFallback>
+			</Avatar>
+		</Link>
 	);
-
-	if (showLink) {
-		return (
-			<Link href="/app/profile" className="transition-opacity hover:opacity-80">
-				{avatar}
-			</Link>
-		);
-	}
-
-	return avatar;
 }

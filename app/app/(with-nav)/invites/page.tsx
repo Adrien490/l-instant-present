@@ -1,4 +1,4 @@
-import GroupInviteItem from "@/app/entities/group-invites/components/group-invite-item";
+import GroupInviteList from "@/app/entities/group-invites/components/group-invite-list";
 import { getGroupInvites } from "@/app/entities/group-invites/queries/get-group-invites";
 import EmptyState from "@/components/empty-state";
 import PageContainer from "@/components/page-container";
@@ -73,11 +73,11 @@ export default async function InvitesPage({ searchParams }: Props) {
 						icon={<Mail className="h-8 w-8 text-muted-foreground/80" />}
 					/>
 				) : (
-					<div className="flex flex-col gap-2.5">
-						{invites.map((invite) => (
-							<GroupInviteItem key={invite.id} invite={invite} type={type} />
-						))}
-					</div>
+					<GroupInviteList
+						className="flex flex-col gap-4"
+						invites={invites}
+						type={type}
+					/>
 				)}
 			</div>
 		</PageContainer>

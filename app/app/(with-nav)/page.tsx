@@ -1,4 +1,4 @@
-import GroupInviteItem from "@/app/entities/group-invites/components/group-invite-item";
+import GroupInviteList from "@/app/entities/group-invites/components/group-invite-list";
 import { getGroupInvites } from "@/app/entities/group-invites/queries/get-group-invites";
 import GroupList from "@/app/entities/groups/components/group-list";
 import getGroups from "@/app/entities/groups/queries/get-groups";
@@ -7,6 +7,7 @@ import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
+import { GroupInviteStatus } from "@prisma/client";
 import { Plus, Users } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -17,8 +18,12 @@ export default async function HomePage() {
 		await Promise.all([
 			getGroups({ search: "" }),
 			getGroups({ search: "", take: 3 }),
-			getGroupInvites({ type: "received" }),
-			getGroupInvites({ type: "received", take: 2 }),
+			getGroupInvites({ type: "received", status: GroupInviteStatus.PENDING }),
+			getGroupInvites({
+				type: "received",
+				status: GroupInviteStatus.PENDING,
+				take: 2,
+			}),
 		]);
 
 	if (!session?.user.id) {
@@ -67,28 +72,25 @@ export default async function HomePage() {
 							Invitations en attente
 						</h2>
 					</div>
-					<div className="mt-4 space-y-4">
-						{firstTwoInvites.map((invite) => (
-							<GroupInviteItem
-								key={invite.id}
-								invite={invite}
-								type="received"
-							/>
-						))}
-						{invites.length === 2 && (
-							<Link href="/app/invites" className="touch-target-2025">
-								<Card className="flex items-center justify-center gap-3 p-4 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
-									<span className="text-base leading-normal antialiased text-muted-foreground">
-										Voir toutes les invitations
-									</span>
-									<span className="text-sm antialiased">•</span>
-									<span className="text-sm leading-normal antialiased">
-										Voir tout
-									</span>
-								</Card>
-							</Link>
-						)}
-					</div>
+
+					<GroupInviteList
+						className="mt-6 flex flex-col gap-4"
+						invites={firstTwoInvites}
+						type="received"
+					/>
+					{invites.length === 2 && (
+						<Link href="/app/invites" className="touch-target-2025">
+							<Card className="flex items-center justify-center gap-3 p-4 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
+								<span className="text-base leading-normal antialiased text-muted-foreground">
+									Voir toutes les invitations
+								</span>
+								<span className="text-sm antialiased">•</span>
+								<span className="text-sm leading-normal antialiased">
+									Voir tout
+								</span>
+							</Card>
+						</Link>
+					)}
 				</div>
 			)}
 
