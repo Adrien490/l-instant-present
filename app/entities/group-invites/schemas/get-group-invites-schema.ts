@@ -1,9 +1,10 @@
+import { GroupInviteStatus } from "@prisma/client";
 import { z } from "zod";
 
 export const getGroupInvitesSchema = z.object({
-	groupId: z.string().uuid({
-		message: "L'identifiant du groupe doit être un UUID valide",
-	}),
+	type: z.enum(["sent", "received"]),
+	status: z.nativeEnum(GroupInviteStatus).optional(),
+	take: z.number().optional(),
 });
 
 export type GetGroupInvitesParams = z.infer<typeof getGroupInvitesSchema>;

@@ -1,6 +1,5 @@
-import GroupItem from "@/app/entities/groups/components/group-item";
+import GroupList from "@/app/entities/groups/components/group-list";
 import getGroups from "@/app/entities/groups/queries/get-groups";
-import EmptyState from "@/components/empty-state";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import SearchForm from "@/components/search-form";
@@ -23,6 +22,10 @@ export default async function MyGroupsPage({ searchParams }: Props) {
 		search: resolvedSearchParams.search,
 	});
 
+	if (!session?.user.id) {
+		return null;
+	}
+
 	return (
 		<PageContainer className="pb-32">
 			<PageHeader
@@ -42,22 +45,7 @@ export default async function MyGroupsPage({ searchParams }: Props) {
 					</Link>
 				</Button>
 			</div>
-			<div className="mt-6 flex flex-col gap-2.5">
-				{groups.length === 0 && (
-					<EmptyState
-						title="Aucun groupe trouvé"
-						description="Vous n'appartenez à aucun groupe"
-						icon={<Users className="h-8 w-8 text-muted-foreground/80" />}
-					/>
-				)}
-				{groups.map((group) => (
-					<GroupItem
-						key={group.id}
-						group={group}
-						isOwner={group.ownerId === session?.user.id}
-					/>
-				))}
-			</div>
+			<GroupList groups={groups} sessionId={session?.user.id} />
 		</PageContainer>
 	);
 }

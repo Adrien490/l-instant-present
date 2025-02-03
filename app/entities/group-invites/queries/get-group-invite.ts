@@ -5,6 +5,10 @@ import db, { CACHE_TIMES } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
+import {
+	GetGroupInviteParams,
+	getGroupInviteSchema,
+} from "../schemas/get-group-invite-schema";
 
 const DEFAULT_SELECT = {
 	id: true,
@@ -48,7 +52,7 @@ export type GetGroupInviteResponse = Prisma.GroupInviteGetPayload<{
 }> | null;
 
 export async function getGroupInvite(
-	inviteId: string
+	params: GetGroupInviteParams
 ): Promise<GetGroupInviteResponse> {
 	try {
 		const session = await auth.api.getSession({
@@ -59,10 +63,17 @@ export async function getGroupInvite(
 			throw new Error("Unauthorized");
 		}
 
+		const validation = getGroupInviteSchema.safeParse(params);
+		if (!validation.success) {
+			throw new Error("Invalid parameters");
+		}
+
+		const validatedParams = validation.data;
+
 		const getInviteFromDb = async () => {
 			const invite = await db.groupInvite.findUnique({
 				where: {
-					id: inviteId,
+					id: validatedParams.inviteId,
 					OR: [{ senderId: session.user.id }, { email: session.user.email }],
 				},
 				select: DEFAULT_SELECT,
@@ -77,12 +88,12 @@ export async function getGroupInvite(
 
 		return unstable_cache(
 			getInviteFromDb,
-			[`invite-${inviteId}-${session.user.id}`],
+			[`invite-${validatedParams.inviteId}-${session.user.id}`],
 			{
 				revalidate: CACHE_TIMES.VERY_SHORT,
 				tags: [
 					"invites",
-					`invite-${inviteId}`,
+					`invite-${validatedParams.inviteId}`,
 					`user-invites-${session.user.id}`,
 				],
 			}

@@ -2,8 +2,11 @@
 
 import { auth } from "@/lib/auth";
 import db from "@/lib/db";
-import { GroupInviteStatus, Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { headers } from "next/headers";
+import getGroupInvitesSchema, {
+	GetGroupInvitesParams,
+} from "../schemas/get-group-invites-schema";
 
 const DEFAULT_SELECT = {
 	id: true,
@@ -46,15 +49,9 @@ export type GetGroupInvitesResponse = Array<
 	Prisma.GroupInviteGetPayload<{ select: typeof DEFAULT_SELECT }>
 >;
 
-interface GetGroupInvitesOptions {
-	type?: "sent" | "received";
-	status?: GroupInviteStatus;
-}
-
-export async function getGroupInvites({
-	type = "received",
-	status = GroupInviteStatus.PENDING,
-}: GetGroupInvitesOptions = {}): Promise<GetGroupInvitesResponse> {
+export async function getGroupInvites(
+	params: GetGroupInvitesParams
+): Promise<GetGroupInvitesResponse> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
@@ -64,15 +61,23 @@ export async function getGroupInvites({
 			throw new Error("Unauthorized");
 		}
 
+		const validation = getGroupInvitesSchema.safeParse(params);
+		if (!validation.success) {
+			throw new Error("Invalid parameters");
+		}
+
+		const validatedParams = validation.data;
+
 		return db.groupInvite.findMany({
 			where: {
-				status,
-				...(type === "sent"
+				status: validatedParams.status,
+				...(validatedParams.type === "sent"
 					? { senderId: session.user.id }
 					: { email: session.user.email }),
 			},
 			select: DEFAULT_SELECT,
 			orderBy: { createdAt: "desc" },
+			take: validatedParams.take,
 		});
 	} catch (error) {
 		console.error("[GET_GROUP_INVITES]", error);

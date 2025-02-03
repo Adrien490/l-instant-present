@@ -86,7 +86,7 @@ export default async function getGroups(
 		const where = buildWhereClause(validatedParams, session.user.id);
 		const cacheKey = `groups:user:${session.user.id}${
 			params.search ? `:search:${params.search}` : ""
-		}`;
+		}${params.take ? `:take:${params.take}` : ""}`;
 
 		const getData = async () => {
 			return await Promise.race([
@@ -94,6 +94,7 @@ export default async function getGroups(
 					where,
 					select: DEFAULT_SELECT,
 					orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+					take: validatedParams.take,
 				}),
 				new Promise<never>((_, reject) =>
 					setTimeout(() => reject(new Error("Query timeout")), DB_TIMEOUT)

@@ -12,4 +12,6 @@ export const getGroupInviteSchema = z.object({
 		}),
 });
 
-export type GetGroupInviteSchema = z.infer<typeof getGroupInviteSchema>;
+export type GetGroupInviteParams = z.infer<typeof getGroupInviteSchema>;
+
+export default getGroupInviteSchema;
