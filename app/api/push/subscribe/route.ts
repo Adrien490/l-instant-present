@@ -8,6 +8,7 @@ export async function POST(request: Request) {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
+
 		if (!session?.user?.id) {
 			return NextResponse.json(
 				{ error: "Vous devez être connecté pour activer les notifications" },
@@ -33,6 +34,7 @@ export async function POST(request: Request) {
 					endpoint: subscription.endpoint,
 					p256dh: subscription.keys.p256dh,
 					auth: subscription.keys.auth,
+					lastUsedAt: new Date(),
 				},
 			});
 		} else {
@@ -42,13 +44,14 @@ export async function POST(request: Request) {
 					p256dh: subscription.keys.p256dh,
 					auth: subscription.keys.auth,
 					userId: session.user.id,
+					userAgent: request.headers.get("user-agent") || undefined,
 				},
 			});
 		}
 
 		return NextResponse.json({ success: true });
 	} catch (error) {
-		console.error("[PUSH_NOTIFICATIONS] Subscribe failed:", error);
+		console.error("[PUSH_SUBSCRIBE]", error);
 		return NextResponse.json(
 			{
 				error: "Une erreur est survenue lors de l'activation des notifications",

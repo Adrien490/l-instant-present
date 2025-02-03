@@ -8,6 +8,7 @@ export async function POST(request: Request) {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
+
 		if (!session?.user?.id) {
 			return NextResponse.json(
 				{ error: "Vous devez être connecté pour désactiver les notifications" },
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
 
 		return NextResponse.json({ success: true });
 	} catch (error) {
-		console.error("[PUSH_NOTIFICATIONS] Unsubscribe failed:", error);
+		console.error("[PUSH_UNSUBSCRIBE]", error);
 		return NextResponse.json(
 			{
 				error:
