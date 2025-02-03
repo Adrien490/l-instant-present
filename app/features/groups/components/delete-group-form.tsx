@@ -1,7 +1,7 @@
 "use client";
 
-import { GetGroupResponse } from "@/app/entities/groups/queries/get-group";
-import deleteGroupSchema from "@/app/entities/groups/schemas/delete-group-schema";
+import { GetGroupResponse } from "@/app/features/groups/queries/get-group";
+import deleteGroupSchema from "@/app/features/groups/schemas/delete-group-schema";
 import ServerActionResponse from "@/components/server-action-response";
 import { Button } from "@/components/ui/button";
 import { FormLabel } from "@/components/ui/form";

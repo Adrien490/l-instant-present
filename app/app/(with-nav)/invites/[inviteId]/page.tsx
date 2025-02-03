@@ -1,5 +1,5 @@
-import { UpdateGroupInviteStatusButton } from "@/app/entities/group-invites/components/update-group-invite-status-button";
-import getGroupInvite from "@/app/entities/group-invites/queries/get-group-invite";
+import { UpdateGroupInviteStatusButton } from "@/app/features/group-invites/components/update-group-invite-status-button";
+import getGroupInvite from "@/app/features/group-invites/queries/get-group-invite";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import { Button } from "@/components/ui/button";

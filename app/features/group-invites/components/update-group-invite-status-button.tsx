@@ -30,7 +30,7 @@ export function UpdateGroupInviteStatusButton({ id, status, button }: Props) {
 					disabled={isPending}
 					{...button}
 				>
-					{isPending && <Loader2 className="w-4 h-4 mr-2" />}
+					{isPending && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
 					{button.children}
 				</Button>
 			</form>

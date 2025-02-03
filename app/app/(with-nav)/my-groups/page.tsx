@@ -1,5 +1,5 @@
-import GroupList from "@/app/entities/groups/components/group-list";
-import getGroups from "@/app/entities/groups/queries/get-groups";
+import GroupList from "@/app/features/groups/components/group-list";
+import getGroups from "@/app/features/groups/queries/get-groups";
 import EmptyPlaceholder from "@/components/empty-placeholder";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";

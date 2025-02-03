@@ -1,7 +1,10 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { createUploadthing, type FileRouter } from "uploadthing/next";
-import { UploadThingError } from "uploadthing/server";
+import {
+	createUploadthing,
+	UploadThingError,
+	type FileRouter,
+} from "uploadthing/server";
 
 const f = createUploadthing();
 
@@ -12,7 +15,7 @@ const getUser = async () => {
 	return session?.user;
 };
 
-// FileRouter for your app, can contain multiple FileRoutes
+// FileRouter pour vos fichiers uploadés
 export const ourFileRouter = {
 	// Define as many FileRoutes as you like, each with a unique routeSlug
 	groupImage: f({
@@ -23,6 +26,7 @@ export const ourFileRouter = {
 			 */
 			maxFileSize: "4MB",
 			maxFileCount: 1,
+			contentDisposition: "inline",
 		},
 	})
 		// Set permissions and file types for this FileRoute

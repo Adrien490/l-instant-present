@@ -1,6 +1,6 @@
-import DeleteGroupForm from "@/app/entities/groups/components/delete-group-form";
-import { getGroup } from "@/app/entities/groups/queries/get-group";
-import { isGroupAdmin } from "@/app/entities/groups/queries/is-group-admin";
+import DeleteGroupForm from "@/app/features/groups/components/delete-group-form";
+import { getGroup } from "@/app/features/groups/queries/get-group";
+import { isGroupAdmin } from "@/app/features/groups/queries/is-group-admin";
 import EmptyState from "@/components/empty-state";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";

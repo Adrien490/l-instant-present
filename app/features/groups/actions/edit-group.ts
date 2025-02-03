@@ -14,7 +14,6 @@ import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { isGroupAdmin } from "../queries/is-group-admin";
 import groupFormSchema from "../schemas/group-form-schema";
-import { uploadGroupImage } from "./upload-group-image";
 
 export default async function editGroup(
 	_: ServerActionState<Group, typeof groupFormSchema> | null,
@@ -49,18 +48,11 @@ export default async function editGroup(
 			);
 		}
 
-		// Gérer l'upload de l'image
-		const imageResult = await uploadGroupImage(null, formData);
-		if (imageResult.status !== ServerActionStatus.SUCCESS) {
-			return createErrorResponse(imageResult.status, imageResult.message);
-		}
-
 		const rawData = {
 			id: groupId,
 			name: formData.get("name")?.toString() || "",
 			description: formData.get("description")?.toString() || null,
-			imageUrl:
-				imageResult.data?.url || formData.get("imageUrl")?.toString() || null,
+			imageUrl: formData.get("imageUrl")?.toString() || null,
 		};
 
 		const validation = groupFormSchema.safeParse(rawData);

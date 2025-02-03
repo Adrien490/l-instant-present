@@ -1,5 +1,5 @@
-import GroupInviteList from "@/app/entities/group-invites/components/group-invite-list";
-import getGroupInvites from "@/app/entities/group-invites/queries/get-group-invites";
+import GroupInviteList from "@/app/features/group-invites/components/group-invite-list";
+import getGroupInvites from "@/app/features/group-invites/queries/get-group-invites";
 import EmptyState from "@/components/empty-state";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";

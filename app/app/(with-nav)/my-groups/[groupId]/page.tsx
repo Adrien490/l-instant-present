@@ -1,4 +1,4 @@
-import { getGroup } from "@/app/entities/groups/queries/get-group";
+import { getGroup } from "@/app/features/groups/queries/get-group";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import { Button } from "@/components/ui/button";
