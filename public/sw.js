@@ -12,6 +12,12 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("push", (event) => {
 	const data = event.data.json();
 
+	// Vérifier si l'utilisateur est déconnecté
+	if (data.data?.isLoggedOut) {
+		// Ne pas afficher la notification si l'utilisateur est déconnecté
+		return;
+	}
+
 	// Configuration des options de notification en fonction du type
 	const options = {
 		body: data.body,
