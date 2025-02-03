@@ -3,11 +3,39 @@
 import db from "@/lib/db";
 import { NotificationType, Prisma, PushDevice } from "@prisma/client";
 import webpush from "web-push";
+import {
+	deviceCounter,
+	notificationCounter,
+	notificationDuration,
+	rateLimitCounter,
+	retryCounter,
+} from "../services/metrics";
+import { queueNotifications } from "../services/queue";
+import { RateLimiter } from "../services/rate-limiter";
+
+// Constantes de configuration
+const CONFIG = {
+	MAX_BATCH_SIZE: 50,
+	DEFAULT_BATCH_SIZE: 10,
+	MAX_RETRIES: 3,
+	RETRY_DELAY: 1000, // ms
+	MAX_PAYLOAD_SIZE: 4096, // bytes
+	RATE_LIMIT: {
+		WINDOW: 60 * 1000, // 1 minute
+		MAX_REQUESTS: 1000,
+	},
+	QUEUE_THRESHOLD: 100, // Utiliser la queue si plus de X utilisateurs
+} as const;
 
 // Vérification des variables d'environnement requises
 const requiredEnvVars = {
 	VAPID_PUBLIC_KEY: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
 	VAPID_PRIVATE_KEY: process.env.VAPID_PRIVATE_KEY,
+	VAPID_EMAIL: process.env.VAPID_EMAIL,
+	REDIS_HOST: process.env.REDIS_HOST,
+	REDIS_PORT: process.env.REDIS_PORT,
+	REDIS_USERNAME: process.env.REDIS_USERNAME,
+	REDIS_PASSWORD: process.env.REDIS_PASSWORD,
 };
 
 Object.entries(requiredEnvVars).forEach(([key, value]) => {
@@ -18,10 +46,12 @@ Object.entries(requiredEnvVars).forEach(([key, value]) => {
 
 // Configuration de web-push avec les clés VAPID
 webpush.setVapidDetails(
-	`mailto:${process.env.VAPID_EMAIL}`,
+	`mailto:${requiredEnvVars.VAPID_EMAIL}`,
 	requiredEnvVars.VAPID_PUBLIC_KEY!,
 	requiredEnvVars.VAPID_PRIVATE_KEY!
 );
+
+const rateLimiter = new RateLimiter();
 
 interface PushNotificationPayload {
 	title: string;
@@ -40,13 +70,47 @@ interface NotificationResult {
 	deviceCount: number;
 	successCount: number;
 	error?: string;
+	retries?: number;
+}
+
+function validatePayload(payload: PushNotificationPayload): void {
+	if (!payload.title || payload.title.length > 50) {
+		throw new Error("Titre invalide");
+	}
+	if (!payload.body || payload.body.length > 200) {
+		throw new Error("Corps du message invalide");
+	}
+	if (!payload.data.url || !payload.data.url.startsWith("/")) {
+		throw new Error("URL invalide");
+	}
+
+	const payloadSize = new TextEncoder().encode(JSON.stringify(payload)).length;
+	if (payloadSize > CONFIG.MAX_PAYLOAD_SIZE) {
+		throw new Error("Payload trop volumineux");
+	}
+}
+
+async function sleep(ms: number): Promise<void> {
+	return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function sendNotificationToDevice(
 	device: PushDevice,
-	payload: PushNotificationPayload
-) {
+	payload: PushNotificationPayload,
+	retries = 0
+): Promise<boolean> {
 	try {
+		validatePayload(payload);
+
+		// Vérifier le rate limit
+		const isAllowed = await rateLimiter.increment(device.userId);
+		if (!isAllowed) {
+			rateLimitCounter.inc();
+			throw new Error("Rate limit exceeded");
+		}
+
+		const startTime = Date.now();
+
 		await webpush.sendNotification(
 			{
 				endpoint: device.endpoint,
@@ -66,22 +130,42 @@ async function sendNotificationToDevice(
 			})
 		);
 
-		// Mettre à jour la date de dernière utilisation
+		// Mesurer la durée
+		notificationDuration.observe((Date.now() - startTime) / 1000);
+
 		await db.pushDevice.update({
 			where: { id: device.id },
 			data: { lastUsedAt: new Date() },
 		});
 
+		deviceCounter.inc({ status: "success" });
 		return true;
 	} catch (error) {
 		console.error(
-			`[PUSH_NOTIFICATION] Échec d'envoi au device ${device.id}:`,
+			`[PUSH_NOTIFICATION] Échec d'envoi au device ${device.id} (tentative ${
+				retries + 1
+			}/${CONFIG.MAX_RETRIES}):`,
 			error
 		);
 
-		// Si l'abonnement n'est plus valide, supprimer l'appareil
-		if (error instanceof Error && error.message.includes("expired")) {
-			await db.pushDevice.delete({ where: { id: device.id } });
+		deviceCounter.inc({ status: "error" });
+
+		if (error instanceof Error) {
+			if (error.message.includes("expired")) {
+				await db.pushDevice.delete({ where: { id: device.id } });
+				return false;
+			}
+
+			if (
+				retries < CONFIG.MAX_RETRIES &&
+				(error.message.includes("timeout") ||
+					error.message.includes("network") ||
+					error.message.includes("429"))
+			) {
+				retryCounter.inc();
+				await sleep(CONFIG.RETRY_DELAY * (retries + 1));
+				return sendNotificationToDevice(device, payload, retries + 1);
+			}
 		}
 
 		return false;
@@ -92,15 +176,23 @@ async function createNotificationRecords(
 	userIds: string[],
 	payload: PushNotificationPayload
 ) {
-	return db.notification.createMany({
-		data: userIds.map((userId) => ({
-			userId,
-			type: payload.data.type,
-			title: payload.title,
-			body: payload.body,
-			data: JSON.parse(JSON.stringify(payload.data)) as Prisma.JsonObject,
-		})),
-	});
+	try {
+		return await db.notification.createMany({
+			data: userIds.map((userId) => ({
+				userId,
+				type: payload.data.type,
+				title: payload.title,
+				body: payload.body,
+				data: JSON.parse(JSON.stringify(payload.data)) as Prisma.JsonObject,
+			})),
+		});
+	} catch (error) {
+		console.error(
+			"[PUSH_NOTIFICATION] Erreur de création des notifications:",
+			error
+		);
+		throw error;
+	}
 }
 
 async function sendNotificationToUser(
@@ -108,7 +200,6 @@ async function sendNotificationToUser(
 	payload: PushNotificationPayload
 ): Promise<NotificationResult> {
 	try {
-		// Récupérer tous les appareils de l'utilisateur
 		const pushDevices = await db.pushDevice.findMany({
 			where: { userId },
 		});
@@ -122,7 +213,6 @@ async function sendNotificationToUser(
 			};
 		}
 
-		// Envoyer la notification à tous les appareils
 		const results = await Promise.all(
 			pushDevices.map((device) => sendNotificationToDevice(device, payload))
 		);
@@ -155,10 +245,15 @@ export async function sendPushNotifications(
 	payload: PushNotificationPayload,
 	options: { batchSize?: number; stopOnError?: boolean } = {}
 ): Promise<NotificationResult[]> {
-	const { batchSize = 10, stopOnError = false } = options;
+	const batchSize = Math.min(
+		options.batchSize || CONFIG.DEFAULT_BATCH_SIZE,
+		CONFIG.MAX_BATCH_SIZE
+	);
+	const { stopOnError = false } = options;
 
 	try {
-		// Dédupliquer les IDs utilisateurs
+		validatePayload(payload);
+
 		const uniqueUserIds = [...new Set(userIds)];
 
 		if (uniqueUserIds.length === 0) {
@@ -166,15 +261,24 @@ export async function sendPushNotifications(
 			return [];
 		}
 
+		// Utiliser la queue pour les gros volumes
+		if (uniqueUserIds.length > CONFIG.QUEUE_THRESHOLD) {
+			console.info(
+				`[PUSH_NOTIFICATION] Utilisation de la queue pour ${uniqueUserIds.length} utilisateurs`
+			);
+			await queueNotifications(uniqueUserIds, payload, options);
+			return [];
+		}
+
+		const startTime = Date.now();
+
 		const results: NotificationResult[] = [];
 		const batches = [];
 
-		// Diviser les utilisateurs en lots
 		for (let i = 0; i < uniqueUserIds.length; i += batchSize) {
 			batches.push(uniqueUserIds.slice(i, i + batchSize));
 		}
 
-		// Traiter chaque lot
 		for (const batch of batches) {
 			const batchResults = await Promise.all(
 				batch.map((userId) => sendNotificationToUser(userId, payload))
@@ -182,13 +286,11 @@ export async function sendPushNotifications(
 
 			results.push(...batchResults);
 
-			// Vérifier les erreurs si stopOnError est activé
 			if (stopOnError && batchResults.some((r) => !r.success)) {
 				break;
 			}
 		}
 
-		// Créer les enregistrements de notification pour les utilisateurs avec succès
 		const successfulUserIds = results
 			.filter((r) => r.success)
 			.map((r) => r.userId);
@@ -197,12 +299,22 @@ export async function sendPushNotifications(
 			await createNotificationRecords(successfulUserIds, payload);
 		}
 
-		// Logs des statistiques
+		// Métriques
+		notificationCounter.inc(
+			{ status: "success", type: payload.data.type },
+			successfulUserIds.length
+		);
+		notificationCounter.inc(
+			{ status: "error", type: payload.data.type },
+			uniqueUserIds.length - successfulUserIds.length
+		);
+
 		const stats = {
 			total: results.length,
-			success: results.filter((r) => r.success).length,
+			success: successfulUserIds.length,
 			devicesTotal: results.reduce((sum, r) => sum + r.deviceCount, 0),
 			devicesSuccess: results.reduce((sum, r) => sum + r.successCount, 0),
+			duration: Date.now() - startTime,
 		};
 
 		console.info("[PUSH_NOTIFICATION] Statistiques:", stats);
@@ -214,7 +326,6 @@ export async function sendPushNotifications(
 	}
 }
 
-// Pour la compatibilité avec l'ancien code
 export default async function sendPushNotification(
 	userId: string,
 	payload: PushNotificationPayload
