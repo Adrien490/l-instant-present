@@ -18,7 +18,7 @@ Object.entries(requiredEnvVars).forEach(([key, value]) => {
 
 // Configuration de web-push avec les clés VAPID
 webpush.setVapidDetails(
-	"mailto:adrien.poirier49@gmail.com",
+	`mailto:${process.env.VAPID_EMAIL}`,
 	requiredEnvVars.VAPID_PUBLIC_KEY!,
 	requiredEnvVars.VAPID_PRIVATE_KEY!
 );
