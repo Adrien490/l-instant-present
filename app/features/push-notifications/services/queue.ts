@@ -1,6 +1,6 @@
 import { NotificationType } from "@prisma/client";
 import Queue from "bull";
-import { sendPushNotifications } from "../actions/send-push-notification";
+import sendPushNotifications from "../helpers/send-push-notifications";
 
 interface NotificationJob {
 	userIds: string[];

@@ -18,7 +18,7 @@ import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import webpush from "web-push";
 import { isGroupAdmin } from "../../groups/queries/is-group-admin";
-import sendPushNotification from "../../push-notifications/actions/send-push-notification";
+import sendPushNotification from "../../push-notifications/helpers/send-push-notification";
 import sendGroupInviteSchema from "../schemas/send-group-invite-schema";
 
 // Configuration de web-push avec vos clés VAPID

@@ -1,5 +1,5 @@
-import { CONFIG } from "../config";
 import { redis } from "../../../../lib/redis";
+import { CONFIG } from "../config/config";
 
 export class RateLimiter {
 	private readonly prefix = "push_notification_rate_limit:";
@@ -20,4 +20,24 @@ export class RateLimiter {
 	async reset(key: string): Promise<void> {
 		await redis.del(this.prefix + key);
 	}
+}
+
+// Rate limiting simple en mémoire
+const rateLimitStore = {
+	requests: 0,
+	windowStart: Date.now(),
+};
+
+export function checkRateLimit() {
+	const now = Date.now();
+	if (now - rateLimitStore.windowStart > CONFIG.RATE_LIMIT.WINDOW) {
+		rateLimitStore.requests = 0;
+		rateLimitStore.windowStart = now;
+	}
+
+	if (rateLimitStore.requests >= CONFIG.RATE_LIMIT.MAX_REQUESTS) {
+		throw new Error("Rate limit exceeded");
+	}
+
+	rateLimitStore.requests++;
 }
