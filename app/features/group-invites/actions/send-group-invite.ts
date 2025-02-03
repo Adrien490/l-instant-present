@@ -9,7 +9,7 @@ import {
 	createSuccessResponse,
 	createValidationErrorResponse,
 } from "@/types/server-action";
-import { GroupInvite } from "@prisma/client";
+import { GroupInvite, GroupInviteStatus } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { isGroupAdmin } from "../../groups/queries/is-group-admin";
@@ -97,11 +97,38 @@ export default async function sendGroupInvite(
 			where: {
 				groupId: validation.data.groupId,
 				email: validation.data.email,
-				status: "PENDING",
+				status: {
+					in: ["PENDING", "EXPIRED"],
+				},
+			},
+			orderBy: {
+				createdAt: "desc",
 			},
 		});
 
-		if (existingInvite) {
+		// Si une invitation existe et qu'elle est expirée, on la met à jour
+		if (existingInvite?.status === GroupInviteStatus.EXPIRED) {
+			const invite = await db.groupInvite.update({
+				where: { id: existingInvite.id },
+				data: {
+					role: validation.data.role,
+					senderId: session.user.id,
+					expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+					status: GroupInviteStatus.PENDING,
+				},
+			});
+
+			revalidateTag(`group-${validation.data.groupId}`);
+			revalidateTag(`group-invites-${validation.data.groupId}`);
+
+			return createSuccessResponse(
+				invite,
+				"L'invitation a été renouvelée avec succès"
+			);
+		}
+
+		// Si une invitation en attente existe déjà
+		if (existingInvite?.status === GroupInviteStatus.PENDING) {
 			return createErrorResponse(
 				ServerActionStatus.CONFLICT,
 				"Une invitation est déjà en attente pour cette personne"
@@ -115,7 +142,7 @@ export default async function sendGroupInvite(
 				role: validation.data.role,
 				senderId: session.user.id,
 				expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
-				status: "PENDING",
+				status: GroupInviteStatus.PENDING,
 			},
 		});
 
