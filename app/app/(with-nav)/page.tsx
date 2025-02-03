@@ -35,23 +35,23 @@ export default async function HomePage() {
 
 			{/* Quick Actions */}
 			<div className="mt-4">
-				<div className="grid grid-cols-2 gap-2">
-					<Link href="/app/my-groups/new">
-						<Card className="flex h-24 flex-col items-center justify-center gap-1.5 p-2 transition-colors hover:bg-muted/50">
+				<div className="grid grid-cols-2 gap-4">
+					<Link href="/app/my-groups/new" className="touch-target-2025">
+						<Card className="flex h-20 flex-col items-center justify-center gap-2 p-2 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
 							<div className="rounded-full bg-primary/10 p-2">
-								<Plus className="h-5 w-5 text-primary" />
+								<Plus className="h-5 w-5 text-primary transform-gpu" />
 							</div>
-							<span className="text-sm font-medium text-center">
+							<span className="text-sm leading-normal antialiased font-medium text-center">
 								Créer un groupe
 							</span>
 						</Card>
 					</Link>
-					<Link href="/app/my-groups">
-						<Card className="flex h-24 flex-col items-center justify-center gap-1.5 p-2 transition-colors hover:bg-muted/50">
+					<Link href="/app/my-groups" className="touch-target-2025">
+						<Card className="flex h-20 flex-col items-center justify-center gap-2 p-2 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
 							<div className="rounded-full bg-primary/10 p-2">
-								<Users className="h-5 w-5 text-primary" />
+								<Users className="h-5 w-5 text-primary transform-gpu" />
 							</div>
-							<span className="text-sm font-medium text-center">
+							<span className="text-sm leading-normal antialiased font-medium text-center">
 								Mes groupes
 							</span>
 						</Card>
@@ -61,11 +61,13 @@ export default async function HomePage() {
 
 			{/* Pending Invites */}
 			{invites.length > 0 && (
-				<div className="mt-6">
+				<div className="mt-6 spacing-2025-compact">
 					<div className="flex items-center justify-between">
-						<h2 className="text-lg font-semibold">Invitations en attente</h2>
+						<h2 className="text-lg font-medium leading-tight tracking-tight md:tracking-normal antialiased">
+							Invitations en attente
+						</h2>
 					</div>
-					<div className="mt-4 space-y-3">
+					<div className="mt-4 space-y-4">
 						{firstTwoInvites.map((invite) => (
 							<GroupInviteItem
 								key={invite.id}
@@ -74,11 +76,15 @@ export default async function HomePage() {
 							/>
 						))}
 						{invites.length === 2 && (
-							<Link href="/app/invites">
-								<Card className="flex items-center justify-center gap-3 p-4 text-base text-muted-foreground transition-colors hover:bg-muted/50 active:bg-muted">
-									<span>Voir toutes les invitations</span>
-									<span className="text-sm">•</span>
-									<span className="text-sm">Voir tout</span>
+							<Link href="/app/invites" className="touch-target-2025">
+								<Card className="flex items-center justify-center gap-3 p-4 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
+									<span className="text-base leading-normal antialiased text-muted-foreground">
+										Voir toutes les invitations
+									</span>
+									<span className="text-sm antialiased">•</span>
+									<span className="text-sm leading-normal antialiased">
+										Voir tout
+									</span>
 								</Card>
 							</Link>
 						)}
@@ -87,11 +93,18 @@ export default async function HomePage() {
 			)}
 
 			{/* My Groups */}
-			<div className="mt-6">
+			<div className="mt-6 spacing-2025-compact">
 				<div className="flex items-center justify-between">
-					<h2 className="text-lg font-semibold">Groupes récents</h2>
+					<h2 className="text-lg font-medium leading-tight tracking-tight md:tracking-normal antialiased">
+						Groupes récents
+					</h2>
 					{groups.length > 0 && (
-						<Button variant="ghost" size="sm" className="text-sm" asChild>
+						<Button
+							variant="ghost"
+							size="sm"
+							className="text-sm leading-normal antialiased touch-target-2025"
+							asChild
+						>
 							<Link href="/app/my-groups">Voir tous mes groupes</Link>
 						</Button>
 					)}
@@ -102,11 +115,15 @@ export default async function HomePage() {
 					className="mt-4 mb-4"
 				/>
 				{groups.length > 3 && (
-					<Link href="/app/my-groups">
-						<Card className="flex items-center justify-center gap-3 p-4 text-base text-muted-foreground transition-colors hover:bg-muted/50 active:bg-muted">
-							<span>+{groups.length - 3} autres groupes</span>
-							<span className="text-sm">•</span>
-							<span className="text-sm">Voir tout</span>
+					<Link href="/app/my-groups" className="touch-target-2025">
+						<Card className="flex items-center justify-center gap-3 p-4 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
+							<span className="text-base leading-normal antialiased text-muted-foreground">
+								+{groups.length - 3} autres groupes
+							</span>
+							<span className="text-sm antialiased">•</span>
+							<span className="text-sm leading-normal antialiased">
+								Voir tout
+							</span>
 						</Card>
 					</Link>
 				)}

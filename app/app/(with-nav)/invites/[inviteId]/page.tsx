@@ -13,11 +13,7 @@ export default async function InvitePage({ params }: Props) {
 	const resolvedParams = await params;
 	const { inviteId } = resolvedParams;
 
-	const invite = await getGroupInvite(inviteId);
-
-	if (!invite) {
-		return notFound();
-	}
+	const invite = await getGroupInvite({ inviteId });
 
 	if (!invite) {
 		return notFound();

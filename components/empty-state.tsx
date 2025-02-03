@@ -20,21 +20,23 @@ export default function EmptyState({
 	return (
 		<div
 			className={cn(
-				"flex flex-col items-center justify-center px-4",
+				"flex flex-col items-center justify-center p-4 safe-area-x touch-action-pan-y",
 				className
 			)}
 		>
-			<div className="flex flex-col items-center gap-6 text-center">
-				<div className="rounded-2xl bg-muted/60 p-5">{icon}</div>
-				<div className="space-y-1.5">
-					<p className="text-base/relaxed font-medium text-foreground/80">
+			<div className="flex flex-col items-center gap-4 sm:gap-6 text-center">
+				<div className="rounded-2xl bg-muted/60 p-4 transform-gpu">{icon}</div>
+				<div className="spacing-2025-compact">
+					<p className="text-2xl font-medium leading-tight tracking-tight md:tracking-normal text-foreground/80">
 						{title}
 					</p>
-					<p className="text-sm/relaxed text-muted-foreground max-w-[260px]">
+					<p className="text-base leading-normal md:leading-relaxed antialiased text-muted-foreground max-w-[260px]">
 						{description}
 					</p>
 				</div>
-				{action && <div className="w-full max-w-[260px]">{action}</div>}
+				{action && (
+					<div className="w-full max-w-[260px] touch-target-2025">{action}</div>
+				)}
 			</div>
 		</div>
 	);

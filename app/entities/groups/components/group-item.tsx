@@ -16,7 +16,7 @@ type Props = {
 
 export default function GroupItem({ group, isOwner }: Props) {
 	return (
-		<div className="flex flex-col">
+		<div className="flex flex-col safe-area-x touch-action-pan-y">
 			<div className="relative flex-shrink-0">
 				{group.imageUrl ? (
 					<div className="relative w-full aspect-[2/1]">
@@ -24,7 +24,7 @@ export default function GroupItem({ group, isOwner }: Props) {
 							src={group.imageUrl}
 							alt={group.name}
 							fill
-							className="object-cover"
+							className="object-cover transform-gpu"
 							sizes="100vw"
 							priority
 						/>
@@ -33,28 +33,28 @@ export default function GroupItem({ group, isOwner }: Props) {
 				) : (
 					<div className="relative w-full aspect-[2/1] bg-gradient-to-br from-primary/20 to-primary/10">
 						<div className="absolute inset-0 flex items-center justify-center">
-							<Users className="h-12 w-12 text-primary" />
+							<Users className="h-5 w-5 text-primary transform-gpu" />
 						</div>
 						<div className="absolute inset-0 bg-gradient-to-t from-background via-background/20 to-transparent" />
 					</div>
 				)}
 
-				<div className="absolute bottom-0 left-0 right-0 p-6">
+				<div className="absolute bottom-0 left-0 right-0 p-4">
 					<div className="flex flex-col gap-4">
-						<h2 className="text-2xl font-semibold flex items-center gap-3 text-white">
+						<h2 className="text-lg font-medium leading-tight tracking-tight md:tracking-normal flex items-center gap-3 text-white antialiased">
 							{group.name}
 							{isOwner && (
-								<Crown className="h-5 w-5 text-amber-500 flex-shrink-0" />
+								<Crown className="h-5 w-5 text-amber-500 flex-shrink-0 transform-gpu" />
 							)}
 						</h2>
-						<div className="flex items-center gap-3 flex-wrap">
-							<time className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm">
+						<div className="flex items-center gap-2 flex-wrap">
+							<time className="text-sm leading-normal antialiased px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white">
 								{formatDistanceToNow(new Date(group.createdAt), {
 									addSuffix: true,
 									locale: fr,
 								})}
 							</time>
-							<div className="px-3 py-1.5 rounded-full bg-white/10 backdrop-blur-sm text-white text-sm">
+							<div className="text-sm leading-normal antialiased px-2 py-1 rounded-full bg-white/10 backdrop-blur-sm text-white">
 								{group.members.length} membre
 								{group.members.length > 1 ? "s" : ""}
 							</div>
@@ -63,14 +63,16 @@ export default function GroupItem({ group, isOwner }: Props) {
 				</div>
 			</div>
 
-			<div className="py-6 space-y-6">
-				<p className="text-base text-muted-foreground">{group.description}</p>
+			<div className="py-4 space-y-4">
+				<p className="text-base leading-normal md:leading-relaxed antialiased text-muted-foreground">
+					{group.description}
+				</p>
 
-				<div className="bg-muted rounded-2xl overflow-hidden">
-					<div className="p-6 space-y-4">
+				<div className="bg-muted rounded-xl overflow-hidden">
+					<div className="p-4 space-y-4">
 						<div className="flex items-center justify-between">
-							<h3 className="text-lg font-medium flex items-center gap-3">
-								<Users className="h-5 w-5 text-primary" />
+							<h3 className="text-base font-medium leading-tight tracking-tight md:tracking-normal antialiased flex items-center gap-2">
+								<Users className="h-5 w-5 text-primary transform-gpu" />
 								Membres du groupe
 							</h3>
 						</div>
@@ -79,25 +81,28 @@ export default function GroupItem({ group, isOwner }: Props) {
 							<div className="space-y-4">
 								<div className="flex flex-wrap gap-2">
 									{group.members.map((member) => (
-										<div key={member.user.id} className="group relative">
+										<div
+											key={member.user.id}
+											className="group relative touch-target-2025"
+										>
 											<div
-												className="h-11 w-11 rounded-full ring-2 ring-background transition-transform hover:scale-105"
+												className="h-10 w-10 rounded-full ring-2 ring-background transition-transform hover:scale-105 transform-gpu"
 												style={{
 													backgroundImage: `url(${member.user.image})`,
 													backgroundSize: "cover",
 													backgroundPosition: "center",
 												}}
 											/>
-											<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 text-sm px-3 py-1.5 rounded-full whitespace-nowrap shadow-sm border">
+											<div className="absolute -bottom-1 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-background/90 text-sm leading-normal antialiased px-2 py-1 rounded-full whitespace-nowrap shadow-sm border">
 												{member.user.name}
 												{member.role === GroupRole.ADMIN && (
-													<Crown className="inline-block ml-1.5 h-3.5 w-3.5 text-amber-500" />
+													<Crown className="inline-block ml-1.5 h-5 w-5 text-amber-500 transform-gpu" />
 												)}
 											</div>
 										</div>
 									))}
 								</div>
-								<div className="text-sm text-muted-foreground">
+								<div className="text-sm leading-normal antialiased text-muted-foreground">
 									<div className="line-clamp-2">
 										{group.members.map((m) => m.user.name).join(", ")}
 									</div>
@@ -107,28 +112,28 @@ export default function GroupItem({ group, isOwner }: Props) {
 					</div>
 				</div>
 
-				<div className="space-y-3 pb-32">
+				<div className="space-y-4 pb-32 safe-area-bottom">
 					{isOwner ? (
 						<>
 							<Button
 								variant="outline"
 								size="lg"
-								className="w-full justify-start font-medium text-base min-h-[2.75rem] px-4 py-3"
+								className="w-full justify-start font-medium text-base leading-normal antialiased touch-target-2025 min-h-[44px] px-4"
 								asChild
 							>
 								<Link href={`/app/my-groups/${group.id}/edit`}>
-									<Edit className="mr-3 h-5 w-5" />
+									<Edit className="mr-3 h-5 w-5 transform-gpu" />
 									Modifier
 								</Link>
 							</Button>
 							<Button
 								variant="destructive"
 								size="lg"
-								className="w-full justify-start font-medium text-base min-h-[2.75rem] px-4 py-3"
+								className="w-full justify-start font-medium text-base leading-normal antialiased touch-target-2025 min-h-[44px] px-4"
 								asChild
 							>
 								<Link href={`/app/my-groups/${group.id}/delete`}>
-									<Trash className="mr-3 h-5 w-5" />
+									<Trash className="mr-3 h-5 w-5 transform-gpu" />
 									Supprimer
 								</Link>
 							</Button>
@@ -137,11 +142,11 @@ export default function GroupItem({ group, isOwner }: Props) {
 						<Button
 							variant="destructive"
 							size="lg"
-							className="w-full justify-start font-medium text-base min-h-[2.75rem] px-4 py-3"
+							className="w-full justify-start font-medium text-base leading-normal antialiased touch-target-2025 min-h-[44px] px-4"
 							asChild
 						>
 							<Link href={`/app/groups/${group.id}/leave`}>
-								<Trash className="mr-3 h-5 w-5" />
+								<Trash className="mr-3 h-5 w-5 transform-gpu" />
 								Quitter le groupe
 							</Link>
 						</Button>
