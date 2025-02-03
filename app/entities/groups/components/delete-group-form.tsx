@@ -10,7 +10,6 @@ import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { AlertTriangle, Loader2, Users } from "lucide-react";
 import Image from "next/image";
-import { useEffect } from "react";
 import { useDeleteGroup } from "../hooks/use-delete-group";
 
 interface DeleteGroupFormProps {
@@ -28,12 +27,7 @@ export default function DeleteGroupForm({ group }: DeleteGroupFormProps) {
 		shouldValidate: "onInput",
 	});
 
-	useEffect(() => {
-		if (state?.status === "success") {
-			window.location.href =
-				"/app/my-groups/" + group.id + "/delete?deleted=true";
-		}
-	}, [state?.status, group.id]);
+	const isNameMatch = fields.confirmName.value === group.name;
 
 	return (
 		<>
@@ -120,7 +114,7 @@ export default function DeleteGroupForm({ group }: DeleteGroupFormProps) {
 						variant="destructive"
 						size="lg"
 						className="w-full font-medium"
-						disabled={isPending}
+						disabled={isPending || !isNameMatch}
 					>
 						{isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
 						Supprimer définitivement

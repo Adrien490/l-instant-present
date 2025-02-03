@@ -67,14 +67,16 @@ export default async function deleteGroup(
 			);
 		}
 
-		// Vérifier que le nom saisi correspond au nom du groupe
+		// Vérifier que le nom saisi correspond exactement au nom du groupe
 		if (validation.data.confirmName !== existingGroup.name) {
 			return createValidationErrorResponse(
 				{
-					confirmName: ["Le nom saisi ne correspond pas au nom du groupe"],
+					confirmName: [
+						"Le nom saisi ne correspond pas exactement au nom du groupe",
+					],
 				},
 				rawData,
-				"Le nom saisi ne correspond pas au nom du groupe"
+				"Le nom saisi ne correspond pas exactement au nom du groupe"
 			);
 		}
 
