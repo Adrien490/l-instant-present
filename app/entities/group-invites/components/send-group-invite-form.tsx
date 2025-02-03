@@ -1,6 +1,6 @@
 "use client";
 
-import { useGroupInviteForm } from "@/app/entities/group-invites/hooks/use-group-invite-form";
+import { useSendGroupInvite } from "@/app/entities/group-invites/hooks/use-send-group-invite";
 import groupInviteFormSchema from "@/app/entities/group-invites/schemas/send-group-invite-schema";
 import PageBottom from "@/components/page-bottom";
 import ServerActionResponse from "@/components/server-action-response";
@@ -16,20 +16,19 @@ import {
 } from "@/components/ui/select";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Loader2 } from "lucide-react";
+import { Loader2, Users } from "lucide-react";
+import Image from "next/image";
 import { useEffect } from "react";
+import { GetGroupsResponse } from "../../groups/queries/get-groups";
 
 interface SendGroupInviteFormProps {
-	groups: Array<{
-		id: string;
-		name: string;
-	}>;
+	groups: GetGroupsResponse;
 }
 
 export default function SendGroupInviteForm({
 	groups,
 }: SendGroupInviteFormProps) {
-	const { dispatch, state, isPending } = useGroupInviteForm();
+	const { dispatch, state, isPending } = useSendGroupInvite();
 
 	const [form, fields] = useForm({
 		id: "group-invite-form",
@@ -65,17 +64,34 @@ export default function SendGroupInviteForm({
 							defaultValue={state?.data?.groupId}
 							required
 						>
-							<SelectTrigger
-								id={fields.groupId.id}
-								className="w-full"
-								aria-describedby={fields.groupId.descriptionId}
-							>
-								<SelectValue placeholder="Sélectionnez un groupe" />
+							<SelectTrigger className="w-full">
+								<SelectValue placeholder="Sélectionner un groupe" />
 							</SelectTrigger>
 							<SelectContent>
-								{groups.map((group) => (
+								{groups?.map((group) => (
 									<SelectItem key={group.id} value={group.id}>
-										{group.name}
+										<div className="flex items-center gap-3 py-1">
+											<div className="relative flex-shrink-0">
+												{group.imageUrl ? (
+													<div className="relative w-8 h-8">
+														<Image
+															src={group.imageUrl}
+															alt={group.name}
+															fill
+															className="object-cover rounded-lg"
+															sizes="32px"
+														/>
+													</div>
+												) : (
+													<div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+														<Users className="h-4 w-4 text-primary" />
+													</div>
+												)}
+											</div>
+											<div className="flex-1 min-w-0">
+												<p className="font-medium truncate">{group.name}</p>
+											</div>
+										</div>
 									</SelectItem>
 								))}
 							</SelectContent>

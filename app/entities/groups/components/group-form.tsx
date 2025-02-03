@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Loader2, X } from "lucide-react";
+import { ImageIcon, Loader2, X } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { useGroupForm } from "../hooks/use-group-form";
@@ -67,17 +67,24 @@ export default function GroupForm({ group }: GroupFormProps) {
 				<input type="hidden" name="id" value={state?.data?.id ?? ""} />
 
 				<div className="space-y-8">
-					<div className="space-y-4">
+					<div className="space-y-6">
 						<div className="flex items-center justify-between">
-							<FormLabel className="text-base">Image du groupe</FormLabel>
+							<div className="space-y-1">
+								<FormLabel className="text-base font-medium">
+									Image du groupe
+								</FormLabel>
+								<p className="text-sm text-muted-foreground">
+									Format recommandé : 1200×600px ou plus grand
+								</p>
+							</div>
 							{currentImageUrl && (
 								<button
 									type="button"
 									onClick={handleRemoveImage}
-									className="text-xs text-muted-foreground hover:text-destructive transition-colors flex items-center gap-1.5"
+									className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium rounded-md text-destructive/90 hover:text-destructive-foreground active:bg-destructive/10 transition-colors"
 								>
 									<X className="h-3.5 w-3.5" />
-									<span>Supprimer l&apos;image</span>
+									<span>Supprimer</span>
 								</button>
 							)}
 						</div>
@@ -85,40 +92,63 @@ export default function GroupForm({ group }: GroupFormProps) {
 						<div className="w-full">
 							<div className="relative">
 								{currentImageUrl ? (
-									<div className="relative min-h-[280px] rounded-2xl overflow-hidden">
+									<div className="relative aspect-video rounded-xl overflow-hidden bg-muted">
 										<Image
 											src={currentImageUrl}
 											alt="Image actuelle du groupe"
 											fill
 											className="object-cover"
-											sizes="(max-width: 640px) 100vw, 50vw"
+											sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
 											priority
 										/>
 										<div className="absolute inset-0 ring-1 ring-inset ring-black/10" />
 										<Button
 											type="button"
 											variant="secondary"
-											className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm"
+											size="sm"
+											className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm hover:bg-background/90 active:bg-background/95"
 											onClick={() => fileInputRef.current?.click()}
 										>
-											Changer l&apos;image
+											<ImageIcon className="h-4 w-4 mr-2" />
+											Modifier
 										</Button>
 									</div>
 								) : (
-									<div className="flex flex-col items-center gap-4 min-h-[280px] border border-dashed border-muted-foreground/25 bg-muted/50 rounded-2xl p-8">
-										<p className="text-center">
-											Ajoutez une image pour votre groupe
-										</p>
-										<Button
-											type="button"
-											variant="secondary"
-											onClick={() => fileInputRef.current?.click()}
-										>
-											Choisir une image
-										</Button>
-										<p className="text-xs text-muted-foreground text-center">
-											JPG, PNG, GIF • Max : 4MB
-										</p>
+									<div
+										role="button"
+										tabIndex={0}
+										className="w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+										onClick={() => fileInputRef.current?.click()}
+										onKeyDown={(e) => {
+											if (e.key === "Enter" || e.key === " ") {
+												e.preventDefault();
+												fileInputRef.current?.click();
+											}
+										}}
+									>
+										<div className="flex flex-col items-center justify-center gap-4 aspect-video rounded-xl border-2 border-dashed border-muted-foreground/25 bg-muted/50 p-6 transition-all duration-200 active:bg-muted/80">
+											<div className="flex flex-col items-center gap-2 text-center">
+												<div className="p-3 rounded-full bg-muted/80">
+													<ImageIcon className="h-6 w-6 text-muted-foreground" />
+												</div>
+												<div>
+													<p className="font-medium">
+														Ajoutez une image pour votre groupe
+													</p>
+													<p className="text-sm text-muted-foreground mt-1">
+														Formats acceptés : JPG, PNG, GIF
+													</p>
+												</div>
+											</div>
+											<div className="mt-2">
+												<Button type="button" variant="secondary" size="sm">
+													Choisir une photo
+												</Button>
+											</div>
+											<p className="text-xs text-muted-foreground">
+												Taille maximale : 4MB
+											</p>
+										</div>
 									</div>
 								)}
 								<input
@@ -128,6 +158,8 @@ export default function GroupForm({ group }: GroupFormProps) {
 									accept="image/*"
 									onChange={handleFileChange}
 									className="hidden"
+									aria-label="Sélectionner une image pour le groupe"
+									capture="environment"
 								/>
 							</div>
 						</div>

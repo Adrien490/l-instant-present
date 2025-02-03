@@ -3,17 +3,17 @@
 import { ServerActionState, ServerActionStatus } from "@/types/server-action";
 import { GroupInvite } from "@prisma/client";
 import { useActionState } from "react";
-import createGroupInvite from "../actions/send-group-invite";
+import sendGroupInvite from "../actions/send-group-invite";
 import groupInviteFormSchema from "../schemas/send-group-invite-schema";
 
-export function useGroupInviteForm() {
+export function useSendGroupInvite() {
 	const [state, dispatch, isPending] = useActionState<
 		ServerActionState<GroupInvite, typeof groupInviteFormSchema>,
 		FormData
 	>(
 		async (previousState, formData) => {
 			try {
-				return await createGroupInvite(previousState, formData);
+				return await sendGroupInvite(previousState, formData);
 			} catch (error) {
 				console.error("[USE_GROUP_INVITE_FORM]", error);
 				return {
