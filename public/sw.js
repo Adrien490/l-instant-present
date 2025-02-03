@@ -42,6 +42,15 @@ self.addEventListener("push", (event) => {
 		options.requireInteraction = true; // La notification reste jusqu'à ce que l'utilisateur interagisse
 		options.tag = `group-invite-${data.data.groupId}`; // Regrouper les notifications par groupe
 		options.renotify = true; // Notifier même si une notification avec le même tag existe
+	} else if (data.data?.type === "MEMBER_JOINED") {
+		options.actions = [
+			{
+				action: "open",
+				title: "Voir les membres",
+			},
+		];
+		options.tag = `group-member-${data.data.groupId}`; // Regrouper les notifications par groupe
+		options.renotify = true; // Notifier même si une notification avec le même tag existe
 	} else {
 		options.actions = [
 			{

@@ -9,9 +9,14 @@ import {
 	createSuccessResponse,
 	createValidationErrorResponse,
 } from "@/types/server-action";
-import { GroupInvite, GroupInviteStatus } from "@prisma/client";
+import {
+	GroupInvite,
+	GroupInviteStatus,
+	NotificationType,
+} from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
+import sendPushNotifications from "../../push-notifications/helpers/send-push-notifications";
 import updateGroupInviteSchema from "../schemas/update-group-invite-status-schema";
 
 export default async function updateGroupInviteStatus(
@@ -58,6 +63,11 @@ export default async function updateGroupInviteStatus(
 						group: {
 							select: {
 								name: true,
+								members: {
+									select: {
+										userId: true,
+									},
+								},
 							},
 						},
 					},
@@ -98,6 +108,30 @@ export default async function updateGroupInviteStatus(
 							role: existingInvite.role,
 						},
 					});
+
+					// Récupérer les informations de l'utilisateur qui rejoint
+					const joiningUser = await tx.user.findUnique({
+						where: { id: session.user.id },
+						select: { name: true },
+					});
+
+					// Envoyer une notification à tous les membres du groupe
+					const memberIds = existingInvite.group.members
+						.map((member) => member.userId)
+						.filter((id) => id !== session.user.id); // Exclure l'utilisateur qui rejoint
+
+					if (memberIds.length > 0) {
+						await sendPushNotifications(memberIds, {
+							title: "Nouveau membre",
+							body: `${joiningUser?.name} a rejoint le groupe "${existingInvite.group.name}"`,
+							icon: "/icon.png",
+							badge: "/badge.png",
+							data: {
+								url: `/app/groups/${existingInvite.groupId}/members`,
+								type: NotificationType.MEMBER_JOINED,
+							},
+						});
+					}
 				}
 
 				const updatedInvite = await tx.groupInvite.update({
