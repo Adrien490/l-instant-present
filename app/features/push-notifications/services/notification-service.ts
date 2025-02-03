@@ -1,4 +1,4 @@
-import db from "@/lib/db";
+import { default as db, default as prisma } from "@/lib/db";
 import { Prisma, PushDevice } from "@prisma/client";
 import webpush from "web-push";
 import { CONFIG } from "../config/config";
@@ -104,21 +104,54 @@ export async function sendNotificationToUser(
 	payload: PushNotificationPayload
 ): Promise<NotificationResult> {
 	try {
-		const pushDevices = await db.pushDevice.findMany({
-			where: { userId },
+		// Vérifier si l'utilisateur a une session active
+		const hasActiveSession = await prisma.session.findFirst({
+			where: {
+				userId,
+				expiresAt: {
+					gt: new Date(), // Session non expirée
+				},
+			},
 		});
 
-		if (pushDevices.length === 0) {
+		if (!hasActiveSession) {
 			return {
 				userId,
-				success: true,
+				success: false,
 				deviceCount: 0,
 				successCount: 0,
+				error: "User is logged out",
 			};
 		}
 
+		// Récupérer les devices de l'utilisateur
+		const devices = await prisma.pushDevice.findMany({
+			where: { userId },
+		});
+
+		if (devices.length === 0) {
+			return {
+				userId,
+				success: false,
+				deviceCount: 0,
+				successCount: 0,
+				error: "No devices found",
+			};
+		}
+
+		// Ajouter l'information de connexion au payload
+		const payloadWithSession = {
+			...payload,
+			data: {
+				...payload.data,
+				isLoggedIn: true,
+			},
+		};
+
 		const results = await Promise.all(
-			pushDevices.map((device) => sendNotificationToDevice(device, payload))
+			devices.map((device) =>
+				sendNotificationToDevice(device, payloadWithSession)
+			)
 		);
 
 		const successCount = results.filter(Boolean).length;
@@ -126,20 +159,17 @@ export async function sendNotificationToUser(
 		return {
 			userId,
 			success: true,
-			deviceCount: pushDevices.length,
+			deviceCount: devices.length,
 			successCount,
 		};
 	} catch (error) {
-		console.error(
-			`[PUSH_NOTIFICATION] Erreur pour l'utilisateur ${userId}:`,
-			error
-		);
+		console.error(`[PUSH_NOTIFICATION] Error for user ${userId}:`, error);
 		return {
 			userId,
 			success: false,
 			deviceCount: 0,
 			successCount: 0,
-			error: error instanceof Error ? error.message : "Erreur inconnue",
+			error: error instanceof Error ? error.message : "Unknown error",
 		};
 	}
 }
