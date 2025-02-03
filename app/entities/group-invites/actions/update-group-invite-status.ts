@@ -12,19 +12,12 @@ import {
 import { GroupInvite } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import updateGroupInviteSchema, {
-	updateGroupInviteStatusSchema,
-} from "../schemas/update-group-invite-status-schema";
+import updateGroupInviteSchema from "../schemas/update-group-invite-status-schema";
 
 export default async function updateGroupInviteStatus(
-	_: ServerActionState<
-		GroupInvite,
-		typeof updateGroupInviteStatusSchema
-	> | null,
+	_: ServerActionState<GroupInvite, typeof updateGroupInviteSchema> | null,
 	formData: FormData
-): Promise<
-	ServerActionState<GroupInvite, typeof updateGroupInviteStatusSchema>
-> {
+): Promise<ServerActionState<GroupInvite, typeof updateGroupInviteSchema>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
@@ -52,6 +45,43 @@ export default async function updateGroupInviteStatus(
 			);
 		}
 
+		const existingInvite = await db.groupInvite.findUnique({
+			where: { id: validation.data.id },
+			select: {
+				groupId: true,
+				email: true,
+				role: true,
+			},
+		});
+
+		if (!existingInvite) {
+			return createErrorResponse(
+				ServerActionStatus.ERROR,
+				"L'invitation n'existe pas"
+			);
+		}
+
+		if (validation.data.status === "ACCEPTED") {
+			const existingMember = await db.groupMember.findUnique({
+				where: {
+					userId_groupId: {
+						userId: session.user.id,
+						groupId: existingInvite.groupId,
+					},
+				},
+			});
+
+			if (!existingMember) {
+				await db.groupMember.create({
+					data: {
+						userId: session.user.id,
+						groupId: existingInvite.groupId,
+						role: existingInvite.role,
+					},
+				});
+			}
+		}
+
 		const invite = await db.groupInvite.update({
 			where: { id: validation.data.id },
 			data: { status: validation.data.status },
@@ -62,6 +92,7 @@ export default async function updateGroupInviteStatus(
 		revalidateTag("groups:list");
 		revalidateTag(`groups:user:${session.user.id}`);
 		revalidateTag("groups:search:all");
+
 		return createSuccessResponse(
 			invite,
 			"L'invitation a été mise à jour avec succès"

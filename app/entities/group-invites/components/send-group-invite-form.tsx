@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
+import { GroupRole } from "@prisma/client";
 import { Loader2, Users } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
@@ -24,6 +25,11 @@ import { GetGroupsResponse } from "../../groups/queries/get-groups";
 interface SendGroupInviteFormProps {
 	groups: GetGroupsResponse;
 }
+
+const ROLE_LABELS = {
+	[GroupRole.MEMBER]: "Membre",
+	[GroupRole.ADMIN]: "Administrateur",
+};
 
 export default function SendGroupInviteForm({
 	groups,
@@ -122,6 +128,33 @@ export default function SendGroupInviteForm({
 						{fields.email.errors && (
 							<p className="text-sm text-destructive" id={fields.email.errorId}>
 								{fields.email.errors[0]}
+							</p>
+						)}
+					</div>
+
+					<div className="space-y-1.5">
+						<FormLabel htmlFor={fields.role.id}>
+							Rôle <span className="text-destructive">*</span>
+						</FormLabel>
+						<Select
+							name={fields.role.name}
+							defaultValue={state?.data?.role ?? GroupRole.MEMBER}
+							required
+						>
+							<SelectTrigger className="w-full">
+								<SelectValue placeholder="Sélectionner un rôle" />
+							</SelectTrigger>
+							<SelectContent>
+								{Object.entries(ROLE_LABELS).map(([role, label]) => (
+									<SelectItem key={role} value={role}>
+										{label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+						{fields.role.errors && (
+							<p className="text-sm text-destructive" id={fields.role.errorId}>
+								{fields.role.errors[0]}
 							</p>
 						)}
 					</div>

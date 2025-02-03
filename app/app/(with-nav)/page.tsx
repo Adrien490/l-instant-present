@@ -144,7 +144,7 @@ export default async function HomePage() {
 						action={
 							<Button asChild>
 								<Link href="/app/my-groups/new">
-									<Users className="mr-3 h-5 w-5 transform-gpu" />
+									<Users className="mr-3 h-5 w-5" />
 									Créer un groupe
 								</Link>
 							</Button>

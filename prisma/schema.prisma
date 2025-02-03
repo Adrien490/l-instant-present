@@ -114,6 +114,7 @@ model GroupInvite {
   status    GroupInviteStatus @default(PENDING)
   createdAt DateTime          @default(now())
   expiresAt DateTime?
+  role      GroupRole         @default(MEMBER)
   group     Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
   sender    User              @relation("InviteSender", fields: [senderId], references: [id])
 

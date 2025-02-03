@@ -34,6 +34,7 @@ export default async function sendGroupInvite(
 		const rawData = {
 			groupId: formData.get("groupId")?.toString() || "",
 			email: formData.get("email")?.toString() || "",
+			role: formData.get("role")?.toString() || "",
 		};
 
 		const validation = sendGroupInviteSchema.safeParse(rawData);
@@ -68,7 +69,7 @@ export default async function sendGroupInvite(
 			);
 		}
 
-		if (session.user.email === rawData.email) {
+		if (session.user.email === validation.data.email) {
 			return createErrorResponse(
 				ServerActionStatus.ERROR,
 				"Vous ne pouvez pas vous inviter vous-même"
@@ -109,7 +110,9 @@ export default async function sendGroupInvite(
 
 		const invite = await db.groupInvite.create({
 			data: {
-				...validation.data,
+				groupId: validation.data.groupId,
+				email: validation.data.email,
+				role: validation.data.role,
 				senderId: session.user.id,
 				expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 jours
 			},
