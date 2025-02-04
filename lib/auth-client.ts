@@ -27,11 +27,12 @@ export const authClient = createAuthClient({
 	},
 });
 
-// Configurer le comportement de connexion par défaut
+// Configuration par défaut pour la connexion
+const originalSignIn = authClient.signIn.email;
 authClient.signIn.email = async (params) => {
-	return authClient.signIn.email({
+	return originalSignIn({
 		...params,
-		rememberMe: true, // Toujours activer la persistance
+		rememberMe: true, // Forcer la persistance
 	});
 };
 

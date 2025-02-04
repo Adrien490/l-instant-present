@@ -28,6 +28,11 @@ export const auth = betterAuth({
 		strategy: "jwt",
 		maxAge: 30 * 24 * 60 * 60, // 30 jours
 		updateAge: 24 * 60 * 60, // 24 heures
+		storeSessionInDatabase: true, // Stocker en base de données
+		cookieCache: {
+			enabled: true,
+			maxAge: 30 * 24 * 60 * 60, // 30 jours
+		},
 	},
 	cookies: {
 		options: {
@@ -35,6 +40,27 @@ export const auth = betterAuth({
 			path: "/",
 			secure: process.env.NODE_ENV === "production",
 			maxAge: 30 * 24 * 60 * 60, // 30 jours
+		},
+	},
+	advanced: {
+		useSecureCookies: process.env.NODE_ENV === "production",
+		cookies: {
+			session_token: {
+				attributes: {
+					sameSite: "lax",
+					path: "/",
+					secure: process.env.NODE_ENV === "production",
+					maxAge: 30 * 24 * 60 * 60, // 30 jours
+				},
+			},
+			session_data: {
+				attributes: {
+					sameSite: "lax",
+					path: "/",
+					secure: process.env.NODE_ENV === "production",
+					maxAge: 30 * 24 * 60 * 60, // 30 jours
+				},
+			},
 		},
 	},
 	emailAndPassword: {
