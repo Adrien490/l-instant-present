@@ -8,7 +8,7 @@ import { FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { UploadDropzone, useUploadThing } from "@/lib/uploadthing";
-import { useForm } from "@conform-to/react";
+import { useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
@@ -21,18 +21,24 @@ interface GroupFormProps {
 export default function GroupForm({ group }: GroupFormProps) {
 	const { dispatch, state, isPending } = useGroupForm({ group });
 	const { isUploading, startUpload } = useUploadThing("groupImage");
-	console.log(isUploading);
 
 	const [form, fields] = useForm({
 		id: "group-form",
 		onValidate({ formData }) {
 			return parseWithZod(formData, { schema: groupFormSchema });
 		},
+		defaultValue: {
+			id: state?.data?.id ?? "",
+			name: state?.data?.name ?? "",
+			description: state?.data?.description ?? "",
+			imageUrl: state?.data?.imageUrl ?? "",
+		},
 		shouldValidate: "onBlur",
 		shouldRevalidate: "onInput",
 	});
 
-	const imageUrl = fields.imageUrl.value || state?.data?.imageUrl;
+	const imageControl = useInputControl(fields.imageUrl);
+	const imageUrl = imageControl.value;
 
 	return (
 		<>
@@ -44,7 +50,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 				action={dispatch}
 				className="flex flex-col gap-4 w-full"
 			>
-				<input type="hidden" name="id" value={state?.data?.id ?? ""} />
+				<input type="hidden" name="id" value={fields.id.value ?? ""} />
 				<input
 					type="hidden"
 					id={fields.imageUrl.id}
@@ -59,9 +65,6 @@ export default function GroupForm({ group }: GroupFormProps) {
 								<FormLabel className="text-base font-medium">
 									Image du groupe
 								</FormLabel>
-								<p className="text-sm text-muted-foreground">
-									Format recommandé : 1200×600px ou plus grand
-								</p>
 							</div>
 							{imageUrl && (
 								<Button
@@ -69,17 +72,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 									variant="ghost"
 									size="sm"
 									className="text-destructive hover:text-destructive/90 w-full sm:w-auto"
-									onClick={() => {
-										const input = document.getElementById(
-											fields.imageUrl.id
-										) as HTMLInputElement;
-										if (input) {
-											input.value = "";
-											input.dispatchEvent(
-												new Event("change", { bubbles: true })
-											);
-										}
-									}}
+									onClick={() => imageControl.change("")}
 								>
 									Changer l&apos;image
 								</Button>
@@ -105,14 +98,8 @@ export default function GroupForm({ group }: GroupFormProps) {
 										endpoint="groupImage"
 										onChange={async (files) => {
 											const res = await startUpload(files);
-											const input = document.getElementById(
-												fields.imageUrl.id
-											) as HTMLInputElement;
-											if (input && res?.[0]?.serverData?.url) {
-												input.value = res[0].serverData.url;
-												input.dispatchEvent(
-													new Event("change", { bubbles: true })
-												);
+											if (res?.[0]?.serverData?.url) {
+												imageControl.change(res[0].serverData.url);
 											}
 										}}
 										onUploadError={(error) => {
@@ -152,7 +139,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 								placeholder="Nom du groupe"
 								aria-describedby={fields.name.descriptionId}
 								aria-invalid={!fields.name.valid}
-								defaultValue={group ? state?.data?.name : ""}
+								defaultValue={fields.name.value ?? ""}
 								className="h-11"
 							/>
 							{fields.name.errors && (
@@ -175,7 +162,7 @@ export default function GroupForm({ group }: GroupFormProps) {
 								placeholder="Description du groupe"
 								aria-describedby={fields.description.descriptionId}
 								aria-invalid={!fields.description.valid}
-								defaultValue={group ? state?.data?.description ?? "" : ""}
+								defaultValue={fields.description.value ?? ""}
 								rows={4}
 								className="resize-none"
 							/>
