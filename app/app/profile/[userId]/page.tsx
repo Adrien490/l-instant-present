@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
-import { Group, Mail, Pencil, Shield, Trophy, User, Waves } from "lucide-react";
+import { Group, Mail, Pencil, Trophy, User, Waves } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -38,23 +38,7 @@ export default async function ProfilePage({ params }: Props) {
 				<Card className="relative overflow-hidden">
 					<CardContent className="pt-6">
 						<div className="flex flex-col items-center text-center space-y-4">
-							<div className="relative">
-								<Avatar className="w-24 h-24 border-4 border-background shadow-xl">
-									<AvatarImage
-										src={user?.image || undefined}
-										alt={user?.name || "Avatar de l'utilisateur"}
-									/>
-									<AvatarFallback className="text-2xl bg-primary/10">
-										{getUserInitials(user?.name || "", user?.email || "")}
-									</AvatarFallback>
-								</Avatar>
-								{isCurrentUser && (
-									<Badge className="absolute -top-2 -right-2 px-2">
-										<Shield className="w-3 h-3 mr-1" />
-										Vous
-									</Badge>
-								)}
-							</div>
+							<div className="relative"></div>
 							<div className="space-y-2">
 								<h1 className="text-2xl font-bold flex items-center justify-center gap-2">
 									{user?.name || "Utilisateur"}
