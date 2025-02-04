@@ -1,7 +1,7 @@
 import PushNotificationButton from "@/app/features/push-notifications/components/push-notification-button";
 import LogoutButton from "@/app/features/users/components/logout-button";
 import getUser from "@/app/features/users/queries/get-user";
-import { formatDateToFrench, getUserInitials } from "@/app/lib/utils";
+import { getUserInitials } from "@/app/lib/utils";
 import EmptyPlaceholder from "@/components/empty-placeholder";
 import PageContainer from "@/components/page-container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -77,7 +77,14 @@ export default async function ProfilePage({ params }: Props) {
 									<span>{user?.email}</span>
 								</div>
 								<p className="text-sm text-muted-foreground">
-									Membre depuis {formatDateToFrench(user.createdAt)}
+									Membre depuis{" "}
+									{user.createdAt
+										? new Date(user.createdAt).toLocaleDateString("fr-FR", {
+												year: "numeric",
+												month: "long",
+												day: "numeric",
+										  })
+										: "date inconnue"}
 								</p>
 								{isCurrentUser && (
 									<Button variant="outline" size="sm" className="mt-4" asChild>
