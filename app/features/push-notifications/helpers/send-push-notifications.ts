@@ -78,11 +78,3 @@ export default async function sendPushNotifications(
 		throw error;
 	}
 }
-
-export async function sendPushNotification(
-	userId: string,
-	payload: PushNotificationPayload
-) {
-	const results = await sendPushNotifications([userId], payload);
-	return results[0];
-}
