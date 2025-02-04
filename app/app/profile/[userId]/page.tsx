@@ -46,8 +46,7 @@ export default async function ProfilePage({ params }: Props) {
 			<div className="max-w-4xl mx-auto py-8 space-y-8">
 				{/* En-tête du profil */}
 				<Card className="relative overflow-hidden">
-					<div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-background" />
-					<CardContent className="pt-6 relative">
+					<CardContent className="pt-6">
 						<div className="flex flex-col items-center text-center space-y-4">
 							<div className="relative">
 								<Avatar className="w-24 h-24 border-4 border-background shadow-xl">
