@@ -3,14 +3,14 @@
 import { GetUserResponse } from "@/app/features/users/queries/get-user";
 import userFormSchema from "@/app/features/users/schemas/user-form-schema";
 import ServerActionResponse from "@/components/server-action-response";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { UploadDropzone, useUploadThing } from "@/lib/uploadthing";
-import { useForm } from "@conform-to/react";
+import { useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
-import { Loader2 } from "lucide-react";
-import Image from "next/image";
+import { Loader2, User } from "lucide-react";
 import useUserForm from "../hooks/use-user-form";
 
 interface UserFormProps {
@@ -26,11 +26,17 @@ export default function UserForm({ user }: UserFormProps) {
 		onValidate({ formData }) {
 			return parseWithZod(formData, { schema: userFormSchema });
 		},
+		defaultValue: {
+			name: state?.data?.name ?? "",
+			email: state?.data?.email ?? "",
+			image: state?.data?.image ?? "",
+		},
 		shouldValidate: "onBlur",
 		shouldRevalidate: "onInput",
 	});
 
-	const imageUrl = fields.image.value || state?.data?.image;
+	const imageControl = useInputControl(fields.image);
+	const imageUrl = imageControl.value;
 
 	return (
 		<>
@@ -53,9 +59,6 @@ export default function UserForm({ user }: UserFormProps) {
 								<FormLabel className="text-base font-medium">
 									Photo de profil
 								</FormLabel>
-								<p className="text-sm text-muted-foreground">
-									Format recommandé : 400×400px ou plus grand
-								</p>
 							</div>
 							{imageUrl && (
 								<Button
@@ -63,17 +66,7 @@ export default function UserForm({ user }: UserFormProps) {
 									variant="ghost"
 									size="sm"
 									className="text-destructive hover:text-destructive/90 w-full sm:w-auto"
-									onClick={() => {
-										const input = document.getElementById(
-											fields.image.id
-										) as HTMLInputElement;
-										if (input) {
-											input.value = "";
-											input.dispatchEvent(
-												new Event("change", { bubbles: true })
-											);
-										}
-									}}
+									onClick={() => imageControl.change("")}
 								>
 									Changer la photo
 								</Button>
@@ -82,46 +75,40 @@ export default function UserForm({ user }: UserFormProps) {
 
 						<div className="relative rounded-lg overflow-hidden shadow-sm">
 							{imageUrl ? (
-								<div className="relative aspect-square w-32 bg-muted mx-auto">
-									<Image
-										src={imageUrl}
-										alt="Photo de profil"
-										fill
-										className="object-cover"
-										sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-										priority
-									/>
-									<div className="absolute inset-0 ring-1 ring-inset ring-black/10" />
+								<div className="relative w-40 mx-auto">
+									<Avatar className="w-40 h-40 border-4 border-background shadow-lg">
+										<AvatarImage src={imageUrl} alt="Photo de profil" />
+										<AvatarFallback className="bg-muted">
+											<User className="w-16 h-16 text-muted-foreground" />
+										</AvatarFallback>
+									</Avatar>
 								</div>
 							) : (
-								<div className="relative touch-none w-32 mx-auto">
-									<UploadDropzone
-										endpoint="userAvatar"
-										onChange={async (files) => {
-											const res = await startUpload(files);
-											const input = document.getElementById(
-												fields.image.id
-											) as HTMLInputElement;
-											if (input && res?.[0]?.serverData?.url) {
-												input.value = res[0].serverData.url;
-												input.dispatchEvent(
-													new Event("change", { bubbles: true })
-												);
-											}
-										}}
-										onUploadError={(error) => {
-											console.error("[USER_FORM] Upload error:", error);
-										}}
-										appearance={{
-											container: "aspect-square bg-muted/50",
-											label: "text-base font-medium",
-											allowedContent: "text-sm text-muted-foreground mt-1",
-											button: "hidden",
-										}}
-										className="rounded-lg border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/40 transition-colors"
-									/>
+								<div className="relative touch-none w-40 mx-auto">
+									<div className="rounded-full overflow-hidden border-4 border-background shadow-lg">
+										<UploadDropzone
+											endpoint="userAvatar"
+											onChange={async (files) => {
+												const res = await startUpload(files);
+												if (res?.[0]?.serverData?.url) {
+													imageControl.change(res[0].serverData.url);
+												}
+											}}
+											onUploadError={(error) => {
+												console.error("[USER_FORM] Upload error:", error);
+											}}
+											appearance={{
+												container:
+													"w-40 h-40 bg-muted flex items-center justify-center",
+												label: "text-base font-medium",
+												allowedContent: "text-sm text-muted-foreground mt-1",
+												button: "hidden",
+											}}
+											className="hover:bg-muted/80 transition-colors"
+										/>
+									</div>
 									{isUploading && (
-										<div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+										<div className="absolute inset-0 flex items-center justify-center bg-black/50 backdrop-blur-sm rounded-full">
 											<div className="flex flex-col items-center gap-2">
 												<Loader2 className="h-8 w-8 animate-spin text-white" />
 												<p className="text-sm text-white font-medium">
@@ -146,7 +133,7 @@ export default function UserForm({ user }: UserFormProps) {
 								placeholder="Votre nom"
 								aria-describedby={fields.name.descriptionId}
 								aria-invalid={!fields.name.valid}
-								defaultValue={user ? state?.data?.name : ""}
+								defaultValue={state?.data?.name ?? ""}
 								className="h-11"
 							/>
 							{fields.name.errors && (
@@ -170,7 +157,7 @@ export default function UserForm({ user }: UserFormProps) {
 								placeholder="Votre adresse email"
 								aria-describedby={fields.email.descriptionId}
 								aria-invalid={!fields.email.valid}
-								defaultValue={user ? state?.data?.email : ""}
+								defaultValue={state?.data?.email ?? ""}
 								className="h-11"
 							/>
 							{fields.email.errors && (
