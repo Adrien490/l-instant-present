@@ -52,6 +52,33 @@ export const ourFileRouter = {
 			// !!! Whatever is returned here is sent to the clientside `onClientUploadComplete` callback
 			return { url: file.url };
 		}),
+
+	userAvatar: f({
+		image: {
+			maxFileSize: "2MB",
+			maxFileCount: 1,
+			contentDisposition: "inline",
+		},
+	})
+		.middleware(async () => {
+			const user = await getUser();
+
+			if (!user)
+				throw new UploadThingError(
+					"Vous devez être connecté pour télécharger une photo de profil"
+				);
+
+			return { userId: user.id };
+		})
+		.onUploadComplete(async ({ metadata, file }) => {
+			console.log(
+				"Upload de photo de profil complété pour l'utilisateur:",
+				metadata.userId
+			);
+			console.log("URL du fichier:", file.url);
+
+			return { url: file.url };
+		}),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;

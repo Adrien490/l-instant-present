@@ -4,9 +4,6 @@ import webpush from "web-push";
 import { CONFIG } from "../config/config";
 import { sleep, validatePayload } from "../lib/utils";
 import { NotificationResult, PushNotificationPayload } from "../types";
-import { RateLimiter } from "./rate-limiter";
-
-const rateLimiter = new RateLimiter();
 
 export async function sendNotificationToDevice(
 	device: PushDevice,
@@ -15,10 +12,6 @@ export async function sendNotificationToDevice(
 ): Promise<boolean> {
 	try {
 		validatePayload(payload);
-		const canSend = await rateLimiter.increment(device.userId);
-		if (!canSend) {
-			throw new Error("Rate limit exceeded");
-		}
 
 		await webpush.sendNotification(
 			{
