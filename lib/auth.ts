@@ -37,4 +37,8 @@ export const auth = betterAuth({
 			maxAge: 30 * 24 * 60 * 60, // 30 jours
 		},
 	},
+	emailAndPassword: {
+		enabled: true,
+		rememberMe: true, // Activer la persistance de session
+	},
 });

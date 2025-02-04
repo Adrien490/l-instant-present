@@ -22,10 +22,17 @@ export const authClient = createAuthClient({
 		key: "auth_session",
 	},
 	session: {
-		persistOnClose: true,
 		refreshOnFocus: true,
 		refreshInterval: 5 * 60, // Rafraîchir toutes les 5 minutes
 	},
 });
+
+// Configurer le comportement de connexion par défaut
+authClient.signIn.email = async (params) => {
+	return authClient.signIn.email({
+		...params,
+		rememberMe: true, // Toujours activer la persistance
+	});
+};
 
 export const { useSession } = authClient;
