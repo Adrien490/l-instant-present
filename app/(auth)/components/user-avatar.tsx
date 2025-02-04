@@ -1,7 +1,8 @@
 "use client";
 
+import { getUserInitials } from "@/app/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn, getUserInitials } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { User } from "better-auth/types";
 import Link from "next/link";
 import { use } from "react";
