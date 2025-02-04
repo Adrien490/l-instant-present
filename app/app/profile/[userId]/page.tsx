@@ -1,3 +1,4 @@
+import ProfileSettings from "@/app/features/users/components/profile-settings";
 import getUser from "@/app/features/users/queries/get-user";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
@@ -22,5 +23,5 @@ export default async function ProfilePage({ params }: Props) {
 
 	const isCurrentUser = session?.user?.id === user.id;
 
-	return <></>;
+	return <>{isCurrentUser ? <ProfileSettings /> : <></>}</>;
 }
