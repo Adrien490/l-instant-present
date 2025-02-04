@@ -1,12 +1,12 @@
 import ProfileSettings from "@/app/features/users/components/profile-settings";
 import getUser from "@/app/features/users/queries/get-user";
+import { formatDateToFrench, getUserInitials } from "@/app/lib/utils";
 import PageContainer from "@/components/page-container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
-import { formatDateToFrench, getUserInitials } from "@/lib/utils";
 import { Group, Mail, Pencil, Shield, Trophy, User, Waves } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
