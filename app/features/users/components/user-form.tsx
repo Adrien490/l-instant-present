@@ -28,7 +28,6 @@ export default function UserForm({ user }: UserFormProps) {
 		},
 		defaultValue: {
 			name: state?.data?.name ?? "",
-			email: state?.data?.email ?? "",
 			image: state?.data?.image ?? "",
 		},
 		shouldValidate: "onBlur",
@@ -142,30 +141,6 @@ export default function UserForm({ user }: UserFormProps) {
 									id={fields.name.errorId}
 								>
 									{fields.name.errors[0]}
-								</p>
-							)}
-						</div>
-
-						<div className="space-y-2">
-							<FormLabel htmlFor={fields.email.id} className="text-base">
-								Email <span className="text-destructive">*</span>
-							</FormLabel>
-							<Input
-								id={fields.email.id}
-								name={fields.email.name}
-								type="email"
-								placeholder="Votre adresse email"
-								aria-describedby={fields.email.descriptionId}
-								aria-invalid={!fields.email.valid}
-								defaultValue={state?.data?.email ?? ""}
-								className="h-11"
-							/>
-							{fields.email.errors && (
-								<p
-									className="text-sm text-destructive"
-									id={fields.email.errorId}
-								>
-									{fields.email.errors[0]}
 								</p>
 							)}
 						</div>

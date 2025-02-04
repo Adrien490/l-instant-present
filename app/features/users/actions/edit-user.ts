@@ -49,7 +49,6 @@ export default async function editUser(
 		const rawData = {
 			id: userId,
 			name: formData.get("name")?.toString() || "",
-			email: formData.get("email")?.toString() || "",
 			image: formData.get("image")?.toString() || null,
 		};
 
@@ -67,7 +66,6 @@ export default async function editUser(
 			where: { id: userId },
 			data: {
 				name: validation.data.name,
-				email: validation.data.email,
 				image: validation.data.image,
 				updatedAt: new Date(),
 			},

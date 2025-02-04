@@ -6,7 +6,6 @@ const userFormSchema = z.object({
 		.string()
 		.min(2, "Le nom doit contenir au moins 2 caractères")
 		.max(50, "Le nom ne peut pas dépasser 50 caractères"),
-	email: z.string().email("L'adresse email n'est pas valide"),
 	image: z.string().nullable(),
 });
 
