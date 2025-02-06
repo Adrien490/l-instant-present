@@ -37,7 +37,20 @@ export default function GroupList({
 					(member: { user: { id: string } }) => member.user.id === sessionId
 				);
 
-				return <GroupCard key={group.id} group={group} isOwner={isOwner} />;
+				const isAdmin = group.members.some(
+					(member: { user: { id: string }; role: string }) =>
+						member.user.id === sessionId && member.role === "ADMIN"
+				);
+
+				return (
+					<GroupCard
+						key={group.id}
+						group={group}
+						isOwner={isOwner}
+						canEdit={isAdmin}
+						canDelete={isAdmin}
+					/>
+				);
 			})}
 		</div>
 	);

@@ -1,7 +1,7 @@
 "use client";
 
 import { Card } from "@/components/ui/card";
-import { Crown, Settings, Users } from "lucide-react";
+import { Crown, Eye, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,6 +14,7 @@ import {
 } from "react-swipeable-list";
 import "react-swipeable-list/dist/styles.css";
 import { GetGroupListResponse } from "../queries/get-group-list";
+
 type GroupData = GetGroupListResponse[number];
 
 import { Edit, Trash2 } from "lucide-react";
@@ -21,26 +22,34 @@ import { Edit, Trash2 } from "lucide-react";
 type Props = {
 	group: GroupData;
 	isOwner: boolean;
+	canEdit: boolean;
+	canDelete: boolean;
 };
 
-export default function GroupCard({ group, isOwner }: Props) {
+export default function GroupCard({
+	group,
+	isOwner,
+	canEdit,
+	canDelete,
+}: Props) {
 	const router = useRouter();
 	const trailingActions = () => (
 		<TrailingActions>
 			<SwipeAction onClick={() => router.push(`/app/my-groups/${group.id}`)}>
 				<div className="h-full flex items-center justify-end">
-					{isOwner && (
-						<>
-							<div className="h-full w-16 flex items-center justify-center bg-destructive/10 backdrop-blur-sm text-destructive hover:bg-destructive/20 active:bg-destructive/30 transition-all">
-								<Trash2 className="h-5 w-5" />
-							</div>
-							<div className="h-full w-16 flex items-center justify-center bg-muted/95 backdrop-blur-sm text-muted-foreground hover:bg-muted/80 active:bg-muted/70 transition-all">
-								<Edit className="h-5 w-5" />
-							</div>
-						</>
+					{canEdit && (
+						<div className="h-full w-16 flex items-center justify-center bg-muted/95 backdrop-blur-sm text-muted-foreground hover:bg-muted/80 active:bg-muted/70 transition-all">
+							<Edit className="h-5 w-5" />
+						</div>
 					)}
+					{canDelete && (
+						<div className="h-full w-16 flex items-center justify-center bg-destructive/10 backdrop-blur-sm text-destructive hover:bg-destructive/20 active:bg-destructive/30 transition-all">
+							<Trash2 className="h-5 w-5" />
+						</div>
+					)}
+
 					<div className="h-full w-16 flex items-center justify-center bg-primary/10 backdrop-blur-sm text-primary hover:bg-primary/20 active:bg-primary/30 transition-all">
-						<Settings className="h-5 w-5" />
+						<Eye className="h-5 w-5" />
 					</div>
 				</div>
 			</SwipeAction>

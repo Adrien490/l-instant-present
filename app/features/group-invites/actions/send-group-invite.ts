@@ -113,7 +113,7 @@ export default async function sendGroupInvite(
 				groupId: validation.data.groupId,
 				email: validation.data.email,
 				status: {
-					in: ["PENDING", "EXPIRED"],
+					in: [GroupInviteStatus.PENDING, GroupInviteStatus.EXPIRED],
 				},
 			},
 			orderBy: {
