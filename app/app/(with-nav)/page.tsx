@@ -1,6 +1,7 @@
 import GroupInviteList from "@/app/features/group-invites/components/group-invite-list";
 import getGroupInvites from "@/app/features/group-invites/queries/get-group-invite-list";
 import GroupList from "@/app/features/groups/components/group-list";
+import GroupListSkeleton from "@/app/features/groups/components/group-list-skeleton";
 import getGroupList from "@/app/features/groups/queries/get-group-list";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
@@ -110,7 +111,7 @@ export default async function HomePage() {
 					</Button>
 				</div>
 
-				<Suspense fallback={<div>Chargement des groupes...</div>}>
+				<Suspense fallback={<GroupListSkeleton />}>
 					<GroupList
 						getGroupListPromise={getGroupList({ search: "", take: 3 })}
 						sessionId={session.user.id}

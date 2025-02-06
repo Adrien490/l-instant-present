@@ -4,6 +4,7 @@ import { Card } from "@/components/ui/card";
 import { Crown, Settings, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
 	Type as ListType,
 	SwipeableList,
@@ -13,7 +14,6 @@ import {
 } from "react-swipeable-list";
 import "react-swipeable-list/dist/styles.css";
 import { GetGroupListResponse } from "../queries/get-group-list";
-
 type GroupData = GetGroupListResponse[number];
 
 type Props = {
@@ -22,13 +22,15 @@ type Props = {
 };
 
 export default function GroupCard({ group, isOwner }: Props) {
+	const router = useRouter();
 	const trailingActions = () => (
 		<TrailingActions>
-			<SwipeAction
-				onClick={() => (window.location.href = `/app/my-groups/${group.id}`)}
-			>
-				<div className="h-full w-24 flex items-center bg-muted">
-					<div className="h-full w-full flex items-center justify-center bg-muted hover:bg-muted/80 transition-colors">
+			<SwipeAction onClick={() => router.push(`/app/my-groups/${group.id}`)}>
+				<div className="h-full flex items-center justify-end">
+					<div className="h-full w-20 flex items-center justify-center bg-muted/95 backdrop-blur-sm text-foreground/80 hover:bg-muted/80 active:bg-muted/70 transition-all">
+						<Settings className="h-5 w-5" />
+					</div>
+					<div className="h-full w-16 flex items-center justify-center bg-primary/10 backdrop-blur-sm text-primary hover:bg-primary/20 active:bg-primary/30 transition-all">
 						<Settings className="h-5 w-5" />
 					</div>
 				</div>
@@ -40,7 +42,7 @@ export default function GroupCard({ group, isOwner }: Props) {
 		<div className="w-full">
 			<SwipeableList threshold={0.5} type={ListType.IOS}>
 				<SwipeableListItem trailingActions={trailingActions()}>
-					<Card className="overflow-hidden border-none w-full">
+					<Card className="overflow-hidden">
 						<Link href={`/app/groups/${group.id}`} className="block w-full">
 							<div className="relative flex items-start p-4 w-full">
 								{/* Rest of the component code remains the same */}

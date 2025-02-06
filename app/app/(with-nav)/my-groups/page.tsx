@@ -1,4 +1,5 @@
 import GroupList from "@/app/features/groups/components/group-list";
+import GroupListSkeleton from "@/app/features/groups/components/group-list-skeleton";
 import getGroupList from "@/app/features/groups/queries/get-group-list";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
@@ -45,7 +46,7 @@ export default async function MyGroupsPage({ searchParams }: Props) {
 					</Button>
 				</div>
 
-				<Suspense fallback={<div>Chargement des groupes...</div>}>
+				<Suspense fallback={<GroupListSkeleton />}>
 					<GroupList
 						getGroupListPromise={getGroupList({
 							search: resolvedSearchParams.search,
