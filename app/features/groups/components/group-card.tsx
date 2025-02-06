@@ -4,12 +4,10 @@ import { Card } from "@/components/ui/card";
 import { Crown, Eye, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
 	Type as ListType,
 	SwipeableList,
 	SwipeableListItem,
-	SwipeAction,
 	TrailingActions,
 } from "react-swipeable-list";
 import "react-swipeable-list/dist/styles.css";
@@ -32,36 +30,33 @@ export default function GroupCard({
 	canEdit,
 	canDelete,
 }: Props) {
-	const router = useRouter();
 	const trailingActions = () => (
 		<TrailingActions>
-			<SwipeAction onClick={() => router.push(`/app/my-groups/${group.id}`)}>
-				<div className="h-full flex items-center justify-end">
-					{canEdit && (
-						<Link
-							href={`/app/my-groups/${group.id}/edit`}
-							className="h-full w-16 flex items-center justify-center bg-muted/95 backdrop-blur-sm text-muted-foreground hover:bg-muted/80 active:bg-muted/70 transition-all"
-						>
-							<Edit className="h-5 w-5" />
-						</Link>
-					)}
-					{canDelete && (
-						<Link
-							href={`/app/my-groups/${group.id}/delete`}
-							className="h-full w-16 flex items-center justify-center bg-destructive/10 backdrop-blur-sm text-destructive hover:bg-destructive/20 active:bg-destructive/30 transition-all"
-						>
-							<Trash2 className="h-5 w-5" />
-						</Link>
-					)}
-
+			<div className="h-full flex items-center justify-end">
+				{canEdit && (
 					<Link
-						href={`/app/my-groups/${group.id}`}
-						className="h-full w-16 flex items-center justify-center bg-primary/10 backdrop-blur-sm text-primary hover:bg-primary/20 active:bg-primary/30 transition-all"
+						href={`/app/my-groups/${group.id}/edit`}
+						className="h-full w-16 flex items-center justify-center bg-muted/95 backdrop-blur-sm text-muted-foreground hover:bg-muted/80 active:bg-muted/70 transition-all"
 					>
-						<Eye className="h-5 w-5" />
+						<Edit className="h-5 w-5" />
 					</Link>
-				</div>
-			</SwipeAction>
+				)}
+				{canDelete && (
+					<Link
+						href={`/app/my-groups/${group.id}/delete`}
+						className="h-full w-16 flex items-center justify-center bg-destructive/10 backdrop-blur-sm text-destructive hover:bg-destructive/20 active:bg-destructive/30 transition-all"
+					>
+						<Trash2 className="h-5 w-5" />
+					</Link>
+				)}
+
+				<Link
+					href={`/app/my-groups/${group.id}`}
+					className="h-full w-16 flex items-center justify-center bg-primary/10 backdrop-blur-sm text-primary hover:bg-primary/20 active:bg-primary/30 transition-all"
+				>
+					<Eye className="h-5 w-5" />
+				</Link>
+			</div>
 		</TrailingActions>
 	);
 
