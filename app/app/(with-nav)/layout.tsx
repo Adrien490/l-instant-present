@@ -1,5 +1,5 @@
-import BottomNav from "@/components/bottom-nav";
-import { mainMenuItems } from "@/lib/menus";
+import BottomNav from "@/app/features/menus/components/bottom-nav";
+import mainMenuItems from "@/app/features/menus/lib/main-menu-items";
 
 export default function WithNavLayout({
 	children,

@@ -1,20 +1,44 @@
 "use client";
 
 import { useHapticFeedback } from "@/hooks/use-haptic-feedback";
-import { NavItem, mainMenuItems } from "@/lib/menus";
 import { cn } from "@/lib/utils";
+import {
+	Calendar,
+	HelpCircle,
+	Home,
+	Info,
+	Mail,
+	Medal,
+	PlusCircle,
+	Trophy,
+	Users2,
+} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import NavItem from "../types/nav-item";
+
+// Mapping from iconType to actual icon components
+const iconMap: Record<
+	NavItem["iconType"],
+	React.ComponentType<React.SVGProps<SVGSVGElement>>
+> = {
+	calendar: Calendar,
+	users: Users2,
+	info: Info,
+	home: Home,
+	mail: Mail,
+	"help-circle": HelpCircle,
+	medal: Medal,
+	trophy: Trophy,
+	"plus-circle": PlusCircle,
+};
 
 interface BottomNavProps {
 	items: NavItem[];
 	className?: string;
 }
 
-export default function BottomNav({
-	items = mainMenuItems,
-	className,
-}: BottomNavProps) {
+export default function BottomNav({ items, className }: BottomNavProps) {
 	const pathname = usePathname();
 	const { trigger } = useHapticFeedback();
 
@@ -33,7 +57,7 @@ export default function BottomNav({
 			<div className="mx-auto max-w-md pointer-events-auto">
 				<div className="grid grid-cols-4 h-16">
 					{items.map((item) => {
-						const Icon = item.icon;
+						const Icon = iconMap[item.iconType];
 						const isActive = pathname === item.href;
 
 						return (
