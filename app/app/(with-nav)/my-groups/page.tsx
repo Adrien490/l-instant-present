@@ -34,11 +34,7 @@ export default async function MyGroupsPage({ searchParams }: Props) {
 						placeholder="Rechercher ..."
 						className="w-full"
 					/>
-					<Button
-						asChild
-						size="lg"
-						className="w-full sm:w-auto touch-target-2025 min-h-[44px] font-medium text-base leading-normal antialiased"
-					>
+					<Button asChild size="lg">
 						<Link href="/app/my-groups/new">
 							<Users className="mr-3 h-5 w-5 transform-gpu" />
 							Créer un groupe

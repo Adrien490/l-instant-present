@@ -40,23 +40,23 @@ export default async function HomePage() {
 
 			{/* Quick Actions */}
 			<div className="mt-4">
-				<div className="grid grid-cols-2 gap-4">
+				<div className="grid grid-cols-2 gap-3 sm:gap-4">
 					<Link href="/app/my-groups/new">
-						<Card className="flex h-20 flex-col items-center justify-center gap-2 p-2 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
+						<Card className="group flex h-[4.5rem] sm:h-20 items-center gap-3 p-3 sm:p-4 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
 							<div className="rounded-full bg-primary/10 p-2">
 								<Plus className="h-5 w-5 text-primary transform-gpu" />
 							</div>
-							<span className="text-sm leading-normal antialiased font-medium text-center">
+							<span className="text-sm sm:text-base leading-tight sm:leading-normal font-medium text-left">
 								Créer un groupe
 							</span>
 						</Card>
 					</Link>
 					<Link href="/app/my-groups">
-						<Card className="flex h-20 flex-col items-center justify-center gap-2 p-2 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
+						<Card className="group flex h-[4.5rem] sm:h-20 items-center gap-3 p-3 sm:p-4 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
 							<div className="rounded-full bg-primary/10 p-2">
 								<Users className="h-5 w-5 text-primary transform-gpu" />
 							</div>
-							<span className="text-sm leading-normal antialiased font-medium text-center">
+							<span className="text-sm sm:text-base leading-tight sm:leading-normal font-medium text-left">
 								Mes groupes
 							</span>
 						</Card>
