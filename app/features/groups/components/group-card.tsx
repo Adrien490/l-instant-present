@@ -52,9 +52,11 @@ export default function GroupCard({
 						</Link>
 					)}
 
-					<div className="h-full w-16 flex items-center justify-center bg-primary/10 backdrop-blur-sm text-primary hover:bg-primary/20 active:bg-primary/30 transition-all">
-						<Eye className="h-5 w-5" />
-					</div>
+					<Link href={`/app/my-groups/${group.id}`}>
+						<div className="h-full w-16 flex items-center justify-center bg-primary/10 backdrop-blur-sm text-primary hover:bg-primary/20 active:bg-primary/30 transition-all">
+							<Eye className="h-5 w-5" />
+						</div>
+					</Link>
 				</div>
 			</SwipeAction>
 		</TrailingActions>
