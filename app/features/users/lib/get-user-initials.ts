@@ -1,4 +1,4 @@
-export function getUserInitials(name?: string, email?: string): string {
+export default function getUserInitials(name?: string, email?: string): string {
 	if (!name && !email) return "?";
 
 	if (name) {
@@ -17,12 +17,4 @@ export function getUserInitials(name?: string, email?: string): string {
 	}
 
 	return "?";
-}
-
-export function formatDateToFrench(date: Date): string {
-	return new Intl.DateTimeFormat("fr-FR", {
-		day: "numeric",
-		month: "long",
-		year: "numeric",
-	}).format(date);
 }

@@ -2,9 +2,11 @@
 
 import { auth } from "@/lib/auth";
 import db, { CACHE_TIMES } from "@/lib/db";
+import { QueryResponse, QueryStatus } from "@/types/query";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
+import getGroupMemberSchema from "../schemas/get-group-member-schema";
 
 const DEFAULT_SELECT = {
 	id: true,
@@ -27,21 +29,34 @@ export type GetGroupMemberResponse = Prisma.GroupMemberGetPayload<{
 export async function getGroupMember(
 	groupId: string,
 	userId: string
-): Promise<GetGroupMemberResponse> {
+): Promise<QueryResponse<GetGroupMemberResponse>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
 
 		if (!session) {
-			throw new Error("Vous devez être connecté pour accéder à cette page");
+			return {
+				status: QueryStatus.ERROR,
+				message: "Vous devez être connecté pour accéder à cette page",
+			};
 		}
+
+		const validation = getGroupMemberSchema.safeParse({ groupId, userId });
+		if (!validation.success) {
+			return {
+				status: QueryStatus.ERROR,
+				message: "Paramètres invalides",
+			};
+		}
+
+		const validatedParams = validation.data;
 
 		const getGroupMemberFromDb = async () => {
 			const member = await db.groupMember.findFirst({
 				where: {
-					groupId,
-					userId,
+					groupId: validatedParams.groupId,
+					userId: validatedParams.userId,
 					group: {
 						members: {
 							some: {
@@ -54,13 +69,13 @@ export async function getGroupMember(
 			});
 
 			if (!member) {
-				throw new Error("Membre non trouvé");
+				return null;
 			}
 
 			return member;
 		};
 
-		return unstable_cache(
+		const data = await unstable_cache(
 			getGroupMemberFromDb,
 			[`group-member-${groupId}-${userId}-${session.user.id}`],
 			{
@@ -68,8 +83,16 @@ export async function getGroupMember(
 				tags: ["groups", `group-${groupId}`],
 			}
 		)();
+
+		return {
+			status: QueryStatus.SUCCESS,
+			data,
+		};
 	} catch (error) {
 		console.error("[GET_GROUP_MEMBER_ERROR]", { groupId, userId, error });
-		return null;
+		return {
+			status: QueryStatus.ERROR,
+			message: "Une erreur est survenue lors de la récupération du membre",
+		};
 	}
 }

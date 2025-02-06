@@ -16,7 +16,7 @@ import {
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import sendPushNotifications from "../../push-notifications/helpers/send-push-notifications";
+import sendPushNotifications from "../../push-notifications/actions/send-push-notifications";
 import updateGroupInviteSchema from "../schemas/update-group-invite-status-schema";
 
 export default async function updateGroupInviteStatus(
@@ -37,7 +37,7 @@ export default async function updateGroupInviteStatus(
 
 		const rawData = {
 			id: formData.get("id")?.toString() || "",
-			status: formData.get("status")?.toString() || "",
+			status: (formData.get("status")?.toString() as GroupInviteStatus) || "",
 		};
 
 		const validation = updateGroupInviteSchema.safeParse(rawData);

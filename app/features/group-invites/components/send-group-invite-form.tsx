@@ -19,10 +19,10 @@ import { GroupRole } from "@prisma/client";
 import { Loader2, Users } from "lucide-react";
 import Image from "next/image";
 import { useEffect } from "react";
-import { GetGroupsResponse } from "../../groups/queries/get-groups";
+import { GetGroupListResponse } from "../../groups/queries/get-group-list";
 
 interface SendGroupInviteFormProps {
-	groups: GetGroupsResponse;
+	groups: GetGroupListResponse;
 }
 
 const ROLE_LABELS = {

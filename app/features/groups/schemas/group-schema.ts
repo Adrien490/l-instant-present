@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const groupFormSchema = z.object({
+export const groupSchema = z.object({
 	id: z
 		.string()
 		.uuid({
@@ -24,6 +24,6 @@ export const groupFormSchema = z.object({
 		.nullable(),
 });
 
-export type GroupFormParams = z.infer<typeof groupFormSchema>;
+export type GroupFormParams = z.infer<typeof groupSchema>;
 
-export default groupFormSchema;
+export default groupSchema;

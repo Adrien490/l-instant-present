@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import db, { CACHE_TIMES, DB_TIMEOUTS } from "@/lib/db";
+import { QueryResponse, QueryStatus } from "@/types/query";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
@@ -37,33 +38,39 @@ const DEFAULT_SELECT = {
 
 export type GetGroupResponse = Prisma.GroupGetPayload<{
 	select: typeof DEFAULT_SELECT;
-}>;
+}> | null;
 
 /**
  * Récupère un groupe par son ID
  */
 export async function getGroup(
 	params: GetGroupParams
-): Promise<GetGroupResponse | null> {
+): Promise<QueryResponse<GetGroupResponse>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
 
 		if (!session) {
-			throw new Error("Vous devez être connecté pour accéder à cette page");
+			return {
+				status: QueryStatus.ERROR,
+				message: "Vous devez être connecté pour accéder à cette page",
+			};
 		}
 
 		const validation = getGroupSchema.safeParse(params);
 		if (!validation.success) {
-			throw new Error("ID de groupe invalide");
+			return {
+				status: QueryStatus.ERROR,
+				message: "ID de groupe invalide",
+			};
 		}
 
 		const validatedParams = validation.data;
 		const cacheKey = `group:${validatedParams.id}:user:${session.user.id}`;
 
 		const getData = async () => {
-			return await Promise.race([
+			const result = await Promise.race([
 				db.group.findFirst({
 					where: {
 						id: validatedParams.id,
@@ -79,9 +86,11 @@ export async function getGroup(
 					setTimeout(() => reject(new Error("Query timeout")), DB_TIMEOUT)
 				),
 			]);
+
+			return result;
 		};
 
-		const group = await unstable_cache(getData, [cacheKey], {
+		const data = await unstable_cache(getData, [cacheKey], {
 			revalidate: CACHE_REVALIDATION_TIME,
 			tags: [
 				"groups",
@@ -90,9 +99,15 @@ export async function getGroup(
 			],
 		})();
 
-		return group;
+		return {
+			status: QueryStatus.SUCCESS,
+			data,
+		};
 	} catch (error) {
 		console.error("[GET_GROUP_ERROR]", { params, error });
-		return null;
+		return {
+			status: QueryStatus.ERROR,
+			message: "Une erreur est survenue lors de la récupération du groupe",
+		};
 	}
 }

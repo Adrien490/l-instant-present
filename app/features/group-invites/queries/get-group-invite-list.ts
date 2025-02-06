@@ -2,11 +2,12 @@
 
 import { auth } from "@/lib/auth";
 import db, { DB_TIMEOUTS } from "@/lib/db";
+import { QueryResponse, QueryStatus } from "@/types/query";
 import { Prisma } from "@prisma/client";
 import { headers } from "next/headers";
-import getGroupInvitesSchema, {
-	GetGroupInvitesParams,
-} from "../schemas/get-group-invites-schema";
+import getGroupInviteListSchema, {
+	GetGroupInviteListParams,
+} from "../schemas/get-group-invite-list-schema";
 
 // Constants
 const DB_TIMEOUT = DB_TIMEOUTS.MEDIUM;
@@ -49,13 +50,13 @@ const DEFAULT_SELECT = {
 	},
 } satisfies Prisma.GroupInviteSelect;
 
-export type GetGroupInvitesResponse = Array<
+export type GetGroupInviteListResponse = Array<
 	Prisma.GroupInviteGetPayload<{ select: typeof DEFAULT_SELECT }>
 >;
 
 // Helpers
 const buildWhereClause = (
-	params: GetGroupInvitesParams,
+	params: GetGroupInviteListParams,
 	session: { user: { id: string; email: string } }
 ): Prisma.GroupInviteWhereInput => {
 	return {
@@ -66,27 +67,33 @@ const buildWhereClause = (
 	};
 };
 
-export default async function getGroupInvites(
-	params: GetGroupInvitesParams
-): Promise<GetGroupInvitesResponse> {
+export default async function getGroupInviteList(
+	params: GetGroupInviteListParams
+): Promise<QueryResponse<GetGroupInviteListResponse>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
 
 		if (!session) {
-			throw new Error("Unauthorized");
+			return {
+				status: QueryStatus.ERROR,
+				message: "Unauthorized",
+			};
 		}
 
-		const validation = getGroupInvitesSchema.safeParse(params);
+		const validation = getGroupInviteListSchema.safeParse(params);
 		if (!validation.success) {
-			throw new Error("Invalid parameters");
+			return {
+				status: QueryStatus.ERROR,
+				message: "Invalid parameters",
+			};
 		}
 
 		const validatedParams = validation.data;
 		const where = buildWhereClause(validatedParams, session);
 
-		return await Promise.race([
+		const data = await Promise.race([
 			db.groupInvite.findMany({
 				where,
 				select: DEFAULT_SELECT,
@@ -97,8 +104,16 @@ export default async function getGroupInvites(
 				setTimeout(() => reject(new Error("Query timeout")), DB_TIMEOUT)
 			),
 		]);
+
+		return {
+			status: QueryStatus.SUCCESS,
+			data,
+		};
 	} catch (error) {
-		console.error("[GET_GROUP_INVITES]", error);
-		return [];
+		console.error("[GET_GROUP_INVITE_LIST]", error);
+		return {
+			status: QueryStatus.ERROR,
+			message: "An error occurred while fetching the group invites",
+		};
 	}
 }

@@ -15,7 +15,7 @@
 		"@conform-to/react": "^1.2.2",
 		"@conform-to/zod": "^1.2.2",
 		"@hookform/resolvers": "^3.10.0",
-		"@prisma/client": "^6.3.0",
+		"@prisma/client": "^6.3.1",
 		"@radix-ui/react-accordion": "^1.2.2",
 		"@radix-ui/react-alert-dialog": "^1.1.5",
 		"@radix-ui/react-aspect-ratio": "^1.1.1",
@@ -84,7 +84,7 @@
 		"eslint-config-next": "15.1.6",
 		"jest": "^29.7.0",
 		"postcss": "^8",
-		"prisma": "^6.3.0",
+		"prisma": "^6.3.1",
 		"tailwindcss": "^3.4.1",
 		"ts-jest": "^29.2.5",
 		"typescript": "^5"

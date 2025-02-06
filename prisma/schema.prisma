@@ -8,22 +8,24 @@ datasource db {
 }
 
 model User {
-  id            String           @id
-  name          String
-  email         String           @unique
-  emailVerified Boolean
-  image         String?
-  createdAt     DateTime
-  updatedAt     DateTime
-  accounts      Account[]
-  completions   Completion[]
-  ownedGroups   Group[]          @relation("GroupOwner")
-  sentInvites   GroupInvite[]    @relation("InviteSender")
-  memberships   GroupMember[]
-  pushDevices   PushDevice[]
-  sessions      Session[]
-  validations   ValidationVote[]
-  notifications Notification[]
+  id                     String                  @id
+  name                   String
+  email                  String                  @unique
+  emailVerified          Boolean
+  image                  String?
+  createdAt              DateTime
+  updatedAt              DateTime
+  accounts               Account[]
+  completions            Completion[]
+  ownedGroups            Group[]                 @relation("GroupOwner")
+  sentInvites            GroupInvite[]           @relation("InviteSender")
+  memberships            GroupMember[]
+  pushDevices            PushDevice[]
+  sessions               Session[]
+  validations            ValidationVote[]
+  notifications          Notification[]
+  comments               Comment[]
+  notificationPreference NotificationPreference?
 
   @@map("user")
 }
@@ -39,6 +41,7 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("session")
 }
 
@@ -58,6 +61,7 @@ model Account {
   updatedAt             DateTime
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("account")
 }
 
@@ -85,6 +89,7 @@ model Group {
   invites     GroupInvite[]
   members     GroupMember[]
 
+  @@index([ownerId])
   @@map("group")
 }
 
@@ -103,6 +108,7 @@ model GroupMember {
   user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, groupId])
+  @@index([groupId])
   @@map("group_member")
 }
 
@@ -118,6 +124,7 @@ model GroupInvite {
   group     Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
   sender    User              @relation("InviteSender", fields: [senderId], references: [id])
 
+  @@index([groupId, status])
   @@map("group_invite")
 }
 
@@ -133,47 +140,56 @@ model ChallengePeriod {
   name       String
   startDate  DateTime
   endDate    DateTime
-  isActive   Boolean     @default(true)
   groupId    String
   createdAt  DateTime    @default(now())
   updatedAt  DateTime    @updatedAt
   challenges Challenge[]
   group      Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
 
+  @@index([groupId])
   @@map("challenge_period")
 }
 
 model Challenge {
-  id          String           @id @default(uuid())
-  title       String
-  description String
-  difficulty  Difficulty       @default(MEDIUM)
-  points      Int              @default(10)
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-  periodId    String?
-  gamePeriod  ChallengePeriod? @relation(fields: [periodId], references: [id])
-  completions Completion[]
+  id                           String           @id @default(uuid())
+  title                        String
+  description                  String
+  difficulty                   Difficulty       @default(MEDIUM)
+  points                       Int              @default(10)
+  createdAt                    DateTime         @default(now())
+  updatedAt                    DateTime         @updatedAt
+  periodId                     String?
+  gamePeriod                   ChallengePeriod? @relation(fields: [periodId], references: [id])
+  completions                  Completion[]
+  requiredValidationPercentage Int              @default(50)
+  attachments                  Attachment[]
 
+  @@index([periodId])
   @@map("challenge")
 }
 
+enum CompletionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Completion {
-  id                  String           @id @default(uuid())
-  userId              String
-  challengeId         String
-  proof               String
-  status              String           @default("PENDING")
-  completedAt         DateTime         @default(now())
-  updatedAt           DateTime         @updatedAt
-  validationThreshold Int              @default(0)
-  positiveVotes       Int              @default(0)
-  negativeVotes       Int              @default(0)
-  challenge           Challenge        @relation(fields: [challengeId], references: [id])
-  user                User             @relation(fields: [userId], references: [id])
-  validators          ValidationVote[]
+  id          String           @id @default(uuid())
+  userId      String
+  challengeId String
+  proof       String
+  status      CompletionStatus @default(PENDING)
+  completedAt DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  challenge   Challenge        @relation(fields: [challengeId], references: [id])
+  user        User             @relation(fields: [userId], references: [id])
+  validators  ValidationVote[]
+  comments    Comment[]
 
   @@unique([userId, challengeId])
+  @@index([challengeId])
+  @@index([status])
   @@map("completion")
 }
 
@@ -203,19 +219,21 @@ model PushDevice {
   lastUsedAt DateTime @default(now())
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
   @@map("push_device")
 }
 
 model Notification {
-  id        String           @id @default(uuid())
+  id        String              @id @default(uuid())
   userId    String
   type      NotificationType
   title     String
   body      String
-  read      Boolean          @default(false)
+  read      Boolean             @default(false)
   data      Json? // Pour stocker des données supplémentaires (groupId, challengeId, etc.)
-  createdAt DateTime         @default(now())
-  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  channel   NotificationChannel @default(PUSH)
+  createdAt DateTime            @default(now())
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId, read, createdAt]) // Index optimisé pour les requêtes
   @@map("notification")
@@ -234,4 +252,67 @@ enum NotificationType {
   VALIDATION_RECEIVED
   PERIOD_STARTED
   MEMBER_JOINED
+  COMMENT_ADDED
+}
+
+enum NotificationChannel {
+  PUSH
+  IN_APP
+}
+
+enum NotificationFrequency {
+  INSTANT
+  HOURLY
+  DAILY
+  WEEKLY
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId       String
+  completionId String
+
+  user       User         @relation(fields: [userId], references: [id])
+  completion Completion   @relation(fields: [completionId], references: [id], onDelete: Cascade)
+  Attachment Attachment[]
+
+  @@index([completionId])
+  @@index([userId])
+}
+
+model NotificationPreference {
+  id              String  @id @default(uuid())
+  userId          String  @unique
+  pushEnabled     Boolean @default(true)
+  inAppEnabled    Boolean @default(true)
+  allowedSettings Json? // Optionnel pour stocker des préférences additionnelles
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Attachment {
+  id          String     @id @default(uuid())
+  url         String
+  fileType    String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  comment     Comment?   @relation(fields: [commentId], references: [id])
+  commentId   String?
+  challenge   Challenge? @relation(fields: [challengeId], references: [id])
+  challengeId String?
+
+  @@index([commentId])
+  @@index([challengeId])
+}
+
+enum ReactionType {
+  LIKE
+  LOVE
+  HAHA
+  WOW
+  SAD
+  ANGRY
 }

@@ -8,10 +8,10 @@ import { GetUserResponse } from "../queries/get-user";
 import userFormSchema from "../schemas/user-form-schema";
 
 interface UseUserFormProps {
-	user?: GetUserResponse;
+	user: GetUserResponse | undefined;
 }
 
-export default function useUserForm({ user }: UseUserFormProps = {}) {
+export default function useUserForm({ user }: UseUserFormProps) {
 	const [state, dispatch, isPending] = useActionState<
 		ServerActionState<User, typeof userFormSchema>,
 		FormData
@@ -31,7 +31,7 @@ export default function useUserForm({ user }: UseUserFormProps = {}) {
 		{
 			message: "",
 			status: ServerActionStatus.INITIAL,
-			data: user,
+			data: user ?? undefined,
 		}
 	);
 

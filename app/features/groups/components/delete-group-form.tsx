@@ -26,6 +26,10 @@ export default function DeleteGroupForm({ group }: DeleteGroupFormProps) {
 		shouldValidate: "onInput",
 	});
 
+	if (!group) {
+		return null;
+	}
+
 	const isNameMatch = fields.confirmName.value === group.name;
 
 	return (

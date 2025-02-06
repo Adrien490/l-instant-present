@@ -1,7 +1,7 @@
 import db from "@/lib/db";
 import { Prisma, PushDevice } from "@prisma/client";
 import webpush from "web-push";
-import { CONFIG } from "../config/config";
+import { CONFIG } from "../lib/config";
 import { sleep, validatePayload } from "../lib/utils";
 import { NotificationResult, PushNotificationPayload } from "../types";
 

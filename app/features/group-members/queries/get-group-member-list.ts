@@ -2,9 +2,11 @@
 
 import { auth } from "@/lib/auth";
 import db, { CACHE_TIMES } from "@/lib/db";
+import { QueryResponse, QueryStatus } from "@/types/query";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
+import getGroupMemberListSchema from "../schemas/get-group-member-list-schema";
 
 const DEFAULT_SELECT = {
 	id: true,
@@ -20,26 +22,39 @@ const DEFAULT_SELECT = {
 	},
 } satisfies Prisma.GroupMemberSelect;
 
-export type GetGroupMembersResponse = Array<
+export type GetGroupMemberListResponse = Array<
 	Prisma.GroupMemberGetPayload<{ select: typeof DEFAULT_SELECT }>
 >;
 
-export async function getGroupMembers(
+export async function getGroupMemberList(
 	groupId: string
-): Promise<GetGroupMembersResponse> {
+): Promise<QueryResponse<GetGroupMemberListResponse>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
 
 		if (!session) {
-			throw new Error("Vous devez être connecté pour accéder à cette page");
+			return {
+				status: QueryStatus.ERROR,
+				message: "Vous devez être connecté pour accéder à cette page",
+			};
 		}
+
+		const validation = getGroupMemberListSchema.safeParse({ groupId });
+		if (!validation.success) {
+			return {
+				status: QueryStatus.ERROR,
+				message: "Paramètres invalides",
+			};
+		}
+
+		const validatedParams = validation.data;
 
 		const getGroupMembersFromDb = async () => {
 			const members = await db.groupMember.findMany({
 				where: {
-					groupId,
+					groupId: validatedParams.groupId,
 					group: {
 						members: {
 							some: {
@@ -55,7 +70,7 @@ export async function getGroupMembers(
 			return members;
 		};
 
-		return unstable_cache(
+		const data = await unstable_cache(
 			getGroupMembersFromDb,
 			[`group-members-${groupId}-${session.user.id}`],
 			{
@@ -63,8 +78,16 @@ export async function getGroupMembers(
 				tags: ["groups", `group-${groupId}`],
 			}
 		)();
+
+		return {
+			status: QueryStatus.SUCCESS,
+			data,
+		};
 	} catch (error) {
 		console.error("[GET_GROUP_MEMBERS_ERROR]", { groupId, error });
-		return [];
+		return {
+			status: QueryStatus.ERROR,
+			message: "Une erreur est survenue lors de la récupération des membres",
+		};
 	}
 }

@@ -1,7 +1,7 @@
 import PushNotificationButton from "@/app/features/push-notifications/components/push-notification-button";
 import LogoutButton from "@/app/features/users/components/logout-button";
+import getUserInitials from "@/app/features/users/lib/get-user-initials";
 import getUser from "@/app/features/users/queries/get-user";
-import { getUserInitials } from "@/app/lib/utils";
 import EmptyPlaceholder from "@/components/empty-placeholder";
 import PageContainer from "@/components/page-container";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
+import { QueryStatus } from "@/types/query";
 import {
 	CalendarDays,
 	Group,
@@ -34,12 +35,19 @@ export default async function ProfilePage({ params }: Props) {
 	const resolvedParams = await params;
 	const { userId } = resolvedParams;
 
-	const user = await getUser({ id: userId });
-	const session = await auth.api.getSession({ headers: await headers() });
+	const response = await getUser({ id: userId });
+
+	if (response.status === QueryStatus.ERROR) {
+		return notFound();
+	}
+
+	const user = response.data;
 
 	if (!user) {
 		return notFound();
 	}
+
+	const session = await auth.api.getSession({ headers: await headers() });
 
 	const isCurrentUser = session?.user?.id === user.id;
 

@@ -6,8 +6,8 @@ import SocialLogin from "./components/social-login";
 
 export default function AuthPage() {
 	return (
-		<PageContainer className="min-h-[100dvh] flex flex-col items-center justify-center py-8 md:py-12">
-			<div className="w-full max-w-[340px] mx-auto space-y-10 md:space-y-12">
+		<PageContainer className="min-h-screen flex flex-col items-center justify-center pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
+			<div className="w-full max-w-md mx-auto p-6 bg-background rounded-lg shadow-lg space-y-10 md:space-y-12">
 				{/* Logo et Présentation */}
 				<div className="space-y-8 md:space-y-10 text-center">
 					{/* Carousel */}
@@ -47,7 +47,7 @@ export default function AuthPage() {
 				</div>
 
 				{/* Connexion */}
-				<div className="flex flex-col items-center space-y-6">
+				<div className="flex flex-col items-center space-y-1">
 					<div className="relative w-full text-center">
 						<Separator className="absolute inset-x-0 top-1/2 -translate-y-1/2" />
 						<div className="relative inline-block bg-background px-4">

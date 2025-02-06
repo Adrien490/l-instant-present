@@ -1,6 +1,6 @@
+import GroupForm from "@/app/features/groups/components/group-form";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
-import GroupForm from "../../../../features/groups/components/group-form";
 
 export default function NewGroupPage() {
 	return (

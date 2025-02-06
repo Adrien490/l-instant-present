@@ -2,10 +2,13 @@
 
 import { auth } from "@/lib/auth";
 import db, { CACHE_TIMES, DB_TIMEOUTS } from "@/lib/db";
+import { QueryResponse, QueryStatus } from "@/types/query";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
-import getGroupsSchema, { GetGroupsParams } from "../schemas/get-groups-schema";
+import getGroupListSchema, {
+	GetGroupListParams,
+} from "../schemas/get-group-list-schema";
 
 // Constants
 const CACHE_REVALIDATION_TIME = CACHE_TIMES.MEDIUM;
@@ -35,13 +38,13 @@ const DEFAULT_SELECT = {
 	},
 } satisfies Prisma.GroupSelect;
 
-export type GetGroupsResponse = Array<
+export type GetGroupListResponse = Array<
 	Prisma.GroupGetPayload<{ select: typeof DEFAULT_SELECT }>
 >;
 
 // Helpers
 const buildWhereClause = (
-	params: GetGroupsParams,
+	params: GetGroupListParams,
 	userId: string
 ): Prisma.GroupWhereInput => {
 	const conditions: Prisma.GroupWhereInput[] = [
@@ -63,20 +66,26 @@ const buildWhereClause = (
 	return { AND: conditions };
 };
 
-export default async function getGroups(
-	params: GetGroupsParams
-): Promise<GetGroupsResponse> {
+export default async function getGroupList(
+	params: GetGroupListParams
+): Promise<QueryResponse<GetGroupListResponse>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
 		if (!session) {
-			throw new Error("Unauthorized");
+			return {
+				status: QueryStatus.ERROR,
+				message: "Unauthorized",
+			};
 		}
 
-		const validation = getGroupsSchema.safeParse(params);
+		const validation = getGroupListSchema.safeParse(params);
 		if (!validation.success) {
-			throw new Error("Invalid parameters");
+			return {
+				status: QueryStatus.ERROR,
+				message: "Invalid parameters",
+			};
 		}
 
 		const validatedParams = validation.data;
@@ -103,7 +112,7 @@ export default async function getGroups(
 			]);
 		};
 
-		return await unstable_cache(getData, [cacheKey], {
+		const data = await unstable_cache(getData, [cacheKey], {
 			revalidate: CACHE_REVALIDATION_TIME,
 			tags: [
 				"groups:list",
@@ -111,8 +120,16 @@ export default async function getGroups(
 				`groups:search:${params.search || "all"}`,
 			],
 		})();
+
+		return {
+			status: QueryStatus.SUCCESS,
+			data,
+		};
 	} catch (error) {
 		console.error("[GET_GROUPS]", error);
-		return [];
+		return {
+			status: QueryStatus.ERROR,
+			message: "An error occurred while fetching groups",
+		};
 	}
 }

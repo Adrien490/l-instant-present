@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import db from "@/lib/db";
+import { QueryStatus } from "@/types/query";
 import {
 	ServerActionState,
 	ServerActionStatus,
@@ -47,7 +48,16 @@ export default async function deleteGroup(
 		}
 
 		// Vérifier que l'utilisateur est admin du groupe
-		const isAdmin = await isGroupAdmin(validation.data.id);
+		const adminResponse = await isGroupAdmin(validation.data.id);
+		if (adminResponse.status === QueryStatus.ERROR || !adminResponse.data) {
+			return createErrorResponse(
+				ServerActionStatus.FORBIDDEN,
+				"Vous n'avez pas les droits pour supprimer ce groupe"
+			);
+		}
+
+		const isAdmin = adminResponse.data;
+
 		if (!isAdmin) {
 			return createErrorResponse(
 				ServerActionStatus.FORBIDDEN,

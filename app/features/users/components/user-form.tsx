@@ -18,7 +18,9 @@ interface UserFormProps {
 }
 
 export default function UserForm({ user }: UserFormProps) {
-	const { dispatch, state, isPending } = useUserForm({ user });
+	const { dispatch, state, isPending } = useUserForm({
+		user: user ?? undefined,
+	});
 	const { isUploading, startUpload } = useUploadThing("userAvatar");
 
 	const [form, fields] = useForm({

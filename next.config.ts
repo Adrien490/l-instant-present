@@ -11,10 +11,14 @@ const nextConfig: NextConfig = {
 				protocol: "https",
 				hostname: "utfs.io",
 			},
-		],
-		domains: [
-			"lh3.googleusercontent.com", // Pour les images de profil Google
-			"uploadthing.com", // Pour les images uploadées via UploadThing
+			{
+				protocol: "https",
+				hostname: "lh3.googleusercontent.com",
+			},
+			{
+				protocol: "https",
+				hostname: "uploadthing.com",
+			},
 		],
 	},
 	async headers() {

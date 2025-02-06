@@ -6,10 +6,10 @@ import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Mail, Users } from "lucide-react";
 import Link from "next/link";
-import { GetGroupInvitesResponse } from "../queries/get-group-invites";
+import { GetGroupInviteListResponse } from "../queries/get-group-invite-list";
 
 type Props = {
-	invites: GetGroupInvitesResponse;
+	invites: GetGroupInviteListResponse;
 	type: "sent" | "received";
 	className?: string;
 };

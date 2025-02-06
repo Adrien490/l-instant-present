@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import db from "@/lib/db";
+import { QueryStatus } from "@/types/query";
 import {
 	ServerActionState,
 	ServerActionStatus,
@@ -9,7 +10,7 @@ import {
 	createSuccessResponse,
 	createValidationErrorResponse,
 } from "@/types/server-action";
-import { GroupMember } from "@prisma/client";
+import { GroupMember, GroupRole } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import { isGroupAdmin } from "../../groups/queries/is-group-admin";
@@ -34,7 +35,7 @@ export default async function updateGroupMember(
 		const rawData = {
 			groupId: formData.get("groupId")?.toString() || "",
 			userId: formData.get("userId")?.toString() || "",
-			role: formData.get("role")?.toString() || "MEMBER",
+			role: (formData.get("role")?.toString() as GroupRole) || GroupRole.MEMBER,
 		};
 
 		const validation = updateGroupMemberSchema.safeParse(rawData);
@@ -48,7 +49,16 @@ export default async function updateGroupMember(
 		}
 
 		// Vérifier que l'utilisateur est admin du groupe
-		const isAdmin = await isGroupAdmin(validation.data.groupId);
+		const adminResponse = await isGroupAdmin(validation.data.groupId);
+		if (adminResponse.status === QueryStatus.ERROR || !adminResponse.data) {
+			return createErrorResponse(
+				ServerActionStatus.FORBIDDEN,
+				"Vous n'avez pas les droits pour modifier un membre"
+			);
+		}
+
+		const isAdmin = adminResponse.data;
+
 		if (!isAdmin) {
 			return createErrorResponse(
 				ServerActionStatus.FORBIDDEN,

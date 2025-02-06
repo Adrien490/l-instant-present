@@ -3,6 +3,7 @@ import getUser from "@/app/features/users/queries/get-user";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { auth } from "@/lib/auth";
+import { QueryStatus } from "@/types/query";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 
@@ -17,7 +18,13 @@ export default async function ProfileEditPage({ params }: Props) {
 	const { userId } = resolvedParams;
 	const session = await auth.api.getSession({ headers: await headers() });
 
-	const user = await getUser({ id: userId });
+	const response = await getUser({ id: userId });
+
+	if (response.status === QueryStatus.ERROR) {
+		return notFound();
+	}
+
+	const user = response.data;
 
 	if (!user || session?.user?.id !== user.id) {
 		return notFound();

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const SortOrder = z.enum(["asc", "desc"]);
 
-export const getGroupsSchema = z.object({
+export const getGroupListSchema = z.object({
 	search: z.string().optional(),
 	take: z.number().int().positive().optional(),
 	orderBy: z
@@ -15,6 +15,6 @@ export const getGroupsSchema = z.object({
 		.optional(),
 });
 
-export type GetGroupsParams = z.infer<typeof getGroupsSchema>;
+export type GetGroupListParams = z.infer<typeof getGroupListSchema>;
 
-export default getGroupsSchema;
+export default getGroupListSchema;

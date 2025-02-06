@@ -15,7 +15,7 @@ import { headers } from "next/headers";
 import userFormSchema from "../schemas/user-form-schema";
 
 export default async function editUser(
-	_: ServerActionState<User, typeof userFormSchema> | null,
+	_: ServerActionState<User, typeof userFormSchema>,
 	formData: FormData
 ): Promise<ServerActionState<User, typeof userFormSchema>> {
 	try {

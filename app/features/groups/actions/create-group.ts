@@ -12,7 +12,7 @@ import {
 import { Group, GroupRole } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import groupFormSchema from "../schemas/group-form-schema";
+import groupFormSchema from "../schemas/group-schema";
 
 export default async function createGroup(
 	_: ServerActionState<Group, typeof groupFormSchema> | null,

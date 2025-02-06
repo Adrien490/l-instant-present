@@ -1,5 +1,5 @@
-import { CONFIG } from "../config/config";
 import { PushNotificationPayload } from "../types";
+import { CONFIG } from "./config";
 
 export function validatePayload(payload: PushNotificationPayload): void {
 	if (!payload.title || payload.title.length > 50) {

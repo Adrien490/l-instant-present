@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import db from "@/lib/db";
+import { QueryStatus } from "@/types/query";
 import {
 	ServerActionState,
 	ServerActionStatus,
@@ -36,7 +37,16 @@ export default async function removeGroupMember(
 		};
 
 		// Vérifier que l'utilisateur est admin du groupe
-		const isAdmin = await isGroupAdmin(rawData.groupId);
+		const adminResponse = await isGroupAdmin(rawData.groupId);
+		if (adminResponse.status === QueryStatus.ERROR || !adminResponse.data) {
+			return createErrorResponse(
+				ServerActionStatus.FORBIDDEN,
+				"Vous n'avez pas les droits pour retirer un membre"
+			);
+		}
+
+		const isAdmin = adminResponse.data;
+
 		if (!isAdmin) {
 			return createErrorResponse(
 				ServerActionStatus.FORBIDDEN,

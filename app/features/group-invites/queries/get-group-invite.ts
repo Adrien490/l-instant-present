@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import db, { DB_TIMEOUTS } from "@/lib/db";
+import { QueryResponse, QueryStatus } from "@/types/query";
 import { Prisma } from "@prisma/client";
 import { headers } from "next/headers";
 import {
@@ -55,24 +56,30 @@ export type GetGroupInviteResponse = Prisma.GroupInviteGetPayload<{
 
 export default async function getGroupInvite(
 	params: GetGroupInviteParams
-): Promise<GetGroupInviteResponse> {
+): Promise<QueryResponse<GetGroupInviteResponse>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
 
 		if (!session) {
-			throw new Error("Unauthorized");
+			return {
+				status: QueryStatus.ERROR,
+				message: "Unauthorized",
+			};
 		}
 
 		const validation = getGroupInviteSchema.safeParse(params);
 		if (!validation.success) {
-			throw new Error("Invalid parameters");
+			return {
+				status: QueryStatus.ERROR,
+				message: "Invalid parameters",
+			};
 		}
 
 		const validatedParams = validation.data;
 
-		return await Promise.race([
+		const data = await Promise.race([
 			db.groupInvite.findUnique({
 				where: {
 					id: validatedParams.inviteId,
@@ -84,8 +91,16 @@ export default async function getGroupInvite(
 				setTimeout(() => reject(new Error("Query timeout")), DB_TIMEOUT)
 			),
 		]);
+
+		return {
+			status: QueryStatus.SUCCESS,
+			data,
+		};
 	} catch (error) {
 		console.error("[GET_GROUP_INVITE]", error);
-		return null;
+		return {
+			status: QueryStatus.ERROR,
+			message: "An error occurred while fetching the group invite",
+		};
 	}
 }

@@ -1,4 +1,4 @@
-import { CONFIG } from "../config/config";
+import { CONFIG } from "../lib/config";
 import { validatePayload } from "../lib/utils";
 import {
 	createNotificationRecords,

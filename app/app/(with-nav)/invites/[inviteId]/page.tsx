@@ -5,6 +5,7 @@ import PageContainer from "@/components/page-container";
 import { Button } from "@/components/ui/button";
 import UserAvatar from "@/components/user-avatar";
 import { auth } from "@/lib/auth";
+import { QueryStatus } from "@/types/query";
 import { GroupInviteStatus } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -24,7 +25,13 @@ export default async function InvitePage({ params }: Props) {
 	const { inviteId } = resolvedParams;
 	const session = await auth.api.getSession({ headers: await headers() });
 
-	const invite = await getGroupInvite({ inviteId });
+	const response = await getGroupInvite({ inviteId });
+
+	if (response.status === QueryStatus.ERROR) {
+		return <div>{response.message}</div>;
+	}
+
+	const invite = response.data;
 
 	if (!invite) {
 		return notFound();

@@ -1,11 +1,12 @@
 import GroupList from "@/app/features/groups/components/group-list";
-import getGroups from "@/app/features/groups/queries/get-groups";
+import getGroups from "@/app/features/groups/queries/get-group-list";
 import EmptyPlaceholder from "@/components/empty-placeholder";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import SearchForm from "@/components/search-form";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
+import { QueryStatus } from "@/types/query";
 import { Users } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -19,13 +20,15 @@ type Props = {
 export default async function MyGroupsPage({ searchParams }: Props) {
 	const session = await auth.api.getSession({ headers: await headers() });
 	const resolvedSearchParams = await searchParams;
-	const groups = await getGroups({
+	const response = await getGroups({
 		search: resolvedSearchParams.search,
 	});
 
-	if (!session?.user.id) {
-		return null;
+	if (response.status === QueryStatus.ERROR) {
+		return <div>{response.message}</div>;
 	}
+
+	const groups = response.data;
 
 	return (
 		<PageContainer className="pb-32">
@@ -54,7 +57,7 @@ export default async function MyGroupsPage({ searchParams }: Props) {
 				{groups.length > 0 ? (
 					<GroupList
 						groups={groups}
-						sessionId={session?.user.id}
+						sessionId={session?.user.id ?? ""}
 						className="flex flex-col gap-4"
 					/>
 				) : (

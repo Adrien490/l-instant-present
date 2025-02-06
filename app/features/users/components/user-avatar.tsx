@@ -1,11 +1,11 @@
 "use client";
 
-import { getUserInitials } from "@/app/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { User } from "better-auth/types";
 import Link from "next/link";
 import { use } from "react";
+import getUserInitials from "../lib/get-user-initials";
 
 interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
 	size?: "sm" | "md" | "lg";

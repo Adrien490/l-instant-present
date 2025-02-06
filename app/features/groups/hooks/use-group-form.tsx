@@ -6,10 +6,10 @@ import { useActionState } from "react";
 import createGroup from "../actions/create-group";
 import editGroup from "../actions/edit-group";
 import { GetGroupResponse } from "../queries/get-group";
-import groupFormSchema from "../schemas/group-form-schema";
+import groupFormSchema from "../schemas/group-schema";
 
 interface UseGroupFormProps {
-	group?: GetGroupResponse;
+	group?: GetGroupResponse | null;
 }
 
 export function useGroupForm({ group }: UseGroupFormProps = {}) {
@@ -34,7 +34,7 @@ export function useGroupForm({ group }: UseGroupFormProps = {}) {
 		{
 			message: "",
 			status: ServerActionStatus.INITIAL,
-			data: group,
+			data: group ?? undefined,
 		}
 	);
 

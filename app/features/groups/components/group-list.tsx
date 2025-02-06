@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils";
 import { Crown, Settings, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { GetGroupsResponse } from "../queries/get-groups";
+import { GetGroupListResponse } from "../queries/get-group-list";
 
 type Props = {
-	groups: GetGroupsResponse;
+	groups: GetGroupListResponse;
 	sessionId: string;
 	className?: string;
 };

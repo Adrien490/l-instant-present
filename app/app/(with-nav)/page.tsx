@@ -1,13 +1,14 @@
 import GroupInviteList from "@/app/features/group-invites/components/group-invite-list";
-import getGroupInvites from "@/app/features/group-invites/queries/get-group-invites";
+import getGroupInvites from "@/app/features/group-invites/queries/get-group-invite-list";
 import GroupList from "@/app/features/groups/components/group-list";
-import getGroups from "@/app/features/groups/queries/get-groups";
+import getGroups from "@/app/features/groups/queries/get-group-list";
 import EmptyPlaceholder from "@/components/empty-placeholder";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
+import { QueryStatus } from "@/types/query";
 import { GroupInviteStatus } from "@prisma/client";
 import { Plus, Users } from "lucide-react";
 import { headers } from "next/headers";
@@ -15,21 +16,40 @@ import Link from "next/link";
 
 export default async function HomePage() {
 	const session = await auth.api.getSession({ headers: await headers() });
-	const [groups, firstThreeGroups, invites, firstTwoInvites] =
-		await Promise.all([
-			getGroups({ search: "" }),
-			getGroups({ search: "", take: 3 }),
-			getGroupInvites({ type: "received", status: GroupInviteStatus.PENDING }),
-			getGroupInvites({
-				type: "received",
-				status: GroupInviteStatus.PENDING,
-				take: 2,
-			}),
-		]);
 
 	if (!session?.user.id) {
 		return null;
 	}
+
+	const [
+		groupsResponse,
+		firstThreeGroupsResponse,
+		invitesResponse,
+		firstTwoInvitesResponse,
+	] = await Promise.all([
+		getGroups({ search: "" }),
+		getGroups({ search: "", take: 3 }),
+		getGroupInvites({ type: "received", status: GroupInviteStatus.PENDING }),
+		getGroupInvites({
+			type: "received",
+			status: GroupInviteStatus.PENDING,
+			take: 2,
+		}),
+	]);
+
+	if (
+		groupsResponse.status === QueryStatus.ERROR ||
+		firstThreeGroupsResponse.status === QueryStatus.ERROR ||
+		invitesResponse.status === QueryStatus.ERROR ||
+		firstTwoInvitesResponse.status === QueryStatus.ERROR
+	) {
+		return <div>Une erreur est survenue lors du chargement des données</div>;
+	}
+
+	const groups = groupsResponse.data;
+	const firstThreeGroups = firstThreeGroupsResponse.data;
+	const invites = invitesResponse.data;
+	const firstTwoInvites = firstTwoInvitesResponse.data;
 
 	return (
 		<PageContainer className="pb-32">

@@ -6,7 +6,9 @@ import { QueryResponse, QueryStatus } from "@/types/query";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
-import getUserSchema, { GetUserParams } from "../schemas/get-user-schema";
+import getChallengePeriodSchema, {
+	GetChallengePeriodParams,
+} from "../schemas/get-challenge-period-schema";
 
 // Constants
 const CACHE_REVALIDATION_TIME = CACHE_TIMES.MEDIUM;
@@ -16,42 +18,41 @@ const DB_TIMEOUT = DB_TIMEOUTS.MEDIUM;
 const DEFAULT_SELECT = {
 	id: true,
 	name: true,
-	email: true,
-	image: true,
-	emailVerified: true,
+	startDate: true,
+	endDate: true,
+	groupId: true,
 	createdAt: true,
 	updatedAt: true,
-	ownedGroups: {
+	challenges: {
 		select: {
 			id: true,
-			name: true,
-			imageUrl: true,
-		},
-	},
-	memberships: {
-		select: {
-			role: true,
-			group: {
+			title: true,
+			description: true,
+			difficulty: true,
+			points: true,
+			completions: {
 				select: {
 					id: true,
-					name: true,
-					imageUrl: true,
+					status: true,
+					userId: true,
+					proof: true,
+					completedAt: true,
 				},
 			},
 		},
 	},
-} satisfies Prisma.UserSelect;
+} satisfies Prisma.ChallengePeriodSelect;
 
-export type GetUserResponse = Prisma.UserGetPayload<{
+export type GetChallengePeriodResponse = Prisma.ChallengePeriodGetPayload<{
 	select: typeof DEFAULT_SELECT;
 }> | null;
 
 /**
- * Récupère un utilisateur par son ID
+ * Récupère une période de défi par son ID
  */
-export default async function getUser(
-	params: GetUserParams
-): Promise<QueryResponse<GetUserResponse>> {
+export default async function getChallengePeriod(
+	params: GetChallengePeriodParams
+): Promise<QueryResponse<GetChallengePeriodResponse>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
@@ -64,22 +65,30 @@ export default async function getUser(
 			};
 		}
 
-		const validation = getUserSchema.safeParse(params);
+		const validation = getChallengePeriodSchema.safeParse(params);
 		if (!validation.success) {
 			return {
 				status: QueryStatus.ERROR,
-				message: "ID d'utilisateur invalide",
+				message: "Paramètres invalides",
 			};
 		}
 
 		const validatedParams = validation.data;
-		const cacheKey = `user:${validatedParams.id}`;
+		const cacheKey = `period:${validatedParams.id}:group:${validatedParams.groupId}:user:${session.user.id}`;
 
 		const getData = async () => {
 			return await Promise.race([
-				db.user.findUnique({
+				db.challengePeriod.findFirst({
 					where: {
 						id: validatedParams.id,
+						groupId: validatedParams.groupId,
+						group: {
+							members: {
+								some: {
+									userId: session.user.id,
+								},
+							},
+						},
 					},
 					select: DEFAULT_SELECT,
 				}),
@@ -91,7 +100,11 @@ export default async function getUser(
 
 		const data = await unstable_cache(getData, [cacheKey], {
 			revalidate: CACHE_REVALIDATION_TIME,
-			tags: ["users", `user:${validatedParams.id}`],
+			tags: [
+				`group:${validatedParams.groupId}`,
+				`group-periods:${validatedParams.groupId}`,
+				`period:${validatedParams.id}`,
+			],
 		})();
 
 		return {
@@ -99,11 +112,10 @@ export default async function getUser(
 			data,
 		};
 	} catch (error) {
-		console.error("[GET_USER_ERROR]", { params, error });
+		console.error("[GET_CHALLENGE_PERIOD_ERROR]", { params, error });
 		return {
 			status: QueryStatus.ERROR,
-			message:
-				"Une erreur est survenue lors de la récupération de l'utilisateur",
+			message: "Une erreur est survenue lors de la récupération de la période",
 		};
 	}
 }

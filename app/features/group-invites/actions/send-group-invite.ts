@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import db from "@/lib/db";
+import { QueryStatus } from "@/types/query";
 import {
 	ServerActionState,
 	ServerActionStatus,
@@ -12,13 +13,14 @@ import {
 import {
 	GroupInvite,
 	GroupInviteStatus,
+	GroupRole,
 	NotificationType,
 } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
 import webpush from "web-push";
 import { isGroupAdmin } from "../../groups/queries/is-group-admin";
-import sendPushNotification from "../../push-notifications/helpers/send-push-notification";
+import sendPushNotification from "../../push-notifications/actions/send-push-notification";
 import sendGroupInviteSchema from "../schemas/send-group-invite-schema";
 
 // Configuration de web-push avec vos clés VAPID
@@ -47,7 +49,7 @@ export default async function sendGroupInvite(
 		const rawData = {
 			groupId: formData.get("groupId")?.toString() || "",
 			email: formData.get("email")?.toString() || "",
-			role: formData.get("role")?.toString() || "",
+			role: (formData.get("role")?.toString() as GroupRole) || "",
 		};
 
 		const validation = sendGroupInviteSchema.safeParse(rawData);
@@ -61,7 +63,16 @@ export default async function sendGroupInvite(
 		}
 
 		// Vérifier que l'utilisateur est admin du groupe
-		const isAdmin = await isGroupAdmin(validation.data.groupId);
+		const adminResponse = await isGroupAdmin(validation.data.groupId);
+		if (adminResponse.status === QueryStatus.ERROR || !adminResponse.data) {
+			return createErrorResponse(
+				ServerActionStatus.FORBIDDEN,
+				"Vous n'avez pas les droits pour envoyer une invitation"
+			);
+		}
+
+		const isAdmin = adminResponse.data;
+
 		if (!isAdmin) {
 			return createErrorResponse(
 				ServerActionStatus.FORBIDDEN,

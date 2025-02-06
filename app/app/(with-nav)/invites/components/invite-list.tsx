@@ -1,6 +1,6 @@
 "use client";
 
-import { type GetGroupInvitesResponse } from "@/app/features/group-invites/queries/get-group-invites";
+import { type GetGroupInviteListResponse } from "@/app/features/group-invites/queries/get-group-invite-list";
 import EmptyState from "@/components/empty-state";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
@@ -11,7 +11,7 @@ import { Calendar, Clock, Mail, Send, Users } from "lucide-react";
 import Link from "next/link";
 
 interface InviteListProps {
-	invites: GetGroupInvitesResponse;
+	invites: GetGroupInviteListResponse;
 	type: "sent" | "received";
 	className?: string;
 }

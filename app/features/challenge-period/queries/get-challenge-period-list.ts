@@ -6,7 +6,9 @@ import { QueryResponse, QueryStatus } from "@/types/query";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
-import getUsersSchema, { GetUsersParams } from "../schemas/get-users-schema";
+import getChallengePeriodListSchema, {
+	GetChallengePeriodListParams,
+} from "../schemas/get-challenge-period-list-schema";
 
 // Constants
 const CACHE_REVALIDATION_TIME = CACHE_TIMES.MEDIUM;
@@ -16,48 +18,55 @@ const DB_TIMEOUT = DB_TIMEOUTS.MEDIUM;
 const DEFAULT_SELECT = {
 	id: true,
 	name: true,
-	email: true,
-	image: true,
-	emailVerified: true,
+	startDate: true,
+	endDate: true,
+	groupId: true,
 	createdAt: true,
 	updatedAt: true,
-	memberships: {
+	_count: {
 		select: {
-			role: true,
-			group: {
-				select: {
-					id: true,
-					name: true,
-					imageUrl: true,
-				},
-			},
+			challenges: true,
 		},
 	},
-} satisfies Prisma.UserSelect;
+} satisfies Prisma.ChallengePeriodSelect;
 
-export type GetUsersResponse = Array<
-	Prisma.UserGetPayload<{ select: typeof DEFAULT_SELECT }>
+export type GetChallengePeriodListResponse = Array<
+	Prisma.ChallengePeriodGetPayload<{ select: typeof DEFAULT_SELECT }>
 >;
 
 // Helpers
-const buildWhereClause = (params: GetUsersParams): Prisma.UserWhereInput => {
-	const conditions: Prisma.UserWhereInput[] = [];
+const buildWhereClause = (
+	params: GetChallengePeriodListParams,
+	userId: string
+): Prisma.ChallengePeriodWhereInput => {
+	const conditions: Prisma.ChallengePeriodWhereInput[] = [
+		{
+			groupId: params.groupId,
+			group: {
+				members: {
+					some: {
+						userId,
+					},
+				},
+			},
+		},
+	];
 
 	if (params.search) {
 		conditions.push({
-			OR: [
-				{ name: { contains: params.search, mode: "insensitive" } },
-				{ email: { contains: params.search, mode: "insensitive" } },
-			],
+			name: { contains: params.search, mode: "insensitive" },
 		});
 	}
 
-	return conditions.length > 0 ? { AND: conditions } : {};
+	return { AND: conditions };
 };
 
-export default async function getUsers(
-	params: GetUsersParams
-): Promise<QueryResponse<GetUsersResponse>> {
+/**
+ * Récupère la liste des périodes de défi d'un groupe
+ */
+export default async function getChallengePeriodList(
+	params: GetChallengePeriodListParams
+): Promise<QueryResponse<GetChallengePeriodListResponse>> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
@@ -70,7 +79,7 @@ export default async function getUsers(
 			};
 		}
 
-		const validation = getUsersSchema.safeParse(params);
+		const validation = getChallengePeriodListSchema.safeParse(params);
 		if (!validation.success) {
 			return {
 				status: QueryStatus.ERROR,
@@ -79,21 +88,23 @@ export default async function getUsers(
 		}
 
 		const validatedParams = validation.data;
-		const where = buildWhereClause(validatedParams);
-		const cacheKey = `users${params.search ? `:search:${params.search}` : ""}${
+		const where = buildWhereClause(validatedParams, session.user.id);
+		const cacheKey = `group-periods:${validatedParams.groupId}:user:${
+			session.user.id
+		}${params.search ? `:search:${params.search}` : ""}${
 			params.take ? `:take:${params.take}` : ""
 		}`;
 
 		const getData = async () => {
 			return await Promise.race([
-				db.user.findMany({
+				db.challengePeriod.findMany({
 					where,
 					select: DEFAULT_SELECT,
 					orderBy: validatedParams.orderBy
 						? Object.entries(validatedParams.orderBy).map(([key, value]) => ({
 								[key]: value,
 						  }))
-						: [{ createdAt: "desc" }, { id: "desc" }],
+						: [{ startDate: "desc" }, { id: "desc" }],
 					take: validatedParams.take,
 				}),
 				new Promise<never>((_, reject) =>
@@ -104,7 +115,11 @@ export default async function getUsers(
 
 		const data = await unstable_cache(getData, [cacheKey], {
 			revalidate: CACHE_REVALIDATION_TIME,
-			tags: ["users:list", `users:search:${params.search || "all"}`],
+			tags: [
+				`group:${validatedParams.groupId}`,
+				`group-periods:${validatedParams.groupId}`,
+				`periods:search:${params.search || "all"}`,
+			],
 		})();
 
 		return {
@@ -112,11 +127,10 @@ export default async function getUsers(
 			data,
 		};
 	} catch (error) {
-		console.error("[GET_USERS]", error);
+		console.error("[GET_CHALLENGE_PERIOD_LIST]", error);
 		return {
 			status: QueryStatus.ERROR,
-			message:
-				"Une erreur est survenue lors de la récupération des utilisateurs",
+			message: "Une erreur est survenue lors de la récupération des périodes",
 		};
 	}
 }
