@@ -2,7 +2,6 @@
 
 import { auth } from "@/lib/auth";
 import db, { CACHE_TIMES, DB_TIMEOUTS } from "@/lib/db";
-import { QueryResponse, QueryStatus } from "@/types/query";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
@@ -57,25 +56,19 @@ const buildWhereClause = (params: GetUsersParams): Prisma.UserWhereInput => {
 
 export default async function getUsers(
 	params: GetUsersParams
-): Promise<QueryResponse<GetUsersResponse>> {
+): Promise<GetUsersResponse> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
 
 		if (!session) {
-			return {
-				status: QueryStatus.ERROR,
-				message: "Vous devez être connecté pour accéder à cette page",
-			};
+			throw new Error("Vous devez être connecté pour accéder à cette page");
 		}
 
 		const validation = getUsersSchema.safeParse(params);
 		if (!validation.success) {
-			return {
-				status: QueryStatus.ERROR,
-				message: "Paramètres invalides",
-			};
+			throw new Error("Paramètres invalides");
 		}
 
 		const validatedParams = validation.data;
@@ -107,16 +100,11 @@ export default async function getUsers(
 			tags: ["users:list", `users:search:${params.search || "all"}`],
 		})();
 
-		return {
-			status: QueryStatus.SUCCESS,
-			data,
-		};
+		return data;
 	} catch (error) {
 		console.error("[GET_USERS]", error);
-		return {
-			status: QueryStatus.ERROR,
-			message:
-				"Une erreur est survenue lors de la récupération des utilisateurs",
-		};
+		throw new Error(
+			"Une erreur est survenue lors de la récupération des utilisateurs"
+		);
 	}
 }

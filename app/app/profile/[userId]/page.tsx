@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
-import { QueryStatus } from "@/types/query";
 import {
 	CalendarDays,
 	Group,
@@ -35,13 +34,7 @@ export default async function ProfilePage({ params }: Props) {
 	const resolvedParams = await params;
 	const { userId } = resolvedParams;
 
-	const response = await getUser({ id: userId });
-
-	if (response.status === QueryStatus.ERROR) {
-		return notFound();
-	}
-
-	const user = response.data;
+	const user = await getUser({ id: userId });
 
 	if (!user) {
 		return notFound();

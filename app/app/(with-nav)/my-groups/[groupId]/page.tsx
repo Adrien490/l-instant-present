@@ -3,7 +3,6 @@ import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
-import { QueryStatus } from "@/types/query";
 import { GroupRole } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
@@ -19,13 +18,7 @@ type Props = {
 export default async function GroupPage({ params }: Props) {
 	const resolvedParams = await params;
 	const session = await auth.api.getSession({ headers: await headers() });
-	const response = await getGroup({ id: resolvedParams.groupId });
-
-	if (response.status === QueryStatus.ERROR) {
-		return <div>{response.message}</div>;
-	}
-
-	const group = response.data;
+	const group = await getGroup({ id: resolvedParams.groupId });
 
 	if (!group) {
 		return notFound();

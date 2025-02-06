@@ -2,7 +2,6 @@
 
 import { auth } from "@/lib/auth";
 import db, { CACHE_TIMES, DB_TIMEOUTS } from "@/lib/db";
-import { QueryResponse, QueryStatus } from "@/types/query";
 import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
@@ -45,25 +44,19 @@ export type GetGroupResponse = Prisma.GroupGetPayload<{
  */
 export async function getGroup(
 	params: GetGroupParams
-): Promise<QueryResponse<GetGroupResponse>> {
+): Promise<GetGroupResponse> {
 	try {
 		const session = await auth.api.getSession({
 			headers: await headers(),
 		});
 
 		if (!session) {
-			return {
-				status: QueryStatus.ERROR,
-				message: "Vous devez être connecté pour accéder à cette page",
-			};
+			throw new Error("Vous devez être connecté pour accéder à cette page");
 		}
 
 		const validation = getGroupSchema.safeParse(params);
 		if (!validation.success) {
-			return {
-				status: QueryStatus.ERROR,
-				message: "ID de groupe invalide",
-			};
+			throw new Error("ID de groupe invalide");
 		}
 
 		const validatedParams = validation.data;
@@ -99,15 +92,11 @@ export async function getGroup(
 			],
 		})();
 
-		return {
-			status: QueryStatus.SUCCESS,
-			data,
-		};
+		return data;
 	} catch (error) {
 		console.error("[GET_GROUP_ERROR]", { params, error });
-		return {
-			status: QueryStatus.ERROR,
-			message: "Une erreur est survenue lors de la récupération du groupe",
-		};
+		throw new Error(
+			"Une erreur est survenue lors de la récupération du groupe"
+		);
 	}
 }

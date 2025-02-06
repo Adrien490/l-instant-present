@@ -1,19 +1,12 @@
 import SendGroupInviteForm from "@/app/features/group-invites/components/send-group-invite-form";
-import getGroups from "@/app/features/groups/queries/get-group-list";
+import getGroupList from "@/app/features/groups/queries/get-group-list";
 import EmptyState from "@/components/empty-state";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
-import { QueryStatus } from "@/types/query";
 import { Users } from "lucide-react";
 
 export default async function SendInvitePage() {
-	const response = await getGroups({ search: "" });
-
-	if (response.status === QueryStatus.ERROR) {
-		return <div>{response.message}</div>;
-	}
-
-	const groups = response.data;
+	const groups = await getGroupList({ search: "" });
 
 	return (
 		<PageContainer>

@@ -1,15 +1,14 @@
 import GroupList from "@/app/features/groups/components/group-list";
-import getGroups from "@/app/features/groups/queries/get-group-list";
-import EmptyPlaceholder from "@/components/empty-placeholder";
+import getGroupList from "@/app/features/groups/queries/get-group-list";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import SearchForm from "@/components/search-form";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
-import { QueryStatus } from "@/types/query";
 import { Users } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
+import { Suspense } from "react";
 
 type Props = {
 	searchParams: Promise<{
@@ -20,15 +19,6 @@ type Props = {
 export default async function MyGroupsPage({ searchParams }: Props) {
 	const session = await auth.api.getSession({ headers: await headers() });
 	const resolvedSearchParams = await searchParams;
-	const response = await getGroups({
-		search: resolvedSearchParams.search,
-	});
-
-	if (response.status === QueryStatus.ERROR) {
-		return <div>{response.message}</div>;
-	}
-
-	const groups = response.data;
 
 	return (
 		<PageContainer className="pb-32">
@@ -54,19 +44,16 @@ export default async function MyGroupsPage({ searchParams }: Props) {
 						</Link>
 					</Button>
 				</div>
-				{groups.length > 0 ? (
+
+				<Suspense fallback={<div>Chargement des groupes...</div>}>
 					<GroupList
-						groups={groups}
+						getGroupListPromise={getGroupList({
+							search: resolvedSearchParams.search,
+						})}
 						sessionId={session?.user.id ?? ""}
-						className="flex flex-col gap-4"
+						className="flex flex-col gap-2"
 					/>
-				) : (
-					<EmptyPlaceholder
-						icon={<Users className="h-8 w-8 text-muted-foreground/80" />}
-						title="Aucun groupe trouvé"
-						description="Créez un groupe pour commencer"
-					/>
-				)}
+				</Suspense>
 			</div>
 		</PageContainer>
 	);

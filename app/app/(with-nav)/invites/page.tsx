@@ -1,11 +1,10 @@
 import GroupInviteList from "@/app/features/group-invites/components/group-invite-list";
-import getGroupInvites from "@/app/features/group-invites/queries/get-group-invite-list";
+import getGroupInviteList from "@/app/features/group-invites/queries/get-group-invite-list";
 import EmptyPlaceholder from "@/components/empty-placeholder";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { QueryStatus } from "@/types/query";
 import { Mail, Plus, Send } from "lucide-react";
 import Link from "next/link";
 
@@ -16,13 +15,7 @@ type Props = {
 export default async function InvitesPage({ searchParams }: Props) {
 	const resolvedSearchParams = await searchParams;
 	const type = resolvedSearchParams.type || "received";
-	const response = await getGroupInvites({ type });
-
-	if (response.status === QueryStatus.ERROR) {
-		return <div>{response.message}</div>;
-	}
-
-	const invites = response.data;
+	const invites = await getGroupInviteList({ type });
 
 	return (
 		<PageContainer className="pb-24">

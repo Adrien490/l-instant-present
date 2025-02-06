@@ -5,7 +5,6 @@ import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { auth } from "@/lib/auth";
-import { QueryStatus } from "@/types/query";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 
@@ -26,16 +25,10 @@ export default async function DeleteGroupPage({ params }: Props) {
 		redirect("/auth/signin");
 	}
 
-	const [groupResponse, isAdmin] = await Promise.all([
+	const [group, isAdmin] = await Promise.all([
 		getGroup({ id: groupId }),
 		isGroupAdmin(groupId),
 	]);
-
-	if (groupResponse.status === QueryStatus.ERROR) {
-		return <div>{groupResponse.message}</div>;
-	}
-
-	const group = groupResponse.data;
 
 	if (!group || !isAdmin) {
 		notFound();

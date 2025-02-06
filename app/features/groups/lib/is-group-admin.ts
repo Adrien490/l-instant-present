@@ -3,7 +3,6 @@
 import groupAdminSchema from "@/app/features/groups/schemas/group-admin-schema";
 import { auth } from "@/lib/auth";
 import db from "@/lib/db";
-import { QueryResponse, QueryStatus } from "@/types/query";
 import { GroupRole } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
@@ -11,16 +10,11 @@ import { headers } from "next/headers";
 /**
  * Vérifie si l'utilisateur est admin du groupe
  */
-export async function isGroupAdmin(
-	groupId: string
-): Promise<QueryResponse<boolean>> {
+export async function isGroupAdmin(groupId: string) {
 	try {
 		const validation = groupAdminSchema.safeParse({ groupId });
 		if (!validation.success) {
-			return {
-				status: QueryStatus.ERROR,
-				message: "ID de groupe invalide",
-			};
+			throw new Error("ID de groupe invalide");
 		}
 
 		const session = await auth.api.getSession({
@@ -28,10 +22,7 @@ export async function isGroupAdmin(
 		});
 
 		if (!session) {
-			return {
-				status: QueryStatus.ERROR,
-				message: "Vous devez être connecté pour accéder à cette page",
-			};
+			throw new Error("Vous devez être connecté pour accéder à cette page");
 		}
 
 		const checkAdmin = async () => {
@@ -58,15 +49,11 @@ export async function isGroupAdmin(
 			}
 		)();
 
-		return {
-			status: QueryStatus.SUCCESS,
-			data,
-		};
+		return data;
 	} catch (error) {
 		console.error("[IS_GROUP_ADMIN_ERROR]", { groupId, error });
-		return {
-			status: QueryStatus.ERROR,
-			message: "Une erreur est survenue lors de la vérification des droits",
-		};
+		throw new Error(
+			"Une erreur est survenue lors de la vérification des droits"
+		);
 	}
 }

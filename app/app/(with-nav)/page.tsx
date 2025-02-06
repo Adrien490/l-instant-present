@@ -1,18 +1,17 @@
 import GroupInviteList from "@/app/features/group-invites/components/group-invite-list";
 import getGroupInvites from "@/app/features/group-invites/queries/get-group-invite-list";
 import GroupList from "@/app/features/groups/components/group-list";
-import getGroups from "@/app/features/groups/queries/get-group-list";
-import EmptyPlaceholder from "@/components/empty-placeholder";
+import getGroupList from "@/app/features/groups/queries/get-group-list";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
-import { QueryStatus } from "@/types/query";
 import { GroupInviteStatus } from "@prisma/client";
 import { Plus, Users } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
+import { Suspense } from "react";
 
 export default async function HomePage() {
 	const session = await auth.api.getSession({ headers: await headers() });
@@ -21,14 +20,7 @@ export default async function HomePage() {
 		return null;
 	}
 
-	const [
-		groupsResponse,
-		firstThreeGroupsResponse,
-		invitesResponse,
-		firstTwoInvitesResponse,
-	] = await Promise.all([
-		getGroups({ search: "" }),
-		getGroups({ search: "", take: 3 }),
+	const [invites, firstTwoInvites] = await Promise.all([
 		getGroupInvites({ type: "received", status: GroupInviteStatus.PENDING }),
 		getGroupInvites({
 			type: "received",
@@ -36,20 +28,6 @@ export default async function HomePage() {
 			take: 2,
 		}),
 	]);
-
-	if (
-		groupsResponse.status === QueryStatus.ERROR ||
-		firstThreeGroupsResponse.status === QueryStatus.ERROR ||
-		invitesResponse.status === QueryStatus.ERROR ||
-		firstTwoInvitesResponse.status === QueryStatus.ERROR
-	) {
-		return <div>Une erreur est survenue lors du chargement des données</div>;
-	}
-
-	const groups = groupsResponse.data;
-	const firstThreeGroups = firstThreeGroupsResponse.data;
-	const invites = invitesResponse.data;
-	const firstTwoInvites = firstTwoInvitesResponse.data;
 
 	return (
 		<PageContainer className="pb-32">
@@ -121,56 +99,24 @@ export default async function HomePage() {
 					<h2 className="text-lg font-medium leading-tight tracking-tight md:tracking-normal antialiased">
 						Groupes récents
 					</h2>
-					{groups.length > 0 && (
-						<Button
-							variant="ghost"
-							size="sm"
-							className="text-sm leading-normal antialiased touch-target-2025"
-							asChild
-						>
-							<Link href="/app/my-groups">Voir tous mes groupes</Link>
-						</Button>
-					)}
+
+					<Button
+						variant="ghost"
+						size="sm"
+						className="text-sm leading-normal antialiased touch-target-2025"
+						asChild
+					>
+						<Link href="/app/my-groups">Voir tous mes groupes</Link>
+					</Button>
 				</div>
-				{groups.length > 0 ? (
-					<>
-						<GroupList
-							groups={firstThreeGroups}
-							sessionId={session.user.id}
-							className="mt-4 mb-4 flex flex-col gap-4"
-						/>
-						{groups.length > 3 && (
-							<>
-								<Link href="/app/my-groups">
-									<Card className="flex items-center justify-center gap-3 p-4 transition-all hover:bg-muted/50 active:bg-muted transform-gpu">
-										<span className="text-base leading-normal antialiased text-muted-foreground">
-											+{groups.length - 3} autres groupes
-										</span>
-										<span className="text-sm antialiased">•</span>
-										<span className="text-sm leading-normal antialiased">
-											Voir tout
-										</span>
-									</Card>
-								</Link>
-							</>
-						)}
-					</>
-				) : (
-					<EmptyPlaceholder
-						className="mt-4"
-						icon={<Users className="h-8 w-8 text-muted-foreground/80" />}
-						title="Aucun groupe trouvé"
-						description="Créez un groupe pour commencer"
-						action={
-							<Button asChild>
-								<Link href="/app/my-groups/new">
-									<Users className="mr-3 h-5 w-5" />
-									Créer un groupe
-								</Link>
-							</Button>
-						}
+
+				<Suspense fallback={<div>Chargement des groupes...</div>}>
+					<GroupList
+						getGroupListPromise={getGroupList({ search: "", take: 3 })}
+						sessionId={session.user.id}
+						className="mt-4 mb-4 flex flex-col gap-4"
 					/>
-				)}
+				</Suspense>
 			</div>
 		</PageContainer>
 	);
