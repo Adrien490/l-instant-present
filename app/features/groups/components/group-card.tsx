@@ -16,6 +16,10 @@ import "react-swipeable-list/dist/styles.css";
 import { GetGroupListResponse } from "../queries/get-group-list";
 type GroupData = GetGroupListResponse[number];
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Edit, Trash2 } from "lucide-react";
+import getUserInitials from "../../users/lib/get-user-initials";
+
 type Props = {
 	group: GroupData;
 	isOwner: boolean;
@@ -27,8 +31,41 @@ export default function GroupCard({ group, isOwner }: Props) {
 		<TrailingActions>
 			<SwipeAction onClick={() => router.push(`/app/my-groups/${group.id}`)}>
 				<div className="h-full flex items-center justify-end">
+					{isOwner && (
+						<>
+							<div className="h-full w-16 flex items-center justify-center bg-destructive/10 backdrop-blur-sm text-destructive hover:bg-destructive/20 active:bg-destructive/30 transition-all">
+								<Trash2 className="h-5 w-5" />
+							</div>
+							<div className="h-full w-16 flex items-center justify-center bg-muted/95 backdrop-blur-sm text-muted-foreground hover:bg-muted/80 active:bg-muted/70 transition-all">
+								<Edit className="h-5 w-5" />
+							</div>
+						</>
+					)}
 					<div className="h-full w-16 flex items-center justify-center bg-primary/10 backdrop-blur-sm text-primary hover:bg-primary/20 active:bg-primary/30 transition-all">
 						<Settings className="h-5 w-5" />
+					</div>
+					<div className="h-full px-4 flex items-center gap-2 bg-background/95 backdrop-blur-sm">
+						<div className="flex -space-x-2">
+							{group.members.slice(0, 3).map((member) => (
+								<Avatar
+									key={member.user.id}
+									className="border-2 border-background w-8 h-8"
+								>
+									<AvatarImage
+										src={member.user.image || undefined}
+										alt={member.user.name || ""}
+									/>
+									<AvatarFallback>
+										{getUserInitials(member.user.name) || "?"}
+									</AvatarFallback>
+								</Avatar>
+							))}
+							{group.members.length > 3 && (
+								<div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center border-2 border-background text-xs font-medium">
+									+{group.members.length - 3}
+								</div>
+							)}
+						</div>
 					</div>
 				</div>
 			</SwipeAction>
