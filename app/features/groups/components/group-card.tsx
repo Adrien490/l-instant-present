@@ -38,14 +38,18 @@ export default function GroupCard({
 			<SwipeAction onClick={() => router.push(`/app/my-groups/${group.id}`)}>
 				<div className="h-full flex items-center justify-end">
 					{canEdit && (
-						<div className="h-full w-16 flex items-center justify-center bg-muted/95 backdrop-blur-sm text-muted-foreground hover:bg-muted/80 active:bg-muted/70 transition-all">
-							<Edit className="h-5 w-5" />
-						</div>
+						<Link href={`/app/my-groups/${group.id}/edit`}>
+							<div className="h-full w-16 flex items-center justify-center bg-muted/95 backdrop-blur-sm text-muted-foreground hover:bg-muted/80 active:bg-muted/70 transition-all">
+								<Edit className="h-5 w-5" />
+							</div>
+						</Link>
 					)}
 					{canDelete && (
-						<div className="h-full w-16 flex items-center justify-center bg-destructive/10 backdrop-blur-sm text-destructive hover:bg-destructive/20 active:bg-destructive/30 transition-all">
-							<Trash2 className="h-5 w-5" />
-						</div>
+						<Link href={`/app/my-groups/${group.id}/delete`}>
+							<div className="h-full w-16 flex items-center justify-center bg-destructive/10 backdrop-blur-sm text-destructive hover:bg-destructive/20 active:bg-destructive/30 transition-all">
+								<Trash2 className="h-5 w-5" />
+							</div>
+						</Link>
 					)}
 
 					<div className="h-full w-16 flex items-center justify-center bg-primary/10 backdrop-blur-sm text-primary hover:bg-primary/20 active:bg-primary/30 transition-all">
