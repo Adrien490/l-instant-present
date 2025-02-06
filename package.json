@@ -48,6 +48,7 @@
 		"date-fns": "^3.6.0",
 		"embla-carousel-autoplay": "^8.5.2",
 		"embla-carousel-react": "^8.5.2",
+		"framer-motion": "^12.3.1",
 		"i": "^0.3.7",
 		"ioredis": "^5.4.2",
 		"lucide-react": "^0.474.0",
