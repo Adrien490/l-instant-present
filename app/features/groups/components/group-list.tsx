@@ -46,26 +46,25 @@ function GroupCard({
 	sessionId: string;
 }) {
 	const x = useMotionValue(0);
-	const input = [-100, 0];
-	const output = [1, 0];
-	const opacity = useTransform(x, input, output);
+	const opacity = useTransform(x, [-100, -50, 0], [1, 0.8, 0]);
+	const scale = useTransform(x, [-100, -50, 0], [1, 0.95, 1]);
 
 	const isOwner = group.members.some(
 		(member: { user: { id: string } }) => member.user.id === sessionId
 	);
 
 	return (
-		<div className="relative overflow-hidden">
+		<div className="relative overflow-hidden rounded-2xl">
 			{/* Actions révélées */}
 			<motion.div
-				className="absolute right-0 h-full flex items-center gap-2 px-4"
+				className="absolute right-0 h-full flex items-center gap-3 px-6"
 				style={{ opacity }}
 			>
 				<Link href={`/app/my-groups/${group.id}`}>
 					<Button
 						variant="ghost"
 						size="icon"
-						className="h-10 w-10 rounded-full bg-primary/10 hover:bg-primary/20"
+						className="h-12 w-12 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 shadow-sm"
 					>
 						<Settings className="h-5 w-5 text-primary" />
 					</Button>
@@ -74,7 +73,7 @@ function GroupCard({
 					<Button
 						variant="ghost"
 						size="icon"
-						className="h-10 w-10 rounded-full bg-destructive/10 hover:bg-destructive/20"
+						className="h-12 w-12 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 shadow-sm"
 					>
 						<Trash2 className="h-5 w-5 text-destructive" />
 					</Button>
@@ -85,11 +84,17 @@ function GroupCard({
 			<motion.div
 				drag="x"
 				dragConstraints={{ left: -100, right: 0 }}
-				dragElastic={0.1}
+				dragElastic={0.2}
 				dragMomentum={false}
-				style={{ x }}
+				whileTap={{ cursor: "grabbing" }}
+				style={{ x, scale }}
+				transition={{
+					type: "spring",
+					damping: 20,
+					stiffness: 300,
+				}}
 			>
-				<Card className="overflow-hidden transform-gpu transition-colors hover:bg-muted/50 active:bg-muted">
+				<Card className="overflow-hidden border-0 shadow-sm">
 					<Link
 						href={`/app/groups/${group.id}`}
 						className="block touch-action-pan-y"
@@ -175,6 +180,15 @@ function GroupCard({
 					</Link>
 				</Card>
 			</motion.div>
+
+			{/* Indicateur de swipe */}
+			<motion.div
+				className="absolute left-0 top-0 bottom-0 w-1 bg-destructive/20"
+				style={{
+					scaleY: useTransform(x, [-100, 0], [1, 0]),
+					opacity: useTransform(x, [-100, -50, 0], [1, 0.5, 0]),
+				}}
+			/>
 		</div>
 	);
 }
