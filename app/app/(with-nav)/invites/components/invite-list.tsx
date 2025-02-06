@@ -1,7 +1,7 @@
 "use client";
 
 import { type GetGroupInviteListResponse } from "@/app/features/group-invites/queries/get-group-invite-list";
-import EmptyState from "@/components/empty-state";
+import EmptyPlaceholder from "@/components/empty-placeholder";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -23,7 +23,7 @@ export default function InviteList({
 }: InviteListProps) {
 	if (invites.length === 0) {
 		return (
-			<EmptyState
+			<EmptyPlaceholder
 				className="mt-20"
 				icon={
 					type === "sent" ? (
