@@ -1,6 +1,6 @@
 import DeleteGroupForm from "@/app/features/groups/components/delete-group-form";
+import { isGroupAdmin } from "@/app/features/groups/lib/is-group-admin";
 import { getGroup } from "@/app/features/groups/queries/get-group";
-import { isGroupAdmin } from "@/app/features/groups/queries/is-group-admin";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
@@ -26,7 +26,7 @@ export default async function DeleteGroupPage({ params }: Props) {
 		redirect("/auth/signin");
 	}
 
-	const [groupResponse, isAdminResponse] = await Promise.all([
+	const [groupResponse, isAdmin] = await Promise.all([
 		getGroup({ id: groupId }),
 		isGroupAdmin(groupId),
 	]);
@@ -37,18 +37,8 @@ export default async function DeleteGroupPage({ params }: Props) {
 
 	const group = groupResponse.data;
 
-	if (!group) {
+	if (!group || !isAdmin) {
 		notFound();
-	}
-
-	if (isAdminResponse.status === QueryStatus.ERROR) {
-		return <div>{isAdminResponse.message}</div>;
-	}
-
-	const isAdmin = isAdminResponse.data;
-
-	if (!isAdmin) {
-		redirect("/app/my-groups");
 	}
 
 	return (

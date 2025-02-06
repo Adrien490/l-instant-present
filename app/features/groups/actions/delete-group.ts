@@ -2,7 +2,6 @@
 
 import { auth } from "@/lib/auth";
 import db from "@/lib/db";
-import { QueryStatus } from "@/types/query";
 import {
 	ServerActionState,
 	ServerActionStatus,
@@ -13,7 +12,7 @@ import {
 import { Group } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import { isGroupAdmin } from "../queries/is-group-admin";
+import { isGroupAdmin } from "../lib/is-group-admin";
 import deleteGroupSchema from "../schemas/delete-group-schema";
 
 export default async function deleteGroup(
@@ -48,15 +47,7 @@ export default async function deleteGroup(
 		}
 
 		// Vérifier que l'utilisateur est admin du groupe
-		const adminResponse = await isGroupAdmin(validation.data.id);
-		if (adminResponse.status === QueryStatus.ERROR || !adminResponse.data) {
-			return createErrorResponse(
-				ServerActionStatus.FORBIDDEN,
-				"Vous n'avez pas les droits pour supprimer ce groupe"
-			);
-		}
-
-		const isAdmin = adminResponse.data;
+		const isAdmin = isGroupAdmin;
 
 		if (!isAdmin) {
 			return createErrorResponse(

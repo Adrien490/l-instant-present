@@ -12,7 +12,7 @@ import {
 import { Group } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import { isGroupAdmin } from "../queries/is-group-admin";
+import { isGroupAdmin } from "../lib/is-group-admin";
 import groupFormSchema from "../schemas/group-schema";
 
 export default async function editGroup(

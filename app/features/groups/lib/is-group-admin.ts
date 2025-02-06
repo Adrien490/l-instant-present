@@ -1,12 +1,12 @@
 "use server";
 
+import groupAdminSchema from "@/app/features/groups/schemas/group-admin-schema";
 import { auth } from "@/lib/auth";
 import db from "@/lib/db";
 import { QueryResponse, QueryStatus } from "@/types/query";
 import { GroupRole } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
-import groupAdminSchema from "../schemas/group-admin-schema";
 
 /**
  * Vérifie si l'utilisateur est admin du groupe

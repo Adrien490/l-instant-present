@@ -2,7 +2,6 @@
 
 import { auth } from "@/lib/auth";
 import db from "@/lib/db";
-import { QueryStatus } from "@/types/query";
 import {
 	ServerActionState,
 	ServerActionStatus,
@@ -12,7 +11,7 @@ import {
 import { GroupMember } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import { isGroupAdmin } from "../../groups/queries/is-group-admin";
+import { isGroupAdmin } from "../../groups/lib/is-group-admin";
 import removeGroupMemberSchema from "../schemas/remove-group-member-schema";
 
 export default async function removeGroupMember(
@@ -37,15 +36,7 @@ export default async function removeGroupMember(
 		};
 
 		// Vérifier que l'utilisateur est admin du groupe
-		const adminResponse = await isGroupAdmin(rawData.groupId);
-		if (adminResponse.status === QueryStatus.ERROR || !adminResponse.data) {
-			return createErrorResponse(
-				ServerActionStatus.FORBIDDEN,
-				"Vous n'avez pas les droits pour retirer un membre"
-			);
-		}
-
-		const isAdmin = adminResponse.data;
+		const isAdmin = await isGroupAdmin(rawData.groupId);
 
 		if (!isAdmin) {
 			return createErrorResponse(
