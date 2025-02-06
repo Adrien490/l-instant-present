@@ -4,8 +4,7 @@ import EmptyState from "@/components/empty-state";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { motion, useMotionValue, useTransform } from "framer-motion";
-import { Crown, Settings, Trash2, Users } from "lucide-react";
+import { Crown, Settings, Users } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { GetGroupListResponse } from "../queries/get-group-list";
@@ -31,75 +30,13 @@ export default function GroupList({ groups, sessionId, className }: Props) {
 
 	return (
 		<div className={cn("space-y-3", className)}>
-			{groups.map((group) => (
-				<GroupCard key={group.id} group={group} sessionId={sessionId} />
-			))}
-		</div>
-	);
-}
-
-function GroupCard({
-	group,
-	sessionId,
-}: {
-	group: Props["groups"][0];
-	sessionId: string;
-}) {
-	const x = useMotionValue(0);
-	const opacity = useTransform(x, [-100, -50, 0], [1, 0.8, 0]);
-	const scale = useTransform(x, [-100, -50, 0], [1, 0.95, 1]);
-
-	const isOwner = group.members.some(
-		(member: { user: { id: string } }) => member.user.id === sessionId
-	);
-
-	return (
-		<div className="relative overflow-hidden rounded-2xl">
-			{/* Actions révélées */}
-			<motion.div
-				className="absolute right-0 h-full flex items-center gap-3 px-6"
-				style={{ opacity }}
-			>
-				<Link href={`/app/my-groups/${group.id}`}>
-					<Button
-						variant="ghost"
-						size="icon"
-						className="h-12 w-12 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 shadow-sm"
-					>
-						<Settings className="h-5 w-5 text-primary" />
-					</Button>
-				</Link>
-				{isOwner && (
-					<Button
-						variant="ghost"
-						size="icon"
-						className="h-12 w-12 rounded-full bg-background/80 backdrop-blur-sm hover:bg-background/90 shadow-sm"
-					>
-						<Trash2 className="h-5 w-5 text-destructive" />
-					</Button>
-				)}
-			</motion.div>
-
-			{/* Carte principale */}
-			<motion.div
-				drag="x"
-				dragConstraints={{ left: -100, right: 0 }}
-				dragElastic={0.2}
-				dragMomentum={false}
-				whileTap={{ cursor: "grabbing" }}
-				style={{ x, scale }}
-				transition={{
-					type: "spring",
-					damping: 20,
-					stiffness: 300,
-				}}
-			>
-				<Card className="overflow-hidden border-0 shadow-sm">
-					<Link
-						href={`/app/groups/${group.id}`}
-						className="block touch-action-pan-y"
-					>
-						<div className="flex items-start p-4">
+			{groups.map((group) => {
+				const isOwner = group.members.some(
+					(member: { user: { id: string } }) => member.user.id === sessionId
+				);
+				return (
+					<Card key={group.id} className="overflow-hidden">
+						<div className="relative flex items-start p-4">
 							{/* Image Section */}
 							<div className="relative flex-shrink-0 mt-1">
 								{group.imageUrl ? (
@@ -109,7 +46,7 @@ function GroupCard({
 											src={group.imageUrl}
 											alt={group.name}
 											fill
-											className="object-cover rounded-lg transform-gpu"
+											className="object-cover rounded-lg"
 											sizes="64px"
 											loading="lazy"
 											quality={75}
@@ -155,7 +92,10 @@ function GroupCard({
 							</div>
 
 							{/* Content Section */}
-							<div className="flex-1 min-w-0 ml-4">
+							<Link
+								href={`/app/groups/${group.id}`}
+								className="flex-1 min-w-0 ml-4 py-1"
+							>
 								<h3 className="text-base font-medium leading-tight tracking-tight md:tracking-normal truncate text-foreground antialiased">
 									{group.name}
 								</h3>
@@ -175,20 +115,28 @@ function GroupCard({
 										</p>
 									)}
 								</div>
+							</Link>
+
+							{/* Settings Button */}
+							<div className="flex-shrink-0 ml-2">
+								<Button
+									variant="ghost"
+									size="icon"
+									className="touch-target-2025 h-11 w-11 rounded-full transform-gpu transition-transform hover:scale-105 active:scale-95"
+									asChild
+								>
+									<Link href={`/app/my-groups/${group.id}`}>
+										<Settings className="h-5 w-5" />
+										<span className="sr-only">
+											Paramètres du groupe {group.name}
+										</span>
+									</Link>
+								</Button>
 							</div>
 						</div>
-					</Link>
-				</Card>
-			</motion.div>
-
-			{/* Indicateur de swipe */}
-			<motion.div
-				className="absolute left-0 top-0 bottom-0 w-1 bg-destructive/20"
-				style={{
-					scaleY: useTransform(x, [-100, 0], [1, 0]),
-					opacity: useTransform(x, [-100, -50, 0], [1, 0.5, 0]),
-				}}
-			/>
+					</Card>
+				);
+			})}
 		</div>
 	);
 }
