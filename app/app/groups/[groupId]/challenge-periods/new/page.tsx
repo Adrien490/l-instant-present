@@ -23,6 +23,7 @@ export default async function NewChallengePeriodPage({ params }: Props) {
 			<PageHeader
 				title="Nouvelle période de challenges"
 				description="Créer une nouvelle période de challenges pour ce groupe"
+				showBackButton
 			/>
 			<ChallengePeriodForm groupId={groupId} />
 		</PageContainer>

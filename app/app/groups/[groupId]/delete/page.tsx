@@ -39,6 +39,7 @@ export default async function DeleteGroupPage({ params }: Props) {
 			<PageHeader
 				title="Supprimer un groupe"
 				description="Êtes-vous sûr de vouloir supprimer ce groupe ?"
+				showBackButton
 			/>
 			<div className="max-w-2xl mx-auto space-y-8">
 				<div className="relative rounded-2xl overflow-hidden bg-muted">

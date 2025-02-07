@@ -1,6 +1,7 @@
 import { getGroup } from "@/app/features/groups/queries/get-group";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
+import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { GroupRole } from "@prisma/client";
@@ -28,6 +29,11 @@ export default async function GroupPage({ params }: Props) {
 
 	return (
 		<PageContainer className="">
+			<PageHeader
+				showBackButton
+				title={group.name}
+				description="Gérer le groupe"
+			/>
 			<div className="flex flex-col">
 				<div className="relative">
 					<ImageCover imageUrl={group.imageUrl} alt={group.name}>

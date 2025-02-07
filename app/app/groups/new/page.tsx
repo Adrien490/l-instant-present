@@ -8,6 +8,7 @@ export default function NewGroupPage() {
 			<PageHeader
 				title="Créer un groupe"
 				description="Créez un groupe et invitez vos amis"
+				showBackButton
 			/>
 			<GroupForm />
 		</PageContainer>

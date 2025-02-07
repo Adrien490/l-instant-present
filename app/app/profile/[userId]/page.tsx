@@ -50,6 +50,7 @@ export default async function ProfilePage({ params }: Props) {
 			<PageHeader
 				title={`Profil de ${user.name}`}
 				description="Voir les informations de l'utilisateur"
+				showBackButton
 			/>
 			<div className="mx-auto space-y-8">
 				{/* En-tête du profil */}
