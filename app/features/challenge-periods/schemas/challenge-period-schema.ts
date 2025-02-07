@@ -52,16 +52,6 @@ const challengePeriodSchema = z
 			message: "La date de fin doit être postérieure à la date de début",
 			path: ["endDate"],
 		}
-	)
-	.refine(
-		(data) => {
-			const start = new Date(data.startDate);
-			return start >= new Date();
-		},
-		{
-			message: "La date de début ne peut pas être dans le passé",
-			path: ["startDate"],
-		}
 	);
 
 export type ChallengePeriodParams = z.infer<typeof challengePeriodSchema>;
