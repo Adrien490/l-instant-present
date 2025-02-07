@@ -17,7 +17,6 @@ export default function PageContainer({
 			className={cn(
 				"w-full h-full overflow-y-auto overflow-x-hidden",
 				"px-4 sm:px-6",
-				"pl-safe-left pr-safe-right pt-safe-top pb-safe-bottom",
 				className
 			)}
 			{...props}
