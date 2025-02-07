@@ -20,7 +20,7 @@ import { ChallengePeriod } from "@prisma/client";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { CalendarIcon, Loader2 } from "lucide-react";
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 import createChallengePeriod from "../actions/create-challenge-period";
 
 interface ChallengePeriodFormProps {
@@ -32,7 +32,6 @@ export default function ChallengePeriodForm({
 	period,
 	groupId,
 }: ChallengePeriodFormProps) {
-	const [open, setOpen] = useState(false);
 	const [state, dispatch, isPending] = useActionState<
 		ServerActionState<ChallengePeriod, typeof challengePeriodFormSchema>,
 		FormData
@@ -127,7 +126,7 @@ export default function ChallengePeriodForm({
 								name={fields.startDate.name}
 								value={fields.startDate.value ?? ""}
 							/>
-							<Popover open={open} onOpenChange={setOpen}>
+							<Popover>
 								<PopoverTrigger asChild>
 									<Button
 										variant="outline"
@@ -156,7 +155,6 @@ export default function ChallengePeriodForm({
 										}
 										onSelect={(date) => {
 											startDateControl.change(date?.toISOString() ?? "");
-											setOpen(false);
 										}}
 										initialFocus
 									/>
@@ -182,7 +180,7 @@ export default function ChallengePeriodForm({
 								name={fields.endDate.name}
 								value={fields.endDate.value ?? ""}
 							/>
-							<Popover open={open} onOpenChange={setOpen}>
+							<Popover>
 								<PopoverTrigger asChild>
 									<Button
 										variant="outline"
@@ -211,7 +209,6 @@ export default function ChallengePeriodForm({
 										}
 										onSelect={(date) => {
 											endDateControl.change(date?.toISOString() ?? "");
-											setOpen(false);
 										}}
 										initialFocus
 									/>
