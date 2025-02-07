@@ -112,11 +112,6 @@ export default async function InvitePage({ params }: Props) {
 										{invite.group.members.map((member) => (
 											<UserAvatar
 												key={member.userId}
-												user={{
-													id: member.userId,
-													name: member.user.name,
-													image: member.user.image,
-												}}
 												className="group relative"
 											/>
 										))}
