@@ -35,7 +35,7 @@ export default function GroupCard({
 			<div className="h-full flex items-center justify-end">
 				{canEdit && (
 					<Link
-						href={`/app/my-groups/${group.id}/edit`}
+						href={`/app/groups/${group.id}/edit`}
 						className="h-full w-16 flex items-center justify-center bg-muted/95 backdrop-blur-sm text-muted-foreground hover:bg-muted/80 active:bg-muted/70 transition-all"
 					>
 						<Edit className="h-5 w-5" />
@@ -43,7 +43,7 @@ export default function GroupCard({
 				)}
 				{canDelete && (
 					<Link
-						href={`/app/my-groups/${group.id}/delete`}
+						href={`/app/groups/${group.id}/delete`}
 						className="h-full w-16 flex items-center justify-center bg-destructive/10 backdrop-blur-sm text-destructive hover:bg-destructive/20 active:bg-destructive/30 transition-all"
 					>
 						<Trash2 className="h-5 w-5" />
@@ -51,7 +51,7 @@ export default function GroupCard({
 				)}
 
 				<Link
-					href={`/app/my-groups/${group.id}`}
+					href={`/app/groups/${group.id}`}
 					className="h-full w-16 flex items-center justify-center bg-primary/10 backdrop-blur-sm text-primary hover:bg-primary/20 active:bg-primary/30 transition-all"
 				>
 					<Eye className="h-5 w-5" />

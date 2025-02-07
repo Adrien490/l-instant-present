@@ -38,7 +38,7 @@ export default async function HomePage({ searchParams }: Props) {
 						/>
 						<Button asChild size="lg" className="w-full h-11 md:w-auto md:h-12">
 							<Link
-								href="/app/my-groups/new"
+								href="/app/groups/new"
 								className="flex items-center justify-center"
 							>
 								<Users className="mr-2 h-5 w-5" />
@@ -51,17 +51,8 @@ export default async function HomePage({ searchParams }: Props) {
 					<section className="mt-3 md:mt-4">
 						<div className="flex items-center justify-between mb-3">
 							<h2 className="text-base font-semibold md:text-lg">
-								Groupes récents
+								Mes groupes
 							</h2>
-
-							<Button
-								variant="ghost"
-								size="sm"
-								className="text-sm -mr-2 h-9"
-								asChild
-							>
-								<Link href="/app/my-groups">Voir tout</Link>
-							</Button>
 						</div>
 
 						<Suspense fallback={<GroupListSkeleton />}>

@@ -15,7 +15,6 @@ export default function PageContainer({
 		<div
 			className={cn(
 				"w-full h-full overflow-y-auto overflow-x-hidden",
-				"container",
 				"px-4 pb-4",
 				className
 			)}
