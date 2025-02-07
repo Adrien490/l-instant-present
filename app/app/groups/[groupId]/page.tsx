@@ -125,7 +125,7 @@ export default async function GroupPage({ params }: Props) {
 									className="w-full justify-start font-medium text-base leading-normal antialiased touch-target-2025 min-h-[44px] px-4"
 									asChild
 								>
-									<Link href={`/app/my-groups/${group.id}/edit`}>
+									<Link href={`/app/groups/${group.id}/edit`}>
 										<Edit className="mr-3 h-5 w-5 transform-gpu" />
 										Modifier
 									</Link>
@@ -136,7 +136,7 @@ export default async function GroupPage({ params }: Props) {
 									className="w-full justify-start font-medium text-base leading-normal antialiased touch-target-2025 min-h-[44px] px-4"
 									asChild
 								>
-									<Link href={`/app/my-groups/${group.id}/delete`}>
+									<Link href={`/app/groups/${group.id}/delete`}>
 										<Trash className="mr-3 h-5 w-5 transform-gpu" />
 										Supprimer
 									</Link>
