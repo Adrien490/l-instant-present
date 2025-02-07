@@ -21,10 +21,8 @@ export default async function EditGroupPage({ params }: Props) {
 	return (
 		<PageContainer className="pb-32">
 			<PageHeader
-				title={`Modifier le groupe "${group.name}"`}
-				description={
-					"Vous pouvez modifier le nom, la description et l'image du groupe"
-				}
+				title={group.name}
+				description="Modifier le groupe"
 				showBackButton
 			/>
 			<GroupForm group={group} />
