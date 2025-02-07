@@ -9,13 +9,11 @@ import ChallengePeriodCard from "./challenge-period-card";
 
 type Props = {
 	getChallengePeriodListPromise: Promise<GetChallengePeriodListResponse>;
-	groupId: string;
 	className?: string;
 };
 
 export default function ChallengePeriodList({
 	getChallengePeriodListPromise,
-	groupId,
 	className,
 }: Props) {
 	const periods = use(getChallengePeriodListPromise);
@@ -33,11 +31,7 @@ export default function ChallengePeriodList({
 	return (
 		<div className={cn("flex flex-col gap-2.5", className)}>
 			{periods.map((period) => (
-				<ChallengePeriodCard
-					key={period.id}
-					period={period}
-					groupId={groupId}
-				/>
+				<ChallengePeriodCard key={period.id} period={period} />
 			))}
 		</div>
 	);

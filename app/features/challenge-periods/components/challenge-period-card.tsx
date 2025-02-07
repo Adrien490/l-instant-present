@@ -12,10 +12,9 @@ type ChallengePeriodData = GetChallengePeriodListResponse[number];
 
 type Props = {
 	period: ChallengePeriodData;
-	groupId: string;
 };
 
-export default function ChallengePeriodCard({ period, groupId }: Props) {
+export default function ChallengePeriodCard({ period }: Props) {
 	const isActive =
 		new Date(period.startDate) <= new Date() &&
 		new Date() <= new Date(period.endDate);
@@ -35,7 +34,7 @@ export default function ChallengePeriodCard({ period, groupId }: Props) {
 			}}
 		>
 			<Link
-				href={`/app/groups/${groupId}/challenge-periods/${period.id}/challenges`}
+				href={`/app/groups/${period.groupId}/challenge-periods/${period.id}/challenges`}
 				className="block w-full"
 			>
 				<div className="relative flex items-start p-3 md:p-6 w-full">

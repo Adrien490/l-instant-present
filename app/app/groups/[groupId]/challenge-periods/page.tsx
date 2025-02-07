@@ -65,7 +65,6 @@ export default async function ChallengePeriodsPage({
 				<section className="mt-3 md:mt-4">
 					<Suspense fallback={<div>Loading...</div>}>
 						<ChallengePeriodList
-							groupId={groupId}
 							getChallengePeriodListPromise={getChallengePeriodList({
 								groupId,
 								search,
