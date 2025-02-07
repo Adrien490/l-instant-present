@@ -1,9 +1,8 @@
 import { cn } from "@/lib/utils";
 
-type PageContainerProps = {
+type PageContainerProps = React.HTMLAttributes<HTMLDivElement> & {
 	children: React.ReactNode;
 	className?: string;
-	props?: React.HTMLAttributes<HTMLDivElement>;
 };
 
 export default function PageContainer({
@@ -12,7 +11,7 @@ export default function PageContainer({
 	...props
 }: PageContainerProps) {
 	return (
-		<div
+		<main
 			className={cn(
 				"w-full h-full overflow-y-auto overflow-x-hidden",
 				"px-4 pb-4",
@@ -21,6 +20,6 @@ export default function PageContainer({
 			{...props}
 		>
 			{children}
-		</div>
+		</main>
 	);
 }

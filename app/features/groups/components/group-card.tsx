@@ -65,7 +65,10 @@ export default function GroupCard({
 			<SwipeableList threshold={0.5} type={ListType.IOS}>
 				<SwipeableListItem trailingActions={trailingActions()}>
 					<Card className="overflow-hidden">
-						<Link href={`/app/groups/${group.id}`} className="block w-full">
+						<Link
+							href={`/app/groups/${group.id}/challenge-periods`}
+							className="block w-full"
+						>
 							<div className="relative flex items-start p-4 w-full">
 								{/* Image Section */}
 								<div className="relative flex-shrink-0 mt-1">
