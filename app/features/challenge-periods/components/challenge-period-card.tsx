@@ -93,7 +93,7 @@ export default function ChallengePeriodCard({ period, groupId }: Props) {
 										"text-xs font-semibold px-2 py-0.5 md:px-3 md:py-1 rounded-full",
 										isActive && "bg-primary/15 text-primary",
 										isPast && "bg-muted-foreground/15 text-muted-foreground",
-										isFuture && "bg-secondary/15 text-secondary"
+										isFuture && "bg-muted text-muted-foreground"
 									)}
 								>
 									{isActive && "En cours"}
