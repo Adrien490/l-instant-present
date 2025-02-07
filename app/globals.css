@@ -60,13 +60,30 @@ body {
 		font-size: 16px; /* Empêche le zoom automatique sur iOS */
 	}
 
-	/* Gestion du safe-area pour les appareils avec encoche/dynamic island */
 	.safe-area-top {
-		padding-top: env(safe-area-inset-top);
+		padding-top: env(safe-area-inset-top, 0px);
 	}
 
 	.safe-area-bottom {
-		padding-bottom: env(safe-area-inset-bottom);
+		padding-bottom: env(safe-area-inset-bottom, 0px);
+	}
+
+	.safe-area-left {
+		padding-left: env(safe-area-inset-left, 0px);
+	}
+
+	.safe-area-right {
+		padding-right: env(safe-area-inset-right, 0px);
+	}
+
+	.safe-area-x {
+		padding-left: env(safe-area-inset-left, 0px);
+		padding-right: env(safe-area-inset-right, 0px);
+	}
+
+	.safe-area-y {
+		padding-top: env(safe-area-inset-top, 0px);
+		padding-bottom: env(safe-area-inset-bottom, 0px);
 	}
 
 	/* Désactiver le surlignement bleu sur mobile */
@@ -104,43 +121,6 @@ body {
 		@apply p-3;
 		@apply min-h-[2.75rem];
 	}
-
-	/* Card and container padding */
-	.content-padding {
-		@apply p-4 sm:p-6;
-	}
-
-	/* Mobile-optimized icons */
-	.icon-base {
-		@apply h-5 w-5;
-	}
-
-	.icon-small {
-		@apply h-4 w-4;
-	}
-
-	.icon-large {
-		@apply h-6 w-6;
-	}
-
-	/* Touch targets */
-	.touch-target {
-		@apply min-h-[2.75rem] min-w-[2.75rem];
-		@apply flex items-center justify-center;
-	}
-
-	/* Mobile-optimized spacing utilities */
-	.spacing-base {
-		@apply space-y-4 sm:space-y-6;
-	}
-
-	.spacing-small {
-		@apply space-y-2 sm:space-y-3;
-	}
-
-	.spacing-large {
-		@apply space-y-6 sm:space-y-8;
-	}
 }
 
 @layer base {
@@ -149,14 +129,5 @@ body {
 	}
 	body {
 		@apply bg-background text-foreground;
-	}
-}
-
-/* Styles pour les animations fluides */
-@layer utilities {
-	.transition-gpu {
-		transform: translateZ(0);
-		backface-visibility: hidden;
-		perspective: 1000px;
 	}
 }

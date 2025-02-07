@@ -75,7 +75,7 @@ const SearchForm = ({ paramName, className, placeholder }: SearchFormProps) => {
 					setValue(paramName, e.target.value);
 					debouncedSearch(e.target.value);
 				}}
-				className="pl-12 truncate h-9"
+				className="pl-12 truncate h-9 rounded-full"
 				placeholder={placeholder || "Rechercher..."}
 				aria-label="Champ de recherche"
 			/>

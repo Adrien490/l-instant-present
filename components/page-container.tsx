@@ -15,7 +15,9 @@ export default function PageContainer({
 	return (
 		<div
 			className={cn(
-				"w-full h-full px-4 overflow-y-auto overflow-x-hidden",
+				"w-full h-full overflow-y-auto overflow-x-hidden",
+				"px-4 sm:px-6",
+				"pl-safe-left pr-safe-right pt-safe-top pb-safe-bottom",
 				className
 			)}
 			{...props}
