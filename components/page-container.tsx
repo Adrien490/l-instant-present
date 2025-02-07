@@ -1,11 +1,10 @@
-"use client";
-
 import { cn } from "@/lib/utils";
-import * as React from "react";
 
-interface PageContainerProps extends React.HTMLAttributes<HTMLDivElement> {
+type PageContainerProps = {
 	children: React.ReactNode;
-}
+	className?: string;
+	props?: React.HTMLAttributes<HTMLDivElement>;
+};
 
 export default function PageContainer({
 	children,
@@ -16,7 +15,8 @@ export default function PageContainer({
 		<div
 			className={cn(
 				"w-full h-full overflow-y-auto overflow-x-hidden",
-				"px-4 sm:px-6",
+				"container",
+				"px-4 pb-4",
 				className
 			)}
 			{...props}
