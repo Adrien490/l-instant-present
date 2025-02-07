@@ -100,7 +100,7 @@ export default function ChallengePeriodForm({
 							<Input
 								id={fields.name.id}
 								name={fields.name.name}
-								placeholder="Nom de la période"
+								placeholder="2024 - 2025"
 								aria-describedby={fields.name.descriptionId}
 								aria-invalid={!fields.name.valid}
 								defaultValue={fields.name.value ?? ""}
