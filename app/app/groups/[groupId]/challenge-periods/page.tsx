@@ -63,10 +63,6 @@ export default async function ChallengePeriodsPage({
 
 				{/* Recent Groups Section */}
 				<section className="mt-3 md:mt-4">
-					<div className="flex items-center justify-between mb-3">
-						<h2 className="text-base font-semibold md:text-lg">Mes groupes</h2>
-					</div>
-
 					<Suspense fallback={<div>Loading...</div>}>
 						<ChallengePeriodList
 							groupId={groupId}
