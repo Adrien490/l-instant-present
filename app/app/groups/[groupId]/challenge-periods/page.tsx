@@ -26,7 +26,8 @@ export default async function ChallengePeriodsPage({ params }: Props) {
 	return (
 		<PageContainer>
 			<PageHeader
-				title="Périodes de challenges"
+				showBackButton
+				title={group.name}
 				description="Gérer les périodes de challenges pour ce groupe"
 			/>
 			<div className="flex flex-col gap-3">
