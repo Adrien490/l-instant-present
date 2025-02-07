@@ -22,6 +22,7 @@ import { fr } from "date-fns/locale";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useActionState } from "react";
 import createChallengePeriod from "../actions/create-challenge-period";
+import editChallengePeriod from "../actions/edit-challenge-period";
 
 interface ChallengePeriodFormProps {
 	period?: GetChallengePeriodResponse;
@@ -38,6 +39,9 @@ export default function ChallengePeriodForm({
 	>(
 		async (previousState, formData) => {
 			try {
+				if (period) {
+					return await editChallengePeriod(previousState, formData);
+				}
 				return await createChallengePeriod(previousState, formData);
 			} catch (error) {
 				console.error("[USE_GROUP_FORM]", error);

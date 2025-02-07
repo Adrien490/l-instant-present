@@ -8,18 +8,45 @@ import { FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { UploadDropzone, useUploadThing } from "@/lib/uploadthing";
+import { ServerActionState, ServerActionStatus } from "@/types/server-action";
 import { useForm, useInputControl } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
+import { Group } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
-import { useGroupForm } from "../hooks/use-group-form";
+import { useActionState } from "react";
+import createGroup from "../actions/create-group";
+import editGroup from "../actions/edit-group";
 
 interface GroupFormProps {
 	group?: GetGroupResponse;
 }
 
 export default function GroupForm({ group }: GroupFormProps) {
-	const { dispatch, state, isPending } = useGroupForm({ group });
+	const [state, dispatch, isPending] = useActionState<
+		ServerActionState<Group, typeof groupFormSchema>,
+		FormData
+	>(
+		async (previousState, formData) => {
+			try {
+				if (group) {
+					return await editGroup(previousState, formData);
+				}
+				return await createGroup(previousState, formData);
+			} catch (error) {
+				console.error("[USE_GROUP_FORM]", error);
+				return {
+					status: ServerActionStatus.ERROR,
+					message: "Une erreur est survenue",
+				};
+			}
+		},
+		{
+			message: "",
+			status: ServerActionStatus.INITIAL,
+			data: group ?? undefined,
+		}
+	);
 	const { isUploading, startUpload } = useUploadThing("groupImage");
 
 	const [form, fields] = useForm({

@@ -6,17 +6,39 @@ import ServerActionResponse from "@/components/server-action-response";
 import { Button } from "@/components/ui/button";
 import { FormLabel } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { ServerActionState, ServerActionStatus } from "@/types/server-action";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
+import { Group } from "@prisma/client";
 import { AlertTriangle, Loader2 } from "lucide-react";
-import { useDeleteGroup } from "../hooks/use-delete-group";
+import { useActionState } from "react";
+import deleteGroup from "../actions/delete-group";
 
 interface DeleteGroupFormProps {
 	group: GetGroupResponse;
 }
 
 export default function DeleteGroupForm({ group }: DeleteGroupFormProps) {
-	const { dispatch, state, isPending } = useDeleteGroup();
+	const [state, dispatch, isPending] = useActionState<
+		ServerActionState<Group, typeof deleteGroupSchema>,
+		FormData
+	>(
+		async (previousState, formData) => {
+			try {
+				return await deleteGroup(previousState, formData);
+			} catch (error) {
+				console.error("[USE_GROUP_DELETE]", error);
+				return {
+					status: ServerActionStatus.ERROR,
+					message: "Une erreur est survenue lors de la suppression",
+				};
+			}
+		},
+		{
+			message: "",
+			status: ServerActionStatus.INITIAL,
+		}
+	);
 
 	const [form, fields] = useForm({
 		id: "delete-group-form",
