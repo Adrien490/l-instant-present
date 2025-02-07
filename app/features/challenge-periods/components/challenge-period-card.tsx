@@ -25,7 +25,7 @@ export default function ChallengePeriodCard({ period, groupId }: Props) {
 
 	return (
 		<Card
-			className="group overflow-hidden hover:shadow-lg transition-all duration-300 border-l-4"
+			className="overflow-hidden border-l-4"
 			style={{
 				borderLeftColor: isActive
 					? "hsl(var(--primary))"
@@ -42,7 +42,7 @@ export default function ChallengePeriodCard({ period, groupId }: Props) {
 					<div className="relative flex-shrink-0">
 						<div
 							className={cn(
-								"w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-2xl flex items-center justify-center transform transition-transform group-hover:rotate-12",
+								"w-14 h-14 md:w-20 md:h-20 rounded-xl md:rounded-2xl flex items-center justify-center",
 								"bg-gradient-to-br shadow-lg",
 								isActive && "from-primary to-primary/60",
 								isPast && "from-muted to-muted/60",
@@ -63,7 +63,7 @@ export default function ChallengePeriodCard({ period, groupId }: Props) {
 							<h3 className="text-base md:text-xl font-semibold tracking-tight text-foreground truncate">
 								{period.name}
 							</h3>
-							<ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0 transform transition-transform group-hover:translate-x-1" />
+							<ChevronRight className="h-5 w-5 text-muted-foreground flex-shrink-0" />
 						</div>
 
 						<div className="space-y-2 md:space-y-3">
