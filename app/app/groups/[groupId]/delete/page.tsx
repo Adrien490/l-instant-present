@@ -1,5 +1,5 @@
 import DeleteGroupForm from "@/app/features/groups/components/delete-group-form";
-import { isGroupAdmin } from "@/app/features/groups/lib/is-group-admin";
+import isGroupAdmin from "@/app/features/groups/lib/is-group-admin";
 import { getGroup } from "@/app/features/groups/queries/get-group";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";

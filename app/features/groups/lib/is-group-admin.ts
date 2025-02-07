@@ -10,7 +10,7 @@ import { headers } from "next/headers";
 /**
  * Vérifie si l'utilisateur est admin du groupe
  */
-export async function isGroupAdmin(groupId: string) {
+export default async function isGroupAdmin(groupId: string) {
 	try {
 		const validation = groupAdminSchema.safeParse({ groupId });
 		if (!validation.success) {

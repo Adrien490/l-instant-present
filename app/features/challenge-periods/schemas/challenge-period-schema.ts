@@ -10,18 +10,37 @@ const challengePeriodSchema = z
 			.optional()
 			.nullable(),
 		name: z
-			.string()
+			.string({
+				required_error: "Le nom est requis",
+				invalid_type_error: "Le nom doit être une chaîne de caractères",
+			})
 			.min(3, "Le nom doit contenir au moins 3 caractères")
 			.max(50, "Le nom ne peut pas dépasser 50 caractères"),
-		startDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
-			message: "La date de début doit être une date valide",
-		}),
-		endDate: z.string().refine((date) => !isNaN(Date.parse(date)), {
-			message: "La date de fin doit être une date valide",
-		}),
-		groupId: z.string().uuid({
-			message: "L'identifiant du groupe doit être un UUID valide",
-		}),
+		startDate: z
+			.string({
+				required_error: "La date de début est requise",
+				invalid_type_error: "La date de début doit être une date valide",
+			})
+			.refine((date) => !isNaN(Date.parse(date)), {
+				message: "La date de début doit être une date valide",
+			}),
+		endDate: z
+			.string({
+				required_error: "La date de fin est requise",
+				invalid_type_error: "La date de fin doit être une date valide",
+			})
+			.refine((date) => !isNaN(Date.parse(date)), {
+				message: "La date de fin doit être une date valide",
+			}),
+		groupId: z
+			.string({
+				required_error: "L'identifiant du groupe est requis",
+				invalid_type_error:
+					"L'identifiant du groupe doit être une chaîne de caractères",
+			})
+			.uuid({
+				message: "L'identifiant du groupe doit être un UUID valide",
+			}),
 	})
 	.refine(
 		(data) => {

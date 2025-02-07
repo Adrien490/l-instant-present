@@ -12,7 +12,7 @@ import {
 import { ChallengePeriod } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import { isGroupAdmin } from "../../groups/lib/is-group-admin";
+import isGroupAdmin from "../../groups/lib/is-group-admin";
 import challengePeriodSchema from "../schemas/challenge-period-schema";
 
 export default async function editChallengePeriod(

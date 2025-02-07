@@ -11,7 +11,7 @@ import {
 import { GroupMember } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import { isGroupAdmin } from "../../groups/lib/is-group-admin";
+import isGroupAdmin from "../../groups/lib/is-group-admin";
 import removeGroupMemberSchema from "../schemas/remove-group-member-schema";
 
 export default async function removeGroupMember(

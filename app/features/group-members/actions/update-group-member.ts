@@ -12,7 +12,7 @@ import {
 import { GroupMember, GroupRole } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import { isGroupAdmin } from "../../groups/lib/is-group-admin";
+import isGroupAdmin from "../../groups/lib/is-group-admin";
 import updateGroupMemberSchema from "../schemas/update-group-member-schema";
 
 export default async function updateGroupMember(

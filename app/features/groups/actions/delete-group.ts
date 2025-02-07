@@ -12,7 +12,7 @@ import {
 import { Group } from "@prisma/client";
 import { revalidateTag } from "next/cache";
 import { headers } from "next/headers";
-import { isGroupAdmin } from "../lib/is-group-admin";
+import isGroupAdmin from "../lib/is-group-admin";
 import deleteGroupSchema from "../schemas/delete-group-schema";
 
 export default async function deleteGroup(
