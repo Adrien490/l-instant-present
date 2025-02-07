@@ -4,14 +4,12 @@ import PageHeader from "@/components/page-header";
 
 export default function NewGroupPage() {
 	return (
-		<>
+		<PageContainer>
 			<PageHeader
 				title="Créer un groupe"
 				description="Créez un groupe et invitez vos amis"
 			/>
-			<PageContainer>
-				<GroupForm />
-			</PageContainer>
-		</>
+			<GroupForm />
+		</PageContainer>
 	);
 }

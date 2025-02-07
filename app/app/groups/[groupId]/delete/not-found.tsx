@@ -1,12 +1,17 @@
 import EmptyPlaceholder from "@/components/empty-placeholder";
 import PageContainer from "@/components/page-container";
+import PageHeader from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function GroupNotFound() {
 	return (
-		<PageContainer className="min-h-[60vh] flex items-center justify-center">
+		<PageContainer className="flex items-center justify-center">
+			<PageHeader
+				title="Groupe introuvable"
+				description="Ce groupe a peut-être été supprimé ou n'existe pas."
+			/>
 			<EmptyPlaceholder
 				icon={
 					<AlertTriangle className="h-5 w-5 text-muted-foreground transform-gpu" />

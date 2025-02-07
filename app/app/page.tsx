@@ -25,49 +25,45 @@ export default async function HomePage({ searchParams }: Props) {
 	}
 
 	return (
-		<>
+		<PageContainer>
 			<PageHeader title="Mes groupes" description="Gérer vos groupes" />
-			<PageContainer>
-				<div className="flex flex-col gap-3">
-					{/* Search and Create Group */}
-					<div className="flex flex-col gap-2 md:flex-row md:items-center">
-						<SearchForm
-							paramName="search"
-							placeholder="Rechercher ..."
-							className="w-full"
-						/>
-						<Button asChild size="lg" className="w-full h-11 md:w-auto md:h-12">
-							<Link
-								href="/app/groups/new"
-								className="flex items-center justify-center"
-							>
-								<Users className="mr-2 h-5 w-5" />
-								Créer un groupe
-							</Link>
-						</Button>
+			<div className="flex flex-col gap-3">
+				{/* Search and Create Group */}
+				<div className="flex flex-col gap-2 md:flex-row md:items-center">
+					<SearchForm
+						paramName="search"
+						placeholder="Rechercher ..."
+						className="w-full"
+					/>
+					<Button asChild size="lg" className="w-full h-11 md:w-auto md:h-12">
+						<Link
+							href="/app/groups/new"
+							className="flex items-center justify-center"
+						>
+							<Users className="mr-2 h-5 w-5" />
+							Créer un groupe
+						</Link>
+					</Button>
+				</div>
+
+				{/* Recent Groups Section */}
+				<section className="mt-3 md:mt-4">
+					<div className="flex items-center justify-between mb-3">
+						<h2 className="text-base font-semibold md:text-lg">Mes groupes</h2>
 					</div>
 
-					{/* Recent Groups Section */}
-					<section className="mt-3 md:mt-4">
-						<div className="flex items-center justify-between mb-3">
-							<h2 className="text-base font-semibold md:text-lg">
-								Mes groupes
-							</h2>
-						</div>
-
-						<Suspense fallback={<GroupListSkeleton />}>
-							<GroupList
-								getGroupListPromise={getGroupList({
-									search,
-									take: 3,
-								})}
-								sessionId={session.user.id}
-								className="flex flex-col gap-2.5"
-							/>
-						</Suspense>
-					</section>
-				</div>
-			</PageContainer>
-		</>
+					<Suspense fallback={<GroupListSkeleton />}>
+						<GroupList
+							getGroupListPromise={getGroupList({
+								search,
+								take: 3,
+							})}
+							sessionId={session.user.id}
+							className="flex flex-col gap-2.5"
+						/>
+					</Suspense>
+				</section>
+			</div>
+		</PageContainer>
 	);
 }

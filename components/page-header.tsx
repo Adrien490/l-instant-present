@@ -23,7 +23,7 @@ export default function PageHeader({
 			)}
 			{...props}
 		>
-			<div className="flex h-14 md:h-20 items-center justify-between gap-4 px-4">
+			<div className="flex h-14 md:h-20 items-center justify-between gap-4">
 				{/* Titre et description */}
 				<div className="flex flex-1 items-center min-w-0">
 					<div className="min-w-0 flex-1">
