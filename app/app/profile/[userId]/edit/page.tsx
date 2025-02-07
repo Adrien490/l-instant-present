@@ -24,7 +24,7 @@ export default async function ProfileEditPage({ params }: Props) {
 	}
 
 	return (
-		<PageContainer className="pb-12">
+		<PageContainer>
 			<PageHeader
 				title="Modifier mon profil"
 				description="Modifier les informations de votre profil"
