@@ -1,6 +1,6 @@
-import FAQ from "@/app/app/(with-nav)/help/components/faq";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
+import FAQ from "./components/faq";
 import faqItems from "./lib/faq-items";
 
 export default function HelpPage() {
