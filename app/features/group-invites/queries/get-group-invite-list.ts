@@ -1,14 +1,16 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import db, { DB_TIMEOUTS } from "@/lib/db";
+import db, { CACHE_TIMES, DB_TIMEOUTS } from "@/lib/db";
 import { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 import { headers } from "next/headers";
 import getGroupInviteListSchema, {
 	GetGroupInviteListParams,
 } from "../schemas/get-group-invite-list-schema";
 
 // Constants
+const CACHE_REVALIDATION_TIME = CACHE_TIMES.MEDIUM;
 const DB_TIMEOUT = DB_TIMEOUTS.MEDIUM;
 
 // Types
@@ -49,20 +51,73 @@ const DEFAULT_SELECT = {
 	},
 } satisfies Prisma.GroupInviteSelect;
 
-export type GetGroupInviteListResponse = Array<
-	Prisma.GroupInviteGetPayload<{ select: typeof DEFAULT_SELECT }>
->;
+interface InviteCounts {
+	received: number;
+	sent: number;
+	total: number;
+}
+
+export interface GetGroupInviteListResponse {
+	items: Array<Prisma.GroupInviteGetPayload<{ select: typeof DEFAULT_SELECT }>>;
+	counts: InviteCounts;
+}
 
 // Helpers
 const buildWhereClause = (
 	params: GetGroupInviteListParams,
 	session: { user: { id: string; email: string } }
 ): Prisma.GroupInviteWhereInput => {
+	const conditions: Prisma.GroupInviteWhereInput[] = [];
+
+	// Filtre par type
+	if (params.filter === "sent") {
+		conditions.push({ senderId: session.user.id });
+	} else {
+		conditions.push({ email: session.user.email });
+	}
+
+	// Filtre par statut
+	if (params.status) {
+		conditions.push({ status: params.status });
+	}
+
+	// Filtre de recherche
+	if (params.search) {
+		conditions.push({
+			OR: [
+				{ group: { name: { contains: params.search, mode: "insensitive" } } },
+				{ sender: { name: { contains: params.search, mode: "insensitive" } } },
+				{ email: { contains: params.search, mode: "insensitive" } },
+			],
+		});
+	}
+
+	return { AND: conditions };
+};
+
+// Fonction pour obtenir les compteurs
+const getInviteCounts = async (session: {
+	user: { id: string; email: string };
+}): Promise<InviteCounts> => {
+	const [received, sent] = await Promise.all([
+		db.groupInvite.count({
+			where: {
+				email: session.user.email,
+				status: "PENDING",
+			},
+		}),
+		db.groupInvite.count({
+			where: {
+				senderId: session.user.id,
+				status: "PENDING",
+			},
+		}),
+	]);
+
 	return {
-		status: params.status,
-		...(params.type === "sent"
-			? { senderId: session.user.id }
-			: { email: session.user.email }),
+		received,
+		sent,
+		total: received + sent,
 	};
 };
 
@@ -86,17 +141,41 @@ export default async function getGroupInviteList(
 		const validatedParams = validation.data;
 		const where = buildWhereClause(validatedParams, session);
 
-		const data = await Promise.race([
-			db.groupInvite.findMany({
-				where,
-				select: DEFAULT_SELECT,
-				orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-				take: validatedParams.take,
-			}),
-			new Promise<never>((_, reject) =>
-				setTimeout(() => reject(new Error("Query timeout")), DB_TIMEOUT)
-			),
-		]);
+		// Construction de la clé de cache
+		const cacheKey = `invites:user:${session.user.id}${
+			params.filter ? `:filter:${params.filter}` : ""
+		}${params.search ? `:search:${params.search}` : ""}${
+			params.status ? `:status:${params.status}` : ""
+		}`;
+
+		const getData = async () => {
+			const [items, counts] = await Promise.all([
+				Promise.race([
+					db.groupInvite.findMany({
+						where,
+						select: DEFAULT_SELECT,
+						orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+						take: validatedParams.take,
+					}),
+					new Promise<never>((_, reject) =>
+						setTimeout(() => reject(new Error("Query timeout")), DB_TIMEOUT)
+					),
+				]),
+				getInviteCounts(session),
+			]);
+
+			return { items, counts };
+		};
+
+		const data = await unstable_cache(getData, [cacheKey], {
+			revalidate: CACHE_REVALIDATION_TIME,
+			tags: [
+				"invites:list",
+				`invites:user:${session.user.id}`,
+				`invites:filter:${params.filter || "received"}`,
+				`invites:search:${params.search || "all"}`,
+			],
+		})();
 
 		return data;
 	} catch (error) {
