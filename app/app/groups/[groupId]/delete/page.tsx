@@ -1,12 +1,14 @@
 import DeleteGroupForm from "@/app/features/groups/components/delete-group-form";
 import isGroupAdmin from "@/app/features/groups/lib/is-group-admin";
 import { getGroup } from "@/app/features/groups/queries/get-group";
+import UserAvatar from "@/app/features/users/components/user-avatar";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
+import { Suspense } from "react";
 
 type Props = {
 	params: Promise<{
@@ -36,11 +38,14 @@ export default async function DeleteGroupPage({ params }: Props) {
 
 	return (
 		<PageContainer className="pb-32 safe-area-bottom">
-			<PageHeader
-				title="Supprimer un groupe"
-				description="Êtes-vous sûr de vouloir supprimer ce groupe ?"
-				showBackButton
-			/>
+			<Suspense>
+				<PageHeader
+					title="Supprimer un groupe"
+					description="Êtes-vous sûr de vouloir supprimer ce groupe ?"
+					showBackButton
+					actions={<UserAvatar />}
+				/>
+			</Suspense>
 			<div className="max-w-2xl mx-auto space-y-8">
 				<div className="relative rounded-2xl overflow-hidden bg-muted">
 					<ImageCover imageUrl={group.imageUrl} alt={group.name}>

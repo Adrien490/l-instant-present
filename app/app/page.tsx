@@ -27,23 +27,25 @@ export default async function HomePage({ searchParams }: Props) {
 	return (
 		<PageContainer className="pb-20">
 			{/* Header avec avatar et notifications */}
-			<div className="flex items-center justify-between mb-6">
-				<PageHeader
-					title={
-						<div className="flex flex-col">
-							<span className="text-sm text-muted-foreground font-medium">
-								Bonjour,
-							</span>
-							<span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/50">
-								{session.user.name}
-							</span>
-						</div>
-					}
-				/>
-				<Suspense>
-					<UserAvatar />
-				</Suspense>
-			</div>
+
+			<PageHeader
+				className="mb-4"
+				title={
+					<div className="flex flex-col">
+						<span className="text-sm text-muted-foreground font-medium">
+							Bonjour,
+						</span>
+						<span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/50">
+							{session.user.name}
+						</span>
+					</div>
+				}
+				actions={
+					<Suspense fallback={<></>}>
+						<UserAvatar />
+					</Suspense>
+				}
+			/>
 
 			<div className="flex flex-col gap-8">
 				{/* Quick Actions Grid */}
