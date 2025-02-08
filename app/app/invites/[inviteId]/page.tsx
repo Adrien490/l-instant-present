@@ -1,11 +1,13 @@
 import { UpdateGroupInviteStatusButton } from "@/app/features/group-invites/components/update-group-invite-status-button";
 import getGroupInvite from "@/app/features/group-invites/queries/get-group-invite";
-import UserAvatar from "@/app/features/users/components/user-avatar";
+import getUserInitials from "@/app/features/users/lib/get-user-initials";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import { Button } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
+import { cn } from "@/lib/utils";
 import { GroupInviteStatus } from "@prisma/client";
+import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { formatDistanceToNow } from "date-fns";
 import { fr } from "date-fns/locale";
 import { ArrowRight, Mail, Users, X } from "lucide-react";
@@ -110,10 +112,20 @@ export default async function InvitePage({ params }: Props) {
 								<div className="space-y-4">
 									<div className="flex flex-wrap gap-2">
 										{invite.group.members.map((member) => (
-											<UserAvatar
+											<Avatar
 												key={member.userId}
-												className="group relative"
-											/>
+												className={cn(
+													"h-10 w-10 rounded-full ring-2 ring-background"
+												)}
+											>
+												<AvatarImage
+													src={member.user.image ?? ""}
+													alt={member.user.name ?? ""}
+												/>
+												<AvatarFallback className="text-sm font-medium">
+													{getUserInitials(member.user.name ?? "") ?? "?"}
+												</AvatarFallback>
+											</Avatar>
 										))}
 									</div>
 									<div className="text-sm leading-normal antialiased text-muted-foreground">
