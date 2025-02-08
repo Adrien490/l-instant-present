@@ -34,7 +34,7 @@ export default function EmptyPlaceholder({
 			transition={{ duration: 0.4, ease: [0.4, 0, 0.2, 1] }}
 			className={cn(
 				"relative flex flex-col items-center justify-center",
-				"min-h-[350px] w-full max-w-md mx-auto my-8",
+				"min-h-[350px] w-full max-w-md mx-auto",
 				"px-8 py-12",
 				"rounded-[2.5rem]",
 				"bg-gradient-to-b from-background via-background/95 to-background/90",
