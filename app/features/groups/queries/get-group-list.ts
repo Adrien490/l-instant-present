@@ -41,21 +41,50 @@ export type GetGroupListResponse = Array<
 	Prisma.GroupGetPayload<{ select: typeof DEFAULT_SELECT }>
 >;
 
-// Helpers
+// Dans get-group-list.ts
 const buildWhereClause = (
 	params: GetGroupListParams,
 	userId: string
 ): Prisma.GroupWhereInput => {
-	const conditions: Prisma.GroupWhereInput[] = [
-		{
-			members: {
-				some: {
-					userId,
-				},
-			},
-		},
-	];
+	const conditions: Prisma.GroupWhereInput[] = [];
 
+	// Filtre selon le type de vue
+	switch (params.filter) {
+		case "owned":
+			conditions.push({
+				ownerId: userId,
+			});
+			break;
+		case "joined":
+			conditions.push({
+				AND: [
+					{
+						members: {
+							some: {
+								userId,
+							},
+						},
+					},
+					{
+						ownerId: {
+							not: userId,
+						},
+					},
+				],
+			});
+			break;
+		default:
+			// "all" - montre tous les groupes où l'utilisateur est membre
+			conditions.push({
+				members: {
+					some: {
+						userId,
+					},
+				},
+			});
+	}
+
+	// Ajout du filtre de recherche
 	if (params.search) {
 		conditions.push({
 			name: { contains: params.search, mode: "insensitive" },
@@ -82,10 +111,15 @@ export default async function getGroupList(
 		}
 
 		const validatedParams = validation.data;
+
 		const where = buildWhereClause(validatedParams, session.user.id);
+
+		// Mise à jour de la clé de cache pour inclure le type de vue
 		const cacheKey = `groups:user:${session.user.id}${
-			params.search ? `:search:${params.search}` : ""
-		}${params.take ? `:take:${params.take}` : ""}`;
+			params.filter ? `:filter:${params.filter}` : ""
+		}${params.search ? `:search:${params.search}` : ""}${
+			params.take ? `:take:${params.take}` : ""
+		}`;
 
 		const getData = async () => {
 			return await Promise.race([
@@ -110,6 +144,7 @@ export default async function getGroupList(
 			tags: [
 				"groups:list",
 				`groups:user:${session.user.id}`,
+				`groups:filter:${params.filter || "all"}`,
 				`groups:search:${params.search || "all"}`,
 			],
 		})();

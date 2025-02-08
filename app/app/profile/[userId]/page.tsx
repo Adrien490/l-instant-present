@@ -2,7 +2,6 @@ import PushNotificationButton from "@/app/features/push-notifications/components
 import LogoutButton from "@/app/features/users/components/logout-button";
 import getUserInitials from "@/app/features/users/lib/get-user-initials";
 import getUser from "@/app/features/users/queries/get-user";
-import EmptyPlaceholder from "@/components/empty-placeholder";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -10,17 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { auth } from "@/lib/auth";
-import {
-	CalendarDays,
-	Group,
-	Mail,
-	Pencil,
-	Plus,
-	Shield,
-	Trophy,
-	User,
-	Waves,
-} from "lucide-react";
+import { CalendarDays, Mail, Pencil, Shield, Waves } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -107,122 +96,6 @@ export default async function ProfilePage({ params }: Props) {
 				</Card>
 
 				<div className="grid gap-6 md:grid-cols-2">
-					{/* Statistiques */}
-					<Card>
-						<CardHeader>
-							<CardTitle className="flex items-center gap-2">
-								<Trophy className="h-5 w-5 text-primary" />
-								Statistiques
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="grid grid-cols-2 gap-4">
-								<div className="space-y-1 text-center p-4 rounded-lg bg-muted/50">
-									<p className="text-2xl font-bold text-primary">
-										{user.ownedGroups.length}
-									</p>
-									<p className="text-sm text-muted-foreground">Groupes créés</p>
-								</div>
-								<div className="space-y-1 text-center p-4 rounded-lg bg-muted/50">
-									<p className="text-2xl font-bold text-primary">
-										{user.memberships.length}
-									</p>
-									<p className="text-sm text-muted-foreground">
-										Participations
-									</p>
-								</div>
-							</div>
-						</CardContent>
-					</Card>
-
-					{/* Groupes */}
-					<Card>
-						<CardHeader>
-							<CardTitle className="flex items-center gap-2">
-								<Group className="h-5 w-5 text-primary" />
-								Groupes
-							</CardTitle>
-						</CardHeader>
-						<CardContent>
-							<div className="space-y-6">
-								{user.ownedGroups.length > 0 && (
-									<div>
-										<h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-											<User className="h-4 w-4" />
-											Groupes créés
-										</h3>
-										<div className="space-y-2">
-											{user.ownedGroups.map((group) => (
-												<div
-													key={group.id}
-													className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
-												>
-													<Avatar className="h-8 w-8 border border-border">
-														<AvatarImage src={group.imageUrl || undefined} />
-														<AvatarFallback className="bg-primary/10">
-															{getUserInitials(group.name, "")}
-														</AvatarFallback>
-													</Avatar>
-													<span className="font-medium">{group.name}</span>
-												</div>
-											))}
-										</div>
-									</div>
-								)}
-								{user.memberships.length > 0 && (
-									<div>
-										<h3 className="text-sm font-medium mb-3 flex items-center gap-2">
-											<Group className="h-4 w-4" />
-											Membre de
-										</h3>
-										<div className="space-y-2">
-											{user.memberships.map((membership) => (
-												<div
-													key={membership.group.id}
-													className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted transition-colors"
-												>
-													<Avatar className="h-8 w-8 border border-border">
-														<AvatarImage
-															src={membership.group.imageUrl || undefined}
-														/>
-														<AvatarFallback className="bg-primary/10">
-															{getUserInitials(membership.group.name, "")}
-														</AvatarFallback>
-													</Avatar>
-													<span className="font-medium">
-														{membership.group.name}
-													</span>
-													<Badge
-														variant="secondary"
-														className="ml-auto text-xs capitalize"
-													>
-														{membership.role.toLowerCase()}
-													</Badge>
-												</div>
-											))}
-										</div>
-									</div>
-								)}
-								{user.ownedGroups.length === 0 &&
-									user.memberships.length === 0 && (
-										<EmptyPlaceholder
-											icon={<Group className="h-4 w-4" />}
-											title="Aucun groupe"
-											description="Vous n'avez pas de groupe pour le moment"
-											action={
-												<Link href="/app/groups/create">
-													<Button variant="outline" size="sm">
-														<Plus className="h-4 w-4 mr-2" />
-														Créer un groupe
-													</Button>
-												</Link>
-											}
-										/>
-									)}
-							</div>
-						</CardContent>
-					</Card>
-
 					{/* Actions et paramètres */}
 					{isCurrentUser && (
 						<Card className="md:col-span-2">

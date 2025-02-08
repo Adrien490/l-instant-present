@@ -14,12 +14,12 @@ import Link from "next/link";
 import { Suspense } from "react";
 
 type Props = {
-	searchParams: Promise<{ search?: string; view?: string }>;
+	searchParams: Promise<{ search?: string; filter?: string }>;
 };
 
 export default async function GroupsPage({ searchParams }: Props) {
 	const resolvedSearchParams = await searchParams;
-	const { search, view = "all" } = resolvedSearchParams;
+	const { search, filter = "all" } = resolvedSearchParams;
 	const session = await auth.api.getSession({ headers: await headers() });
 
 	if (!session?.user.id) {
@@ -37,14 +37,22 @@ export default async function GroupsPage({ searchParams }: Props) {
 
 			<div className="flex flex-col gap-5">
 				{/* Tabs Navigation */}
-				<Tabs defaultValue={view} className="w-full">
+				<Tabs defaultValue={filter} className="w-full">
 					<TabsList className="w-full h-12 p-1 bg-muted/50 rounded-full grid grid-cols-3 gap-1">
 						<TabsTrigger
 							value="all"
 							className="rounded-full data-[state=active]:bg-background"
 							asChild
 						>
-							<Link href={{ query: { ...resolvedSearchParams, view: "all" } }}>
+							<Link
+								replace
+								href={{
+									query: {
+										...resolvedSearchParams,
+										filter: "all",
+									},
+								}}
+							>
 								<Users className="h-4 w-4 mr-2" />
 								Tous
 							</Link>
@@ -55,7 +63,13 @@ export default async function GroupsPage({ searchParams }: Props) {
 							asChild
 						>
 							<Link
-								href={{ query: { ...resolvedSearchParams, view: "joined" } }}
+								replace
+								href={{
+									query: {
+										...resolvedSearchParams,
+										filter: "joined",
+									},
+								}}
 							>
 								<UserPlus className="h-4 w-4 mr-2" />
 								Rejoints
@@ -67,7 +81,13 @@ export default async function GroupsPage({ searchParams }: Props) {
 							asChild
 						>
 							<Link
-								href={{ query: { ...resolvedSearchParams, view: "owned" } }}
+								replace
+								href={{
+									query: {
+										...resolvedSearchParams,
+										filter: "owned",
+									},
+								}}
 							>
 								<Crown className="h-4 w-4 mr-2" />
 								Gérés
@@ -94,37 +114,16 @@ export default async function GroupsPage({ searchParams }: Props) {
 					</div>
 				</div>
 
-				{/* Quick Stats Cards */}
-				<div className="grid grid-cols-2 gap-3">
-					<div className="flex gap-3 items-center p-4 rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-border/50">
-						<div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center">
-							<UserPlus className="h-5 w-5 text-primary" />
-						</div>
-						<div>
-							<p className="text-sm font-medium text-muted-foreground">
-								Rejoints
-							</p>
-							<p className="text-2xl font-bold">12</p>
-						</div>
-					</div>
-
-					<div className="flex gap-3 items-center p-4 rounded-2xl bg-gradient-to-br from-secondary/10 via-secondary/5 to-transparent border border-border/50">
-						<div className="h-10 w-10 rounded-xl bg-secondary/10 flex items-center justify-center">
-							<Crown className="h-5 w-5 text-secondary-foreground" />
-						</div>
-						<div>
-							<p className="text-sm font-medium text-muted-foreground">Gérés</p>
-							<p className="text-2xl font-bold">3</p>
-						</div>
-					</div>
-				</div>
-
 				{/* Groups List */}
 				<section className="space-y-4 mt-2">
-					<Suspense key={`${view}-${search}`} fallback={<GroupListSkeleton />}>
+					<Suspense
+						key={`${filter}-${search}`}
+						fallback={<GroupListSkeleton />}
+					>
 						<GroupList
 							getGroupListPromise={getGroupList({
 								search,
+								filter: filter as "all" | "joined" | "owned",
 							})}
 							sessionId={session.user.id}
 							className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
