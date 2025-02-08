@@ -78,7 +78,7 @@ const SearchForm = ({ paramName, className, placeholder }: SearchFormProps) => {
 						debouncedSearch(e.target.value);
 					}}
 					className={cn(
-						"pl-10 pr-10 h-12 rounded-2xl",
+						"pl-10 pr-10 h-12 rounded-full",
 						"bg-muted/50 border-none",
 						"placeholder:text-muted-foreground/70",
 						"focus:ring-2 focus:ring-primary/20",
