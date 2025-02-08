@@ -51,16 +51,9 @@ const DEFAULT_SELECT = {
 	},
 } satisfies Prisma.GroupInviteSelect;
 
-interface InviteCounts {
-	received: number;
-	sent: number;
-	total: number;
-}
-
-export interface GetGroupInviteListResponse {
-	items: Array<Prisma.GroupInviteGetPayload<{ select: typeof DEFAULT_SELECT }>>;
-	counts: InviteCounts;
-}
+export type GetGroupInviteListResponse = Array<
+	Prisma.GroupInviteGetPayload<{ select: typeof DEFAULT_SELECT }>
+>;
 
 // Helpers
 const buildWhereClause = (
@@ -95,32 +88,6 @@ const buildWhereClause = (
 	return { AND: conditions };
 };
 
-// Fonction pour obtenir les compteurs
-const getInviteCounts = async (session: {
-	user: { id: string; email: string };
-}): Promise<InviteCounts> => {
-	const [received, sent] = await Promise.all([
-		db.groupInvite.count({
-			where: {
-				email: session.user.email,
-				status: "PENDING",
-			},
-		}),
-		db.groupInvite.count({
-			where: {
-				senderId: session.user.id,
-				status: "PENDING",
-			},
-		}),
-	]);
-
-	return {
-		received,
-		sent,
-		total: received + sent,
-	};
-};
-
 export default async function getGroupInviteList(
 	params: GetGroupInviteListParams
 ): Promise<GetGroupInviteListResponse> {
@@ -149,7 +116,7 @@ export default async function getGroupInviteList(
 		}`;
 
 		const getData = async () => {
-			const [items, counts] = await Promise.all([
+			const [items] = await Promise.all([
 				Promise.race([
 					db.groupInvite.findMany({
 						where,
@@ -161,10 +128,9 @@ export default async function getGroupInviteList(
 						setTimeout(() => reject(new Error("Query timeout")), DB_TIMEOUT)
 					),
 				]),
-				getInviteCounts(session),
 			]);
 
-			return { items, counts };
+			return items;
 		};
 
 		const data = await unstable_cache(getData, [cacheKey], {

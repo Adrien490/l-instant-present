@@ -19,7 +19,7 @@ export default function GroupInviteList({
 	filter,
 	className,
 }: Props) {
-	const { items: invites } = use(getGroupInviteListPromise);
+	const invites = use(getGroupInviteListPromise);
 
 	if (invites.length === 0) {
 		return (

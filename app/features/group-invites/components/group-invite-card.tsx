@@ -10,7 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { GetGroupInviteListResponse } from "../queries/get-group-invite-list";
 
-type GroupInviteData = GetGroupInviteListResponse["items"][number];
+type GroupInviteData = GetGroupInviteListResponse[number];
 
 interface Props {
 	invite: GroupInviteData;
