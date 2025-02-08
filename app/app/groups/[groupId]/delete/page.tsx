@@ -1,14 +1,10 @@
 import DeleteGroupForm from "@/app/features/groups/components/delete-group-form";
 import isGroupAdmin from "@/app/features/groups/lib/is-group-admin";
 import { getGroup } from "@/app/features/groups/queries/get-group";
-import UserAvatar from "@/app/features/users/components/user-avatar";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { notFound, redirect } from "next/navigation";
-import { Suspense } from "react";
+import { notFound } from "next/navigation";
 
 type Props = {
 	params: Promise<{
@@ -19,13 +15,6 @@ type Props = {
 export default async function DeleteGroupPage({ params }: Props) {
 	const resolvedParams = await params;
 	const { groupId } = resolvedParams;
-	const session = await auth.api.getSession({
-		headers: await headers(),
-	});
-
-	if (!session) {
-		redirect("/auth/signin");
-	}
 
 	const [group, isAdmin] = await Promise.all([
 		getGroup({ id: groupId }),
@@ -37,15 +26,13 @@ export default async function DeleteGroupPage({ params }: Props) {
 	}
 
 	return (
-		<PageContainer className="pb-32 safe-area-bottom">
-			<Suspense>
-				<PageHeader
-					title="Supprimer un groupe"
-					description="Êtes-vous sûr de vouloir supprimer ce groupe ?"
-					showBackButton
-					actions={<UserAvatar />}
-				/>
-			</Suspense>
+		<PageContainer className="pb-32">
+			<PageHeader
+				title="Supprimer un groupe"
+				description="Êtes-vous sûr de vouloir supprimer ce groupe ?"
+				showBackButton
+			/>
+
 			<div className="max-w-2xl mx-auto space-y-8">
 				<div className="relative rounded-2xl overflow-hidden bg-muted">
 					<ImageCover imageUrl={group.imageUrl} alt={group.name}>

@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { useDebouncedCallback } from "use-debounce";
 
 type SearchFormProps = {
-	paramName: string; // Le nom du paramètre de recherche à gérer
+	paramName: string;
 	className?: string;
 	placeholder?: string;
 };
@@ -46,10 +46,10 @@ const SearchForm = ({ paramName, className, placeholder }: SearchFormProps) => {
 		startTransition(() => {
 			router.replace(`?${newSearchParams.toString()}`, { scroll: false });
 		});
-		setValue(paramName, ""); // Reset form value
+		setValue(paramName, "");
 	};
 
-	const searchTerm = watch(paramName); // Watch real-time changes
+	const searchTerm = watch(paramName);
 
 	return (
 		<Form
@@ -60,39 +60,58 @@ const SearchForm = ({ paramName, className, placeholder }: SearchFormProps) => {
 			className={cn("relative flex w-full items-center gap-2", className)}
 			action=""
 		>
-			<div className="absolute left-5 flex items-center">
-				{isPending ? (
-					<Loader2 className="text-muted-foreground h-4 w-4 animate-spin" />
-				) : (
-					<Search className="text-muted-foreground h-4 w-4" />
+			<div className="relative flex-1">
+				<div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
+					{isPending ? (
+						<Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
+					) : (
+						<Search className="text-muted-foreground h-5 w-5" />
+					)}
+				</div>
+
+				<Input
+					autoComplete="off"
+					type="text"
+					value={searchTerm}
+					onChange={(e) => {
+						setValue(paramName, e.target.value);
+						debouncedSearch(e.target.value);
+					}}
+					className={cn(
+						"pl-10 pr-10 h-12 rounded-2xl",
+						"bg-muted/50 border-none",
+						"placeholder:text-muted-foreground/70",
+						"focus:ring-2 focus:ring-primary/20",
+						"transition-shadow duration-200"
+					)}
+					placeholder={placeholder || "Rechercher..."}
+					aria-label="Champ de recherche"
+				/>
+
+				{searchTerm && (
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						className={cn(
+							"absolute right-2 top-1/2 -translate-y-1/2",
+							"h-8 w-8 rounded-full p-0",
+							"hover:bg-muted/80",
+							"transition-colors"
+						)}
+						onClick={clearSearch}
+						aria-label="Effacer la recherche"
+					>
+						<X className="h-4 w-4" />
+					</Button>
 				)}
 			</div>
-			<Input
-				autoComplete="off"
-				type="text"
-				value={searchTerm}
-				onChange={(e) => {
-					setValue(paramName, e.target.value);
-					debouncedSearch(e.target.value);
-				}}
-				className="pl-12 truncate h-9 rounded-full"
-				placeholder={placeholder || "Rechercher..."}
-				aria-label="Champ de recherche"
-			/>
-			<Button
-				className="absolute right-0 hover:bg-transparent"
-				variant="ghost"
-				onClick={clearSearch}
-				aria-label="Effacer la recherche"
-			>
-				<X className="h-4 w-4 text-muted-foreground" />
-			</Button>
 		</Form>
 	);
 };
 
 export function SearchFormSkeleton() {
-	return <Skeleton className="h-10 w-full" />;
+	return <Skeleton className="h-12 w-full rounded-2xl bg-muted/50" />;
 }
 
 export default SearchForm;

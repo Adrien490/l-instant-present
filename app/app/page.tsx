@@ -9,7 +9,6 @@ import { Suspense } from "react";
 import GroupList from "../features/groups/components/group-list";
 import GroupListSkeleton from "../features/groups/components/group-list-skeleton";
 import getGroupList from "../features/groups/queries/get-group-list";
-import UserAvatar from "../features/users/components/user-avatar";
 
 type Props = {
 	searchParams: Promise<{ search?: string }>;
@@ -39,11 +38,6 @@ export default async function HomePage({ searchParams }: Props) {
 							{session.user.name}
 						</span>
 					</div>
-				}
-				actions={
-					<Suspense fallback={<></>}>
-						<UserAvatar />
-					</Suspense>
 				}
 			/>
 

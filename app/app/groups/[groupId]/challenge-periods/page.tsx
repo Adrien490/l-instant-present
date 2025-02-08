@@ -36,6 +36,7 @@ export default async function ChallengePeriodsPage({
 				showBackButton
 				title={group.name}
 				description="Gérer les périodes de challenges"
+				className="mb-4"
 			/>
 			<div className="flex flex-col gap-3">
 				{/* Search and Create Group */}
