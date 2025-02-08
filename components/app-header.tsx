@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
+import UserAvatar from "../app/features/users/components/user-avatar";
 import Logo from "./logo";
-import UserAvatar from "./user-avatar";
 
 export default async function AppHeader() {
 	return (

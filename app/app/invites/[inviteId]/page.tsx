@@ -1,9 +1,9 @@
 import { UpdateGroupInviteStatusButton } from "@/app/features/group-invites/components/update-group-invite-status-button";
 import getGroupInvite from "@/app/features/group-invites/queries/get-group-invite";
+import UserAvatar from "@/app/features/users/components/user-avatar";
 import ImageCover from "@/components/image-cover";
 import PageContainer from "@/components/page-container";
 import { Button } from "@/components/ui/button";
-import UserAvatar from "@/components/user-avatar";
 import { auth } from "@/lib/auth";
 import { GroupInviteStatus } from "@prisma/client";
 import { formatDistanceToNow } from "date-fns";

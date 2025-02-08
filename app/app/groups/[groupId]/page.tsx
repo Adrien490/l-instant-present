@@ -33,13 +33,6 @@ export default async function GroupPage({ params }: Props) {
 				showBackButton
 				title={group.name}
 				description="Gérer le groupe"
-				actions={
-					isOwner ? (
-						<Button variant="outline">
-							<Edit className="h-5 w-5" />
-						</Button>
-					) : null
-				}
 			/>
 			<div className="flex flex-col">
 				<div className="relative">

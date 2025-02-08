@@ -5,7 +5,7 @@ import PageContainer from "@/components/page-container";
 import PageHeader from "@/components/page-header";
 import SearchForm from "@/components/search-form";
 import { Button } from "@/components/ui/button";
-import { Calendar, Settings } from "lucide-react";
+import { Calendar } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -36,11 +36,6 @@ export default async function ChallengePeriodsPage({
 				showBackButton
 				title={group.name}
 				description="Gérer les périodes de challenges"
-				actions={
-					<Button size="sm" variant="outline">
-						<Settings className="h-5 w-5" />
-					</Button>
-				}
 			/>
 			<div className="flex flex-col gap-3">
 				{/* Search and Create Group */}

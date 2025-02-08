@@ -1,41 +1,39 @@
-"use client";
-
+import getUserInitials from "@/app/features/users/lib/get-user-initials";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { auth } from "@/lib/auth";
 import { cn } from "@/lib/utils";
-import { User } from "better-auth/types";
+import { headers } from "next/headers";
 import Link from "next/link";
-import { use } from "react";
-import getUserInitials from "../lib/get-user-initials";
 
-interface UserAvatarProps extends React.HTMLAttributes<HTMLDivElement> {
+type Props = {
 	size?: "sm" | "md" | "lg";
-	userPromise: Promise<User | null>;
-}
+	className?: string;
+};
 
-const avatarSizes = {
+const sizeClasses = {
 	sm: "h-8 w-8",
 	md: "h-10 w-10",
-	lg: "h-14 w-14",
-} as const;
+	lg: "h-12 w-12",
+};
 
-export default function UserAvatar({
-	size = "md",
-	className,
-	userPromise,
-}: UserAvatarProps) {
-	const user = use(userPromise);
-
-	if (!user) return null;
+export default async function UserAvatar({ size = "md", className }: Props) {
+	const session = await auth.api.getSession({ headers: await headers() });
 
 	return (
-		<Link href="/app/profile" className="transition-opacity hover:opacity-80">
-			<Avatar className={cn(avatarSizes[size], className)}>
+		<Link
+			href={`/app/profile/${session?.user.id}`}
+			className={cn(
+				"group relative touch-target-2025 transition-transform hover:scale-105 active:scale-95",
+				className
+			)}
+		>
+			<Avatar className={cn(sizeClasses[size], "ring-2 ring-background")}>
 				<AvatarImage
-					src={user.image || undefined}
-					alt={user.name || "Avatar de l'utilisateur"}
+					src={session?.user.image ?? ""}
+					alt={session?.user.name ?? ""}
 				/>
-				<AvatarFallback className="font-medium">
-					{getUserInitials(user.name, user.email)}
+				<AvatarFallback className="text-sm font-medium">
+					{getUserInitials(session?.user.name ?? "") ?? "?"}
 				</AvatarFallback>
 			</Avatar>
 		</Link>
