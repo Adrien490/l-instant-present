@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
+import { AnimatePresence, motion } from "framer-motion";
 import { Loader2, Search, X } from "lucide-react";
 import Form from "next/form";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -17,7 +18,11 @@ type SearchFormProps = {
 	placeholder?: string;
 };
 
-const SearchForm = ({ paramName, className, placeholder }: SearchFormProps) => {
+export default function SearchForm({
+	paramName,
+	className,
+	placeholder,
+}: SearchFormProps) {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const [isPending, startTransition] = useTransition();
@@ -57,18 +62,10 @@ const SearchForm = ({ paramName, className, placeholder }: SearchFormProps) => {
 				debouncedSearch(data[paramName]);
 			})}
 			data-pending={isPending ? "" : undefined}
-			className={cn("relative flex w-full items-center gap-2", className)}
+			className={cn("relative flex w-full items-center", className)}
 			action=""
 		>
-			<div className="relative flex-1">
-				<div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center pointer-events-none">
-					{isPending ? (
-						<Loader2 className="text-muted-foreground h-5 w-5 animate-spin" />
-					) : (
-						<Search className="text-muted-foreground h-5 w-5" />
-					)}
-				</div>
-
+			<div className="relative w-full">
 				<Input
 					autoComplete="off"
 					type="text"
@@ -78,40 +75,74 @@ const SearchForm = ({ paramName, className, placeholder }: SearchFormProps) => {
 						debouncedSearch(e.target.value);
 					}}
 					className={cn(
-						"pl-10 pr-10 h-12 rounded-full",
+						"pl-12 pr-12 h-12 rounded-2xl",
 						"bg-muted/50 border-none",
 						"placeholder:text-muted-foreground/70",
-						"focus:ring-2 focus:ring-primary/20",
-						"transition-shadow duration-200"
+						"shadow-sm",
+						"focus:ring-2 focus:ring-primary/20 focus:shadow-md",
+						"transition-all duration-200"
 					)}
 					placeholder={placeholder || "Rechercher..."}
 					aria-label="Champ de recherche"
 				/>
 
-				{searchTerm && (
-					<Button
-						type="button"
-						variant="ghost"
-						size="sm"
-						className={cn(
-							"absolute right-2 top-1/2 -translate-y-1/2",
-							"h-8 w-8 rounded-full p-0",
-							"hover:bg-muted/80",
-							"transition-colors"
+				{/* Icône de recherche/loader */}
+				<div className="absolute left-4 top-1/2 -translate-y-1/2">
+					<AnimatePresence mode="wait">
+						{isPending ? (
+							<motion.div
+								key="loader"
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+								className="text-primary"
+							>
+								<Loader2 className="h-5 w-5 animate-spin" />
+							</motion.div>
+						) : (
+							<motion.div
+								key="search"
+								initial={{ opacity: 0 }}
+								animate={{ opacity: 1 }}
+								exit={{ opacity: 0 }}
+							>
+								<Search className="h-5 w-5 text-muted-foreground" />
+							</motion.div>
 						)}
-						onClick={clearSearch}
-						aria-label="Effacer la recherche"
-					>
-						<X className="h-4 w-4" />
-					</Button>
-				)}
+					</AnimatePresence>
+				</div>
+
+				{/* Bouton clear */}
+				<AnimatePresence>
+					{searchTerm && (
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}
+							className="absolute right-2 top-1/2 -translate-y-1/2"
+						>
+							<Button
+								type="button"
+								variant="ghost"
+								size="sm"
+								className={cn(
+									"h-8 w-8 rounded-xl p-0",
+									"hover:bg-muted/80",
+									"transition-colors"
+								)}
+								onClick={clearSearch}
+								aria-label="Effacer la recherche"
+							>
+								<X className="h-4 w-4" />
+							</Button>
+						</motion.div>
+					)}
+				</AnimatePresence>
 			</div>
 		</Form>
 	);
-};
+}
 
 export function SearchFormSkeleton() {
 	return <Skeleton className="h-12 w-full rounded-2xl bg-muted/50" />;
 }
-
-export default SearchForm;
