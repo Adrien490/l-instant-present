@@ -18,7 +18,6 @@ import { parseWithZod } from "@conform-to/zod";
 import { GroupRole } from "@prisma/client";
 import { Loader2, Users } from "lucide-react";
 import Image from "next/image";
-import { useEffect } from "react";
 import { GetGroupListResponse } from "../../groups/queries/get-group-list";
 
 interface SendGroupInviteFormProps {
@@ -43,12 +42,6 @@ export default function SendGroupInviteForm({
 		shouldValidate: "onBlur",
 		shouldRevalidate: "onInput",
 	});
-
-	useEffect(() => {
-		if (state?.status === "success") {
-			form.reset();
-		}
-	}, [state?.status, form]);
 
 	return (
 		<>
